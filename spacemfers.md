@@ -3,47 +3,15 @@
 > mfers, in space
 
 
-## tables
+## database tables
 
-each data type in spacemfers
+each data entity in spacemfers
 
 ### players
 the players in the game
 
 - player_id (pk)
 - fid (indexed)
-
-### actions
-the actions that players can take
-
-- action_id (pk)
-- name
-
-### location_types
-the different types of locations in the game
-
-- location_type_id (pk)
-- name
-
-### locations
-the locations that the players can go
-
-- location_id (pk)
-- location_type (fk)
-- name
-
-### player_location
-represents a player's current location and travel state
-
-- player_id (fk)
-- location_id (fk)
-- arrival_time (timestamp)
-
-### location_action
-represents which actions are available at a location
-
-- location_id (fk)
-- action_id (fk)
 
 ### items
 the items in the game that can be owned by a player
@@ -65,7 +33,6 @@ represents the different space ships in the game
 - player_ship_id (pk)
 - player_id (fk)
 - ship_id (fk)
-- location_id (fk)
 - condition
 
 ### player_active_ship
@@ -80,3 +47,59 @@ represents the items in a player's ship
 - player_ship_id (fk)
 - item_id (fk)
 - amount
+
+
+### systems
+the solar systems to explore in the game
+
+- system_id (pk)
+- name
+
+### planets
+the planets that orbit the star of a solar system
+
+- planet_id (pk)
+- system_id (fk)
+- name
+
+### moons
+moons that orbit planets where player actions can be taken
+
+- moon_id (pk)
+- planet_id (fk)
+- name
+
+### belts
+asteroid belts that orbit planets where player actions can be taken
+
+- belt_id (pk)
+- planet_id (fk)
+- name
+
+### stations
+space stations that orbit planets where players can store items & do business
+
+- station_id (pk)
+- planet_id (fk)
+- name
+
+### player_station_inventory
+represents the player's items in a space station
+
+- player_id (fk)
+- station_id (fk)
+- item_id (fk)
+- amount
+
+### location_types
+the types of location a player can be
+
+- location_type_id (pk)
+- type (system, planet, moon, belt or station)
+
+TODO:
+### locations
+places in the game where a player can be
+
+- location_id (pk)
+- location_type_id (fk)
