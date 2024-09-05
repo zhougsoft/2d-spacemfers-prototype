@@ -61,6 +61,12 @@ the planets that orbit the star of a solar system
 - system_id (fk systems)
 - name
 
+### planet_items
+represents what items can be found on what planets
+
+- planet_id (fk planets)
+- item_id (fk items)
+
 ### moons
 moons that orbit planets where player actions can be taken
 
@@ -68,12 +74,24 @@ moons that orbit planets where player actions can be taken
 - planet_id (fk planets)
 - name
 
+### moon_items
+represents what items can be found on what moons
+
+- moon_id (fk moons)
+- item_id (fk items)
+
 ### belts
 asteroid belts that orbit planets where player actions can be taken
 
 - belt_id (pk)
 - planet_id (fk planets)
 - name
+
+### belt_items
+represents what items can be found on what belts
+
+- belt_id (fk belts)
+- item_id (fk items)
 
 ### stations
 space stations that orbit planets where players can store items & do business
@@ -95,16 +113,6 @@ represents the location of the player in the universe
 
 - player_id (fk players)
 - system_id (fk systems)
-- x (x coordinate within the system)
-- y (y coordinate within the system)
 - arrival_time (if it is > than current time, it means player is travelling)
 - station_id (fk stations, nullable) (if not null, it means player is docked)
 - last_docked
-
-TODO:
-how will the x & y coordinates be calculated during travel?
-will need destination coordinates as well...
-new table called `player_travel` to represent travel state?
-it will need to get auto-updated when the travel is complete... how can this be avoided?
-how can everything be determined by timestamps as optimally as possible?
-
