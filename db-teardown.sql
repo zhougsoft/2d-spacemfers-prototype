@@ -1,0 +1,25 @@
+DROP INDEX IF EXISTS idx_player_ships_player_id;
+DROP INDEX IF EXISTS idx_player_ship_inventory_player_ship_id;
+DROP INDEX IF EXISTS idx_planets_system_id;
+DROP INDEX IF EXISTS idx_moons_planet_id;
+DROP INDEX IF EXISTS idx_belts_planet_id;
+DROP INDEX IF EXISTS idx_stations_planet_id;
+DROP INDEX IF EXISTS idx_player_station_inventory_player_id;
+DROP INDEX IF EXISTS idx_player_station_inventory_station_id;
+
+DROP TABLE IF EXISTS player_location;
+DROP TABLE IF EXISTS player_station_inventory;
+DROP TABLE IF EXISTS stations;
+DROP TABLE IF EXISTS belt_items;
+DROP TABLE IF EXISTS belts;
+DROP TABLE IF EXISTS moon_items;
+DROP TABLE IF EXISTS moons;
+DROP TABLE IF EXISTS planet_items;
+DROP TABLE IF EXISTS planets;
+DROP TABLE IF EXISTS systems;
+DROP TABLE IF EXISTS player_ship_inventory;
+DROP TABLE IF EXISTS player_active_ship;
+DROP TABLE IF EXISTS player_ships;
+DROP TABLE IF EXISTS ships;
+DROP TABLE IF EXISTS items;
+DROP TABLE IF EXISTS players;
