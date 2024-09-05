@@ -95,7 +95,16 @@ represents the location of the player in the universe
 
 - player_id (fk players)
 - system_id (fk systems)
-- station_id (fk stations, nullable) (if not null, it means they are docked)
+- x (x coordinate within the system)
+- y (y coordinate within the system)
+- arrival_time (if it is > than current time, it means player is travelling)
+- station_id (fk stations, nullable) (if not null, it means player is docked)
 - last_docked
-- x
-- y
+
+TODO:
+how will the x & y coordinates be calculated during travel?
+will need destination coordinates as well...
+new table called `player_travel` to represent travel state?
+it will need to get auto-updated when the travel is complete... how can this be avoided?
+how can everything be determined by timestamps as optimally as possible?
+
