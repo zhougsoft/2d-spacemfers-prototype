@@ -2,16 +2,16 @@
 
 > mfers, in space
 
+spacemfers is a web-based, open-universe, idle-clicker, lofi space sandbox MMO inspired by EVE Online.
 
 ## database tables
 
-each data entity in spacemfers
+each table in the spacemfers game database
 
 ### players
 the players in the game
 
 - player_id (pk)
-- fid (indexed)
 
 ### items
 the items in the game that can be owned by a player
@@ -31,23 +31,22 @@ represents the different space ships in the game
 ### player_ships
 
 - player_ship_id (pk)
-- player_id (fk)
-- ship_id (fk)
+- player_id (fk players)
+- ship_id (fk ships)
 - condition
 
 ### player_active_ship
 represents a player's active ship (can only be one at a time)
 
 - player_id (pk, unique)
-- player_ship_id (fk, unique, nullable)
+- player_ship_id (fk player_ships, unique, nullable)
 
 ### player_ship_inventory
 represents the items in a player's ship
 
-- player_ship_id (fk)
-- item_id (fk)
+- player_ship_id (fk player_ships)
+- item_id (fk items)
 - amount
-
 
 ### systems
 the solar systems to explore in the game
@@ -59,47 +58,44 @@ the solar systems to explore in the game
 the planets that orbit the star of a solar system
 
 - planet_id (pk)
-- system_id (fk)
+- system_id (fk systems)
 - name
 
 ### moons
 moons that orbit planets where player actions can be taken
 
 - moon_id (pk)
-- planet_id (fk)
+- planet_id (fk planets)
 - name
 
 ### belts
 asteroid belts that orbit planets where player actions can be taken
 
 - belt_id (pk)
-- planet_id (fk)
+- planet_id (fk planets)
 - name
 
 ### stations
 space stations that orbit planets where players can store items & do business
 
 - station_id (pk)
-- planet_id (fk)
+- planet_id (fk planets)
 - name
 
 ### player_station_inventory
 represents the player's items in a space station
 
-- player_id (fk)
-- station_id (fk)
-- item_id (fk)
+- player_id (fk players)
+- station_id (fk stations)
+- item_id (fk items)
 - amount
 
-### location_types
-the types of location a player can be
+### player_location
+represents the location of the player in the universe
 
-- location_type_id (pk)
-- type (system, planet, moon, belt or station)
-
-TODO:
-### locations
-places in the game where a player can be
-
-- location_id (pk)
-- location_type_id (fk)
+- player_id (fk players)
+- system_id (fk systems)
+- station_id (fk stations, nullable) (if not null, it means they are docked)
+- last_docked
+- x
+- y
