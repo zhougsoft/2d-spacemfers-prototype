@@ -2,6 +2,8 @@
 
 > mfers, in space
 
+![spacemfers](spacemfers.png)
+
 spacemfers is a web-based, open-universe, idle-clicker, lofi space sandbox MMO inspired by EVE Online.
 
 ## database tables
