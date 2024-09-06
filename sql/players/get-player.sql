@@ -1,2 +1,2 @@
 -- get a player by their id
-SELECT * FROM players WHERE player_id = 0;
+SELECT * FROM players WHERE player_id = 1;
