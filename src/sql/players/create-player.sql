@@ -22,5 +22,5 @@ player_location AS (
     FROM new_player
     ON CONFLICT (player_id) DO NOTHING
 )
--- return newly created player id
-SELECT player_id FROM new_player;
+-- return newly created player
+SELECT * FROM new_player;

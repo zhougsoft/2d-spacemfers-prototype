@@ -28,10 +28,19 @@ const main = async () => {
     await runQuery('db-down.sql')
     await runQuery('db-up.sql')
 
-    // create some star systems
+    // create an initial star system
     const systemResult = await runQuery('systems/create-system.sql', ['sol'])
     const systemId = systemResult[0].system_id
     if (typeof systemId !== 'number') throw Error('error creating star system')
+
+    // create an initial ship type
+    const shipResult = await runQuery('ships/create-ship.sql', [
+      'shuttle', // name
+      10, // size
+      100, // max_cargo_size
+    ])
+    const shipId = shipResult[0].ship_id
+    if (typeof shipId !== 'number') throw Error('error creating ship type')
 
     // create some players
     await runQuery('players/create-player.sql')
@@ -42,6 +51,9 @@ const main = async () => {
     await runQuery('player-state/set-location.sql', [1, systemId])
     await runQuery('player-state/set-location.sql', [2, systemId])
     await runQuery('player-state/set-location.sql', [3, systemId])
+
+    // TODO: player ships - make the players own a shuttle, then make it their active ship
+    // will have to edit two tables: player_ships and player_active_ship
 
     // read the data
     const results = await runQuery('players/get-all-players.sql')
