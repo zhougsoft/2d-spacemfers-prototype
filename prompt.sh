@@ -15,18 +15,18 @@ generateCodeBlock() {
 
 
 # db setup & teardown
-db_up=$(generateCodeBlock "sql/db-up.sql")
-db_down=$(generateCodeBlock "sql/db-down.sql")
+db_up=$(generateCodeBlock "src/sql/db-up.sql")
+db_down=$(generateCodeBlock "src/sql/db-down.sql")
 
 # player admin
-create_player=$(generateCodeBlock "sql/players/create-player.sql")
-delete_player=$(generateCodeBlock "sql/players/delete-player.sql")
+create_player=$(generateCodeBlock "src/sql/players/create-player.sql")
+delete_player=$(generateCodeBlock "src/sql/players/delete-player.sql")
 
 # player state
-get_active_ship=$(generateCodeBlock "sql/player-state/get-active-ship.sql")
-set_active_ship=$(generateCodeBlock "sql/player-state/set-active-ship.sql")
-get_location=$(generateCodeBlock "sql/player-state/get-location.sql")
-set_location=$(generateCodeBlock "sql/player-state/set-location.sql")
+get_active_ship=$(generateCodeBlock "src/sql/player-state/get-active-ship.sql")
+set_active_ship=$(generateCodeBlock "src/sql/player-state/set-active-ship.sql")
+get_location=$(generateCodeBlock "src/sql/player-state/get-location.sql")
+set_location=$(generateCodeBlock "src/sql/player-state/set-location.sql")
 
 echo -e "You are a world-class Postgres engineer, SQL wizard and senior relational database systems expert. \
 Your task is to be my consultant for my game spacemfers. spacemfers is a web-based, open-universe, idle-clicker, lofi space sandbox MMO inspired by EVE Online.\n\n\

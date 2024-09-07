@@ -114,7 +114,7 @@ represents the player's items in a space station
 represents the location of the player in the universe
 
 - player_id (fk players)
-- system_id (fk systems)
+- system_id (fk systems, nullable) (if null, it means player hasn't entered the universe yet)
 - arrival_time (if it is > than current time, it means player is travelling)
 - station_id (fk stations, nullable) (if not null, it means player is docked)
 - last_docked
