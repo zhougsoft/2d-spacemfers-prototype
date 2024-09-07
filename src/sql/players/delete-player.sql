@@ -3,7 +3,7 @@
 WITH deleted_player AS (
     -- delete the player and return the id
     DELETE FROM players
-    WHERE player_id = 1
+    WHERE player_id = $1
     RETURNING player_id
 )
 

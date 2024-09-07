@@ -1,1 +1,1 @@
-SELECT * FROM systems WHERE system_id = 1;
+SELECT * FROM systems WHERE system_id = $1;

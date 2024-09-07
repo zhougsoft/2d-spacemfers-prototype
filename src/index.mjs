@@ -1,46 +1,51 @@
-import dotenv from 'dotenv'
 import fs from 'fs/promises'
 import { dirname, join } from 'path'
-import pg from 'pg'
 import { fileURLToPath } from 'url'
-
-dotenv.config()
+import { client } from './db.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-
-const { Client } = pg
-
-const client = new Client({
-  user: process.env.POSTGRES_USER,
-  host: 'localhost',
-  database: process.env.POSTGRES_DB,
-  password: process.env.POSTGRES_PW,
-  port: 5432,
-})
 
 const runQuery = async (filename, params = []) => {
   try {
     const filePath = join(__dirname, 'sql', filename)
     const query = await fs.readFile(filePath, 'utf-8')
     const result = await client.query(query, params)
-    console.log(`query ${filename} result:`, result.rows)
-    return result
+    return result.rows
   } catch (error) {
     console.error(`error executing query ${filename}:`, error)
   }
 }
 
-async function main() {
+const main = async () => {
   try {
     await client.connect()
     console.log('connected to db')
 
     // --- RUN SQL QUERY FILES HERE -------------------------------------------
+
+    // refresh the db
+    await runQuery('db-down.sql')
     await runQuery('db-up.sql')
+
+    // create some star systems
+    const systemResult = await runQuery('systems/create-system.sql', ['sol'])
+    const systemId = systemResult[0].system_id
+    if (typeof systemId !== 'number') throw Error('error creating star system')
+
+    // create some players
     await runQuery('players/create-player.sql')
-    // await runQuery('player-state/set-active-ship.sql', [1, 1])
-    // await runQuery('db-down.sql')
+    await runQuery('players/create-player.sql')
+    await runQuery('players/create-player.sql')
+
+    // set star system locations for the players
+    await runQuery('player-state/set-location.sql', [1, systemId])
+    await runQuery('player-state/set-location.sql', [2, systemId])
+    await runQuery('player-state/set-location.sql', [3, systemId])
+
+    // read the data
+    const results = await runQuery('players/get-all-players.sql')
+    console.log({ results })
     // ------------------------------------------------------------------------
   } catch (error) {
     console.error(error)
