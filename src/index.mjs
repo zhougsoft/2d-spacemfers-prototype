@@ -52,12 +52,41 @@ const main = async () => {
     await runQuery('player-state/set-location.sql', [2, systemId])
     await runQuery('player-state/set-location.sql', [3, systemId])
 
-    // TODO: player ships - make the players own a shuttle, then make it their active ship
-    // will have to edit two tables: player_ships and player_active_ship
+    // give starter ships to the players
+    const [{ player_ship_id: ship1Id }] = await runQuery(
+      'player-state/add-owned-ship.sql',
+      [1, shipId, 100]
+    )
+    const [{ player_ship_id: ship2Id }] = await runQuery(
+      'player-state/add-owned-ship.sql',
+      [2, shipId, 100]
+    )
+    const [{ player_ship_id: ship3Id }] = await runQuery(
+      'player-state/add-owned-ship.sql',
+      [3, shipId, 100]
+    )
 
-    // read the data
-    const results = await runQuery('players/get-all-players.sql')
-    console.log({ results })
+    // set the active ship for each player to their starter ship
+    await runQuery('player-state/set-active-ship.sql', [1, ship1Id])
+    await runQuery('player-state/set-active-ship.sql', [2, ship2Id])
+    await runQuery('player-state/set-active-ship.sql', [3, ship3Id])
+
+    // give player one some extra starter ships
+    await runQuery('player-state/add-owned-ship.sql', [1, shipId, 100])
+    await runQuery('player-state/add-owned-ship.sql', [1, shipId, 100])
+
+    // read data
+    const allPlayers = await runQuery('players/get-all-players.sql')
+    const playerOneOwnedShips = await runQuery(
+      'player-state/get-owned-ships.sql',
+      [1]
+    )
+    const playerOneActiveShip = await runQuery(
+      'player-state/get-active-ship.sql',
+      [1]
+    )
+
+    console.log({ allPlayers, playerOneOwnedShips, playerOneActiveShip })
     // ------------------------------------------------------------------------
   } catch (error) {
     console.error(error)
