@@ -33,6 +33,22 @@ const main = async () => {
     const systemId = systemResult[0].system_id
     if (typeof systemId !== 'number') throw Error('error creating star system')
 
+    // create an initial planet in the system
+    const planetResult = await runQuery('planets/create-planet.sql', [
+      systemId,
+      'earth',
+    ])
+    const planetId = planetResult[0].planet_id
+    if (typeof planetId !== 'number') throw Error('error creating planet')
+
+    // create a station to orbit the planet
+    const stationResult = await runQuery('stations/create-station.sql', [
+      planetId,
+      'bingus outpost',
+    ])
+    const stationId = stationResult[0].station_id
+    if (typeof stationId !== 'number') throw Error('error creating station')
+
     // create an initial ship type
     const shipResult = await runQuery('ships/create-ship.sql', [
       'shuttle', // name
@@ -55,15 +71,15 @@ const main = async () => {
     // give starter ships to the players
     const [{ player_ship_id: ship1Id }] = await runQuery(
       'player-state/add-owned-ship.sql',
-      [1, shipId, 100]
+      [1, shipId, 100, stationId]
     )
     const [{ player_ship_id: ship2Id }] = await runQuery(
       'player-state/add-owned-ship.sql',
-      [2, shipId, 100]
+      [2, shipId, 100, stationId]
     )
     const [{ player_ship_id: ship3Id }] = await runQuery(
       'player-state/add-owned-ship.sql',
-      [3, shipId, 100]
+      [3, shipId, 100, stationId]
     )
 
     // set the active ship for each player to their starter ship
@@ -72,8 +88,18 @@ const main = async () => {
     await runQuery('player-state/set-active-ship.sql', [3, ship3Id])
 
     // give player one some extra starter ships
-    await runQuery('player-state/add-owned-ship.sql', [1, shipId, 100])
-    await runQuery('player-state/add-owned-ship.sql', [1, shipId, 100])
+    await runQuery('player-state/add-owned-ship.sql', [
+      1,
+      shipId,
+      100,
+      stationId,
+    ])
+    await runQuery('player-state/add-owned-ship.sql', [
+      1,
+      shipId,
+      100,
+      stationId,
+    ])
 
     // read data
     const allPlayers = await runQuery('players/get-all-players.sql')
