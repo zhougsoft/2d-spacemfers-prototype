@@ -31,11 +31,13 @@ represents the different space ships in the game
 - max_cargo_size
 
 ### player_ships
+represents ships owned by players
 
 - player_ship_id (pk)
 - player_id (fk players)
 - ship_id (fk ships)
 - condition
+- station_id (fk stations, nullable)
 
 ### player_active_ship
 represents a player's active ship (can only be one at a time)
