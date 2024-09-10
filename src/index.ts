@@ -1,26 +1,8 @@
-import fs from 'fs/promises'
-import { dirname, join } from 'path'
-import { fileURLToPath } from 'url'
-import { client } from './db.mjs'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const runQuery = async (filename, params = []) => {
-  try {
-    const filePath = join(__dirname, 'sql', filename)
-    const query = await fs.readFile(filePath, 'utf-8')
-    const result = await client.query(query, params)
-    return result.rows
-  } catch (error) {
-    console.error(`error executing query ${filename}:`, error)
-  }
-}
+import { client, runQuery } from './db'
 
 const main = async () => {
   try {
     await client.connect()
-    console.log('connected to db')
 
     // --- RUN SQL QUERY FILES HERE -------------------------------------------
 
@@ -30,6 +12,7 @@ const main = async () => {
 
     // create an initial star system
     const systemResult = await runQuery('systems/create-system.sql', ['sol'])
+    if (!systemResult) throw Error('error creating star system')
     const systemId = systemResult[0].system_id
     if (typeof systemId !== 'number') throw Error('error creating star system')
 
@@ -38,6 +21,7 @@ const main = async () => {
       systemId,
       'earth',
     ])
+    if (!planetResult) throw Error('error creating planet')
     const planetId = planetResult[0].planet_id
     if (typeof planetId !== 'number') throw Error('error creating planet')
 
@@ -46,6 +30,7 @@ const main = async () => {
       planetId,
       'bingus outpost',
     ])
+    if (!stationResult) throw Error('error creating station')
     const stationId = stationResult[0].station_id
     if (typeof stationId !== 'number') throw Error('error creating station')
 
@@ -55,6 +40,7 @@ const main = async () => {
       10, // size
       100, // max_cargo_size
     ])
+    if (!shipResult) throw Error('error creating ship')
     const shipId = shipResult[0].ship_id
     if (typeof shipId !== 'number') throw Error('error creating ship type')
 
@@ -69,14 +55,17 @@ const main = async () => {
     await runQuery('player-state/set-player-location.sql', [3, systemId])
 
     // give starter ships to the players
+    // @ts-ignore
     const [{ player_ship_id: ship1Id }] = await runQuery(
       'player-state/add-player-owned-ship.sql',
       [1, shipId, 100, stationId]
     )
+    // @ts-ignore
     const [{ player_ship_id: ship2Id }] = await runQuery(
       'player-state/add-player-owned-ship.sql',
       [2, shipId, 100, stationId]
     )
+    // @ts-ignore
     const [{ player_ship_id: ship3Id }] = await runQuery(
       'player-state/add-player-owned-ship.sql',
       [3, shipId, 100, stationId]
@@ -118,7 +107,6 @@ const main = async () => {
     console.error(error)
   } finally {
     await client.end()
-    console.log('disconnected from db')
   }
 }
 

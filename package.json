@@ -3,10 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node src/index.mjs"
+    "start": "tsx src/index.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "tsx": "^4.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.4",
+    "@types/pg": "^8.11.8",
+    "typescript": "^5.6.2"
   }
 }
