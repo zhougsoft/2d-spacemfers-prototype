@@ -1,3 +1,22 @@
+CREATE TABLE location_types (
+    location_type_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL
+);
+
+INSERT INTO location_types (name) 
+VALUES 
+    ('planet'),  -- ID 1
+    ('station'), -- ID 2
+    ('moon'),    -- ID 3
+    ('belt');    -- ID 4
+
+CREATE TABLE locations (
+    location_id SERIAL PRIMARY KEY,
+    location_type_id INTEGER NOT NULL REFERENCES location_types(location_type_id),
+    location_entity_id INTEGER NOT NULL,
+    UNIQUE (location_type_id, location_entity_id)
+);
+
 CREATE TABLE systems (
     system_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
@@ -9,6 +28,12 @@ CREATE TABLE planets (
     name VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE stations (
+    station_id SERIAL PRIMARY KEY,
+    planet_id INTEGER REFERENCES planets(planet_id),
+    name VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE moons (
     moon_id SERIAL PRIMARY KEY,
     planet_id INTEGER REFERENCES planets(planet_id),
@@ -17,12 +42,6 @@ CREATE TABLE moons (
 
 CREATE TABLE belts (
     belt_id SERIAL PRIMARY KEY,
-    planet_id INTEGER REFERENCES planets(planet_id),
-    name VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE stations (
-    station_id SERIAL PRIMARY KEY,
     planet_id INTEGER REFERENCES planets(planet_id),
     name VARCHAR(255) NOT NULL
 );
@@ -57,10 +76,8 @@ CREATE TABLE players (
 
 CREATE TABLE player_location (
     player_id INTEGER PRIMARY KEY REFERENCES players(player_id),
-    system_id INTEGER REFERENCES systems(system_id),
-    arrival_time TIMESTAMP NOT NULL,
-    station_id INTEGER REFERENCES stations(station_id),
-    last_docked TIMESTAMP
+    location_id INTEGER REFERENCES locations(location_id),
+    arrival_time TIMESTAMP NOT NULL
 );
 
 CREATE TABLE ships (
@@ -98,11 +115,13 @@ CREATE TABLE player_station_inventory (
     PRIMARY KEY (player_id, station_id, item_id)
 );
 
-CREATE INDEX idx_player_ships_player_id ON player_ships(player_id);
-CREATE INDEX idx_player_ship_inventory_player_ship_id ON player_ship_inventory(player_ship_id);
+CREATE INDEX idx_locations_location_type_id ON locations(location_type_id);
+CREATE INDEX idx_locations_location_entity_id ON locations(location_entity_id);
 CREATE INDEX idx_planets_system_id ON planets(system_id);
 CREATE INDEX idx_moons_planet_id ON moons(planet_id);
 CREATE INDEX idx_belts_planet_id ON belts(planet_id);
 CREATE INDEX idx_stations_planet_id ON stations(planet_id);
+CREATE INDEX idx_player_ships_player_id ON player_ships(player_id);
+CREATE INDEX idx_player_ship_inventory_player_ship_id ON player_ship_inventory(player_ship_id);
 CREATE INDEX idx_player_station_inventory_player_id ON player_station_inventory(player_id);
 CREATE INDEX idx_player_station_inventory_station_id ON player_station_inventory(station_id);

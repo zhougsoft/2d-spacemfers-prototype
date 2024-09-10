@@ -13,12 +13,10 @@ active_ship AS (
 ),
 player_location AS (
     -- initialize player location state record
-    INSERT INTO player_location (player_id, system_id, station_id, arrival_time, last_docked)
+    INSERT INTO player_location (player_id, location_id, arrival_time)
     SELECT player_id, 
            NULL,
-           NULL,
-           NOW() as arrival_time,
-           NULL as last_docked
+           NOW() as arrival_time
     FROM new_player
     ON CONFLICT (player_id) DO NOTHING
 )

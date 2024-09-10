@@ -23,7 +23,13 @@ const main = async () => {
     ])
     if (!planetResult) throw Error('error creating planet')
     const planetId = planetResult[0].planet_id
-    if (typeof planetId !== 'number') throw Error('error creating planet')
+    if (typeof planetId !== 'number' || typeof planetId !== 'number')
+      throw Error('error creating planet')
+
+    // create some more planets for testing
+    await runQuery('planets/create-planet.sql', [systemId, 'mars'])
+    await runQuery('planets/create-planet.sql', [systemId, 'mercury'])
+    await runQuery('planets/create-planet.sql', [systemId, 'venus'])
 
     // create a station to orbit the planet
     const stationResult = await runQuery('stations/create-station.sql', [
@@ -31,8 +37,13 @@ const main = async () => {
       'bingus outpost',
     ])
     if (!stationResult) throw Error('error creating station')
-    const stationId = stationResult[0].station_id
+    const { station_id: stationId, location_id: stationLocationId } =
+      stationResult[0]
     if (typeof stationId !== 'number') throw Error('error creating station')
+
+    // create some more stations for testing
+    await runQuery('stations/create-station.sql', [planetId, 'industry place'])
+    await runQuery('stations/create-station.sql', [planetId, 'fleet hq'])
 
     // create an initial ship type
     const shipResult = await runQuery('ships/create-ship.sql', [
@@ -49,10 +60,19 @@ const main = async () => {
     await runQuery('players/create-player.sql')
     await runQuery('players/create-player.sql')
 
-    // set star system locations for the players
-    await runQuery('player-state/set-player-location.sql', [1, systemId])
-    await runQuery('player-state/set-player-location.sql', [2, systemId])
-    await runQuery('player-state/set-player-location.sql', [3, systemId])
+    // set locations for the players to the initial station
+    await runQuery('player-state/set-player-location.sql', [
+      1,
+      stationLocationId,
+    ])
+    await runQuery('player-state/set-player-location.sql', [
+      2,
+      stationLocationId,
+    ])
+    await runQuery('player-state/set-player-location.sql', [
+      3,
+      stationLocationId,
+    ])
 
     // give starter ships to the players
     // @ts-ignore
@@ -91,17 +111,21 @@ const main = async () => {
     ])
 
     // read data
-    const allPlayers = await runQuery('players/get-all-players.sql')
-    const playerOneOwnedShips = await runQuery(
-      'player-state/get-player-owned-ships.sql',
+    // @ts-ignore
+    const [playerOneLocation] = await runQuery(
+      'player-state/get-player-location.sql',
       [1]
     )
-    const playerOneActiveShip = await runQuery(
-      'player-state/get-player-active-ship.sql',
-      [1]
-    )
+    // @ts-ignore
+    const [locationData] = await runQuery('locations/get-location.sql', [
+      playerOneLocation.location_id,
+    ])
+    // @ts-ignore
+    const [stationData] = await runQuery('stations/get-station.sql', [
+      locationData.location_entity_id,
+    ])
 
-    console.log({ allPlayers, playerOneOwnedShips, playerOneActiveShip })
+    console.log({ playerOneLocation, locationData, stationData })
     // ------------------------------------------------------------------------
   } catch (error) {
     console.error(error)
