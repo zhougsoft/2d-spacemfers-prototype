@@ -21,7 +21,7 @@ export const client = new Client({
 
 export const runQuery = async (
   filename: string,
-  params: (number | string | boolean)[] = []
+  params: (number | string | boolean | null)[] = []
 ) => {
   try {
     const filePath = join(__dirname, 'sql', filename)
