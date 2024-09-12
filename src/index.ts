@@ -1,4 +1,5 @@
 import { client, runQuery } from './db'
+import { createPlayer } from './lib/players'
 import {
   createPlanet,
   createShip,
@@ -42,9 +43,9 @@ const main = async () => {
     if (!shipId) throw Error('error creating ship')
 
     // create some players
-    await runQuery('players/create-player.sql')
-    await runQuery('players/create-player.sql')
-    await runQuery('players/create-player.sql')
+    await createPlayer()
+    await createPlayer()
+    await createPlayer()
 
     // set locations for the players to the initial station
     await runQuery('player-state/set-player-location.sql', [
@@ -112,6 +113,7 @@ const main = async () => {
     ])
 
     console.log({ playerOneLocation, locationData, stationData })
+
     // --- end ----------------------------------------------------------------
   } catch (error) {
     console.error(error)
