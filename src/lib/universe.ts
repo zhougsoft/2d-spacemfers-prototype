@@ -4,10 +4,12 @@ export const createSystem = async (name: string) => {
   if (!name || typeof name !== 'string') throw Error('invalid system name')
 
   const systemResult = await runQuery('systems/create-system.sql', [name])
-  const systemId = systemResult?.[0].system_id
 
-  if (typeof systemId !== 'number') return null
-  return systemId as number
+  if (!systemResult) return null
+  const { system_id } = systemResult[0]
+
+  if (typeof system_id !== 'number') return null
+  return system_id as number
 }
 
 export const createPlanet = async (systemId: number, name: string) => {
@@ -48,4 +50,27 @@ export const createStation = async (planetId: number, name: string) => {
   }
 
   return { stationId: station_id as number, locationId: location_id as number }
+}
+
+export const createShip = async (
+  name: string,
+  size: number,
+  maxCargoSize: number
+) => {
+  if (!name || typeof name !== 'string') throw Error('invalid ship name')
+  if (!size || typeof size !== 'number') throw Error('invalid ship size')
+  if (!maxCargoSize || typeof maxCargoSize !== 'number')
+    throw Error('invalid max cargo size')
+
+  const shipResult = await runQuery('ships/create-ship.sql', [
+    name,
+    size,
+    maxCargoSize,
+  ])
+
+  if (!shipResult) return null
+  const { ship_id } = shipResult[0]
+
+  if (typeof ship_id !== 'number') return null
+  return ship_id as number
 }

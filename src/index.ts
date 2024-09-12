@@ -1,5 +1,10 @@
 import { client, runQuery } from './db'
-import { createPlanet, createStation, createSystem } from './lib/universe'
+import {
+  createPlanet,
+  createShip,
+  createStation,
+  createSystem,
+} from './lib/universe'
 
 const main = async () => {
   try {
@@ -33,14 +38,8 @@ const main = async () => {
     await createStation(planetId, 'fleet hq')
 
     // create an initial ship type
-    const shipResult = await runQuery('ships/create-ship.sql', [
-      'shuttle', // name
-      10, // size
-      100, // max_cargo_size
-    ])
-    if (!shipResult) throw Error('error creating ship')
-    const shipId = shipResult[0].ship_id
-    if (typeof shipId !== 'number') throw Error('error creating ship type')
+    const shipId = await createShip('shuttle', 10, 100)
+    if (!shipId) throw Error('error creating ship')
 
     // create some players
     await runQuery('players/create-player.sql')
