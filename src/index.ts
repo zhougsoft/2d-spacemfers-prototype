@@ -1,49 +1,36 @@
 import { client, runQuery } from './db'
+import { createPlanet, createStation, createSystem } from './lib/universe'
 
 const main = async () => {
   try {
     await client.connect()
-
-    // --- RUN SQL QUERY FILES HERE -------------------------------------------
 
     // refresh the db
     await runQuery('db-down.sql')
     await runQuery('db-up.sql')
 
     // create an initial star system
-    const systemResult = await runQuery('systems/create-system.sql', ['sol'])
-    if (!systemResult) throw Error('error creating star system')
-    const systemId = systemResult[0].system_id
-    if (typeof systemId !== 'number') throw Error('error creating star system')
+    const systemId = await createSystem('sol')
+    if (!systemId) throw Error('error creating system')
 
     // create an initial planet in the system
-    const planetResult = await runQuery('planets/create-planet.sql', [
-      systemId,
-      'earth',
-    ])
-    if (!planetResult) throw Error('error creating planet')
-    const planetId = planetResult[0].planet_id
-    if (typeof planetId !== 'number' || typeof planetId !== 'number')
-      throw Error('error creating planet')
+    const planetResults = await createPlanet(systemId, 'earth')
+    if (!planetResults) throw Error('error creating planet')
+    const { planetId } = planetResults
 
     // create some more planets for testing
-    await runQuery('planets/create-planet.sql', [systemId, 'mars'])
-    await runQuery('planets/create-planet.sql', [systemId, 'mercury'])
-    await runQuery('planets/create-planet.sql', [systemId, 'venus'])
+    await createPlanet(systemId, 'mars')
+    await createPlanet(systemId, 'mercury')
+    await createPlanet(systemId, 'venus')
 
     // create a station to orbit the planet
-    const stationResult = await runQuery('stations/create-station.sql', [
-      planetId,
-      'bingus outpost',
-    ])
+    const stationResult = await createStation(planetId, 'trade hub')
     if (!stationResult) throw Error('error creating station')
-    const { station_id: stationId, location_id: stationLocationId } =
-      stationResult[0]
-    if (typeof stationId !== 'number') throw Error('error creating station')
+    const { stationId, locationId: stationLocationId } = stationResult
 
     // create some more stations for testing
-    await runQuery('stations/create-station.sql', [planetId, 'industry place'])
-    await runQuery('stations/create-station.sql', [planetId, 'fleet hq'])
+    await createStation(planetId, 'industry place')
+    await createStation(planetId, 'fleet hq')
 
     // create an initial ship type
     const shipResult = await runQuery('ships/create-ship.sql', [
@@ -126,7 +113,7 @@ const main = async () => {
     ])
 
     console.log({ playerOneLocation, locationData, stationData })
-    // ------------------------------------------------------------------------
+    // --- end ----------------------------------------------------------------
   } catch (error) {
     console.error(error)
   } finally {
