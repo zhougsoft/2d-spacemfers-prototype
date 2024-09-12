@@ -1,42 +1,19 @@
 import { client, runQuery } from './db'
 import { createPlayer } from './lib/players'
-import {
-  createPlanet,
-  createShip,
-  createStation,
-  createSystem,
-} from './lib/universe'
+import { createShip } from './lib/universe'
+import { createSolarSystem } from './utils'
 
 const main = async () => {
   try {
     await client.connect()
 
-    // refresh the db
+    // reset the database
     await runQuery('db-down.sql')
     await runQuery('db-up.sql')
 
-    // create an initial star system
-    const systemId = await createSystem('sol')
-    if (!systemId) throw Error('error creating system')
-
-    // create an initial planet in the system
-    const planetResults = await createPlanet(systemId, 'earth')
-    if (!planetResults) throw Error('error creating planet')
-    const { planetId } = planetResults
-
-    // create some more planets for testing
-    await createPlanet(systemId, 'mars')
-    await createPlanet(systemId, 'mercury')
-    await createPlanet(systemId, 'venus')
-
-    // create a station to orbit the planet
-    const stationResult = await createStation(planetId, 'trade hub')
-    if (!stationResult) throw Error('error creating station')
-    const { stationId, locationId: stationLocationId } = stationResult
-
-    // create some more stations for testing
-    await createStation(planetId, 'industry place')
-    await createStation(planetId, 'fleet hq')
+    // build the universe
+    const solarSystem = await createSolarSystem()
+    const { systemId, planets, station } = solarSystem
 
     // create an initial ship type
     const shipId = await createShip('shuttle', 10, 100)
@@ -50,32 +27,32 @@ const main = async () => {
     // set locations for the players to the initial station
     await runQuery('player-state/set-player-location.sql', [
       1,
-      stationLocationId,
+      station.stationLocationId,
     ])
     await runQuery('player-state/set-player-location.sql', [
       2,
-      stationLocationId,
+      station.stationLocationId,
     ])
     await runQuery('player-state/set-player-location.sql', [
       3,
-      stationLocationId,
+      station.stationLocationId,
     ])
 
     // give starter ships to the players
     // @ts-ignore
     const [{ player_ship_id: ship1Id }] = await runQuery(
       'player-state/add-player-owned-ship.sql',
-      [1, shipId, 100, stationId]
+      [1, shipId, 100, station.stationId]
     )
     // @ts-ignore
     const [{ player_ship_id: ship2Id }] = await runQuery(
       'player-state/add-player-owned-ship.sql',
-      [2, shipId, 100, stationId]
+      [2, shipId, 100, station.stationId]
     )
     // @ts-ignore
     const [{ player_ship_id: ship3Id }] = await runQuery(
       'player-state/add-player-owned-ship.sql',
-      [3, shipId, 100, stationId]
+      [3, shipId, 100, station.stationId]
     )
 
     // set the active ship for each player to their starter ship
@@ -88,16 +65,17 @@ const main = async () => {
       1,
       shipId,
       100,
-      stationId,
+      station.stationId,
     ])
     await runQuery('player-state/add-player-owned-ship.sql', [
       1,
       shipId,
       100,
-      stationId,
+      station.stationId,
     ])
 
-    // read data
+    // --- read some data ---
+
     // @ts-ignore
     const [playerOneLocation] = await runQuery(
       'player-state/get-player-location.sql',
