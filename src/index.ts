@@ -15,6 +15,8 @@ const main = async () => {
     const solarSystem = await createSolarSystem()
     const { systemId, planets, station } = solarSystem
 
+    console.log({ solarSystem })
+
     // create an initial ship type
     const shipId = await createShip('shuttle', 10, 100)
     if (!shipId) throw Error('error creating ship')
