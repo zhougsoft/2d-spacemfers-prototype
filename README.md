@@ -25,7 +25,7 @@ represents locations in the game universe, combining types with entities (e.g. p
 - (unique location_type_id, location_entity_id)
 
 ### systems
-the solar systems to explore in the game
+represents solar systems in the universe
 
 - system_id (pk)
 - name
@@ -106,7 +106,7 @@ represents the different space ships in the game
 - max_cargo_size
 
 ### player_ships
-represents ships owned by players
+represents ships owned by a player
 
 - player_ship_id (pk)
 - player_id (fk players)
@@ -121,14 +121,14 @@ represents a player's active ship (can only be one at a time)
 - player_ship_id (fk player_ships, unique, nullable)
 
 ### player_ship_inventory
-represents the items in a player's ship
+represents the items in a player's ship inventory
 
 - player_ship_id (fk player_ships)
 - item_id (fk items)
 - amount
 
 ### player_station_inventory
-represents the player's items in a space station
+represents the player's items in space station stations
 
 - player_id (fk players)
 - station_id (fk stations)

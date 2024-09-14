@@ -1,4 +1,9 @@
 import { client, runQuery } from './db'
+import {
+  addPlayerShip,
+  setPlayerActiveShip,
+  setPlayerLocation,
+} from './lib/player-state'
 import { createPlayer } from './lib/players'
 import { createShip } from './lib/universe'
 import { createSolarSystem } from './utils'
@@ -15,8 +20,6 @@ const main = async () => {
     const solarSystem = await createSolarSystem()
     const { systemId, planets, station } = solarSystem
 
-    console.log({ solarSystem })
-
     // create an initial ship type
     const shipId = await createShip('shuttle', 10, 100)
     if (!shipId) throw Error('error creating ship')
@@ -27,54 +30,26 @@ const main = async () => {
     await createPlayer()
 
     // set locations for the players to the initial station
-    await runQuery('player-state/set-player-location.sql', [
-      1,
-      station.stationLocationId,
-    ])
-    await runQuery('player-state/set-player-location.sql', [
-      2,
-      station.stationLocationId,
-    ])
-    await runQuery('player-state/set-player-location.sql', [
-      3,
-      station.stationLocationId,
-    ])
+    await setPlayerLocation(1, station.stationLocationId)
+    await setPlayerLocation(2, station.stationLocationId)
+    await setPlayerLocation(3, station.stationLocationId)
 
     // give starter ships to the players
-    // @ts-ignore
-    const [{ player_ship_id: ship1Id }] = await runQuery(
-      'player-state/add-player-owned-ship.sql',
-      [1, shipId, 100, station.stationId]
-    )
-    // @ts-ignore
-    const [{ player_ship_id: ship2Id }] = await runQuery(
-      'player-state/add-player-owned-ship.sql',
-      [2, shipId, 100, station.stationId]
-    )
-    // @ts-ignore
-    const [{ player_ship_id: ship3Id }] = await runQuery(
-      'player-state/add-player-owned-ship.sql',
-      [3, shipId, 100, station.stationId]
-    )
+    const ship1Id = await addPlayerShip(1, shipId, 100, station.stationId)
+    const ship2Id = await addPlayerShip(2, shipId, 100, station.stationId)
+    const ship3Id = await addPlayerShip(3, shipId, 100, station.stationId)
+
+    if (!ship1Id || !ship2Id || !ship3Id)
+      throw Error('error adding player ships')
 
     // set the active ship for each player to their starter ship
-    await runQuery('player-state/set-player-active-ship.sql', [1, ship1Id])
-    await runQuery('player-state/set-player-active-ship.sql', [2, ship2Id])
-    await runQuery('player-state/set-player-active-ship.sql', [3, ship3Id])
+    await setPlayerActiveShip(1, ship1Id)
+    await setPlayerActiveShip(2, ship2Id)
+    await setPlayerActiveShip(3, ship3Id)
 
     // give player one some extra starter ships
-    await runQuery('player-state/add-player-owned-ship.sql', [
-      1,
-      shipId,
-      100,
-      station.stationId,
-    ])
-    await runQuery('player-state/add-player-owned-ship.sql', [
-      1,
-      shipId,
-      100,
-      station.stationId,
-    ])
+    await addPlayerShip(1, shipId, 100, station.stationId)
+    await addPlayerShip(1, shipId, 100, station.stationId)
 
     // --- read some data ---
 
