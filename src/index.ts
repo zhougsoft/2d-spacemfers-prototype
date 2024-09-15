@@ -1,11 +1,12 @@
 import { client, runQuery } from './db'
 import {
   addPlayerShip,
+  getPlayerLocation,
   setPlayerActiveShip,
   setPlayerLocation,
 } from './lib/player-state'
 import { createPlayer } from './lib/players'
-import { createShip } from './lib/universe'
+import { createShip, getLocation, getStation } from './lib/universe'
 import { createSolarSystem } from './utils'
 
 const main = async () => {
@@ -51,25 +52,17 @@ const main = async () => {
     await addPlayerShip(1, shipId, 100, station.stationId)
     await addPlayerShip(1, shipId, 100, station.stationId)
 
-    // --- read some data ---
+    // read some data
+    const playerLocationData = await getPlayerLocation(1)
+    if (!playerLocationData) throw Error('error getting player location')
 
-    // @ts-ignore
-    const [playerOneLocation] = await runQuery(
-      'player-state/get-player-location.sql',
-      [1]
-    )
-    // @ts-ignore
-    const [locationData] = await runQuery('locations/get-location.sql', [
-      playerOneLocation.location_id,
-    ])
-    // @ts-ignore
-    const [stationData] = await runQuery('stations/get-station.sql', [
-      locationData.location_entity_id,
-    ])
+    const locationData = await getLocation(playerLocationData.location_id)
+    if (!locationData) throw Error('error getting location data')
 
-    console.log({ playerOneLocation, locationData, stationData })
+    const stationData = await getStation(locationData.location_entity_id)
+    if (!stationData) throw Error('error getting station data')
 
-    // --- end ----------------------------------------------------------------
+    console.log({ playerLocationData, locationData, stationData })
   } catch (error) {
     console.error(error)
   } finally {
