@@ -92,7 +92,7 @@ the players in the game
 represents the location of the player in the universe
 
 - player_id (pk, fk players)
-- location_id (fk locations)
+- target_location_id (fk locations)
 - prev_location_id (fk locations, nullable)
 - departure_time (nullable)
 - arrival_time

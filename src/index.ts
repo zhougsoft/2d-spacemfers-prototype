@@ -2,11 +2,12 @@ import { client, runQuery } from './db'
 import {
   addPlayerShip,
   getPlayerLocation,
+  initiatePlayerTravel,
   setPlayerActiveShip,
   setPlayerLocation,
 } from './lib/player-state'
 import { createPlayer } from './lib/players'
-import { createShip, getLocation, getStation } from './lib/universe'
+import { createShip } from './lib/universe'
 import { createSolarSystem } from './utils'
 
 const main = async () => {
@@ -52,17 +53,27 @@ const main = async () => {
     await addPlayerShip(1, shipId, 100, station.stationId)
     await addPlayerShip(1, shipId, 100, station.stationId)
 
-    // read some data
+    // make the player travel
     const playerLocationData = await getPlayerLocation(1)
     if (!playerLocationData) throw Error('error getting player location')
+    console.log('before travel (idle)', playerLocationData)
 
-    const locationData = await getLocation(playerLocationData.location_id)
-    if (!locationData) throw Error('error getting location data')
+    const updatedPlayerLocationData = await initiatePlayerTravel(
+      1,
+      planets.uranus.locationId
+    )
+    if (!updatedPlayerLocationData)
+      throw Error('error initiating player travel')
+    console.log('after travel initiated', updatedPlayerLocationData)
 
-    const stationData = await getStation(locationData.location_entity_id)
-    if (!stationData) throw Error('error getting station data')
-
-    console.log({ playerLocationData, locationData, stationData })
+    const updatedPlayerLocationDataAgain = await initiatePlayerTravel(
+      1,
+      planets.mars.locationId
+    )
+    if (!updatedPlayerLocationDataAgain)
+      throw Error('error updating player travel')
+    console.log('after travel changed', updatedPlayerLocationDataAgain)
+    // ------------------------------------------------------------------------
   } catch (error) {
     console.error(error)
   } finally {

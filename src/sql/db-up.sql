@@ -76,7 +76,7 @@ CREATE TABLE players (
 
 CREATE TABLE player_location (
     player_id INTEGER PRIMARY KEY REFERENCES players(player_id),
-    location_id INTEGER REFERENCES locations(location_id),
+    target_location_id INTEGER REFERENCES locations(location_id),
     prev_location_id INTEGER REFERENCES locations(location_id),
     departure_time TIMESTAMP,
     arrival_time TIMESTAMP

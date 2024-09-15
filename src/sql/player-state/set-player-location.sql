@@ -1,4 +1,6 @@
 UPDATE player_location
-SET location_id = $2,
+SET 
+    prev_location_id = target_location_id,
+    target_location_id = $2,
     arrival_time = NOW()
 WHERE player_id = $1;

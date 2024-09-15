@@ -60,3 +60,19 @@ export const setPlayerActiveShip = async (
   ])
   return true
 }
+
+export const initiatePlayerTravel = async (
+  playerId: number,
+  locationId: number
+) => {
+  if (typeof playerId !== 'number') throw Error('invalid player id')
+  if (typeof locationId !== 'number') throw Error('invalid location id')
+
+  const playerTravelResult = await runQuery(
+    'player-state/initate-player-travel.sql',
+    [playerId, locationId]
+  )
+
+  if (!playerTravelResult) return null
+  return playerTravelResult[0]
+}
