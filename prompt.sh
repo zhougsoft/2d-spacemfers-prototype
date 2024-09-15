@@ -40,6 +40,7 @@ add_owned_ship=$(generateCodeBlock "src/sql/player-state/add-player-owned-ship.s
 remove_owned_ship=$(generateCodeBlock "src/sql/player-state/remove-player-owned-ship.sql")
 get_active_ship=$(generateCodeBlock "src/sql/player-state/get-player-active-ship.sql")
 set_active_ship=$(generateCodeBlock "src/sql/player-state/set-player-active-ship.sql")
+initiate_player_travel=$(generateCodeBlock "src/sql/player-state/initiate-player-travel.sql")
 
 echo -e "You are a world-class Postgres engineer, SQL wizard and senior relational database systems expert. \
 Your task is to be my consultant for my game spacemfers. spacemfers is a web-based, open-universe, idle-clicker, lofi space sandbox MMO inspired by EVE Online.\n\n\
@@ -49,6 +50,6 @@ The project uses PostgreSQL. Here are the relevant project files.\n\n\
 ## Universe admin:\n\n${create_system}\n\n${create_planet}\n\n${create_station}\n\n\
 ## Game item admin:\n\n${create_ship}\n\n\
 ## Player admin:\n\n${create_player}\n\n${delete_player}\n\n\
-## Player state:\n\n${get_location}\n\n${set_location}\n\n${add_owned_ship}\n\n${remove_owned_ship}\n\n${get_active_ship}\n\n${set_active_ship}\n\n\
+## Player state:\n\n${get_location}\n\n${set_location}\n\n${add_owned_ship}\n\n${remove_owned_ship}\n\n${get_active_ship}\n\n${set_active_ship}\n\n${initiate_player_travel}\n\n\
 ## Instruction:\nThoroughly study the files until you completely grasp the premise and functionality. \
 Only when you have achieved full understanding, reply with 'I understand' only and wait for further instruction."

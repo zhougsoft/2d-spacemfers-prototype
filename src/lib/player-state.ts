@@ -70,7 +70,7 @@ export const initiatePlayerTravel = async (
   if (typeof locationId !== 'number') throw Error('invalid location id')
 
   const playerTravelResult = await runQuery(
-    'player-state/initate-player-travel.sql',
+    'player-state/initiate-player-travel.sql',
     [playerId, locationId]
   )
 
