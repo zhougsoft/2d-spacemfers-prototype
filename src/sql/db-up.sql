@@ -46,28 +46,17 @@ CREATE TABLE belts (
     name VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE ships (
+    ship_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    size INTEGER NOT NULL,
+    max_cargo_size INTEGER NOT NULL
+);
+
 CREATE TABLE items (
     item_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     size INTEGER NOT NULL
-);
-
-CREATE TABLE planet_items (
-    planet_id INTEGER REFERENCES planets(planet_id),
-    item_id INTEGER REFERENCES items(item_id),
-    PRIMARY KEY (planet_id, item_id)
-);
-
-CREATE TABLE moon_items (
-    moon_id INTEGER REFERENCES moons(moon_id),
-    item_id INTEGER REFERENCES items(item_id),
-    PRIMARY KEY (moon_id, item_id)
-);
-
-CREATE TABLE belt_items (
-    belt_id INTEGER REFERENCES belts(belt_id),
-    item_id INTEGER REFERENCES items(item_id),
-    PRIMARY KEY (belt_id, item_id)
 );
 
 CREATE TABLE players (
@@ -80,13 +69,6 @@ CREATE TABLE player_location (
     prev_location_id INTEGER REFERENCES locations(location_id),
     departure_time TIMESTAMP,
     arrival_time TIMESTAMP
-);
-
-CREATE TABLE ships (
-    ship_id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    size INTEGER NOT NULL,
-    max_cargo_size INTEGER NOT NULL
 );
 
 CREATE TABLE player_ships (
