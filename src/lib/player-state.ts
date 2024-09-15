@@ -27,12 +27,12 @@ export const addPlayerShip = async (
   playerId: number,
   shipId: number,
   condition: number,
-  stationId: number | null
+  stationId: number | null = null
 ) => {
   if (typeof playerId !== 'number') throw Error('invalid player id')
   if (typeof shipId !== 'number') throw Error('invalid ship id')
   if (typeof condition !== 'number') throw Error('invalid condition value')
-  if (stationId && typeof condition !== 'number')
+  if (stationId && typeof stationId !== 'number')
     throw Error('invalid station id')
 
   const playerShipResult = await runQuery(
@@ -49,10 +49,11 @@ export const addPlayerShip = async (
 
 export const setPlayerActiveShip = async (
   playerId: number,
-  playerShipId: number
+  playerShipId: number | null = null
 ) => {
   if (typeof playerId !== 'number') throw Error('invalid player id')
-  if (typeof playerShipId !== 'number') throw Error('invalid player ship id')
+  if (playerShipId && typeof playerShipId !== 'number')
+    throw Error('invalid player ship id')
 
   await runQuery('player-state/set-player-active-ship.sql', [
     playerId,

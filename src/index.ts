@@ -73,6 +73,18 @@ const main = async () => {
     if (!updatedPlayerLocationDataAgain)
       throw Error('error updating player travel')
     console.log('after travel changed', updatedPlayerLocationDataAgain)
+
+    // remove active ship for player one & try to travel (should fail)
+    console.log('\ntesting travel initiation with no active ship...\n')
+    await setPlayerActiveShip(1, null)
+    const updatedPlayerLocationDataFail = await initiatePlayerTravel(
+      1,
+      planets.earth.locationId
+    )
+    if (!updatedPlayerLocationDataFail)
+      throw Error(
+        'success! travel initation failed with no active ship as expected :)'
+      )
     // ------------------------------------------------------------------------
   } catch (error) {
     console.error(error)
