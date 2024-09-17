@@ -2,9 +2,13 @@
   "name": "spacemfers",
   "version": "0.0.0",
   "private": true,
+  "workspaces": [
+    "./client"
+  ],
   "scripts": {
-    "start": "tsx src/index.ts",
-    "test": "tsx src/test.ts"
+    "start": "tsx ./src/index.ts",
+    "test": "tsx ./src/test.ts",
+    "client": "npm run dev --workspace=client"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
