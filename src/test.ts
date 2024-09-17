@@ -1,3 +1,4 @@
+import readline from 'readline'
 import { client, runQuery } from './db'
 import {
   addPlayerShip,
@@ -10,7 +11,29 @@ import { createPlayer } from './lib/players'
 import { createShip } from './lib/universe'
 import { createSolarSystem } from './utils'
 
+const confirmAction = (): Promise<boolean> => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+
+  const msg =
+    '❗❗❗WARNING❗❗❗\nthis is a DESTRUCTIVE action and will WIPE the database.\nARE YOU SURE? (y/n)\n'
+
+  return new Promise(resolve => {
+    rl.question(msg, answer =>
+      resolve(!!answer && answer.toLowerCase() === 'y')
+    )
+  })
+}
+
 const main = async () => {
+  const hasConfirmed = await confirmAction()
+  if (!hasConfirmed) process.exit(0)
+
+  console.log('\n------------------------------------------------------\n')
+  console.log('RUNNING TESTS...\n')
+
   try {
     await client.connect()
 
@@ -121,7 +144,9 @@ const main = async () => {
   } catch (error) {
     console.error(error)
   } finally {
+    console.log('\n------------------------------------------------------\n')
     await client.end()
+    process.exit()
   }
 }
 
