@@ -19,10 +19,9 @@ export const client = new Client({
   port: 5432,
 })
 
-export const runQuery = async (
-  filename: string,
-  params: (number | string | boolean | null)[] = []
-) => {
+type QueryParam = number | number[] | string | string[] | boolean | null
+
+export const runQuery = async (filename: string, params: QueryParam[] = []) => {
   try {
     const filePath = join(__dirname, 'sql', filename)
     const query = fs.readFileSync(filePath, 'utf-8')

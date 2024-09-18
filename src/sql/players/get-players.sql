@@ -1,1 +1,1 @@
-SELECT * FROM players WHERE player_id IN ($1);
+SELECT * FROM players WHERE player_id = ANY($1);

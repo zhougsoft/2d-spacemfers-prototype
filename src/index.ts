@@ -1,7 +1,12 @@
 import cors from 'cors'
 import express from 'express'
 import { client, runQuery } from './db'
-import { createPlayer } from './lib/players'
+import {
+  createPlayer,
+  getAllPlayers,
+  getPlayer,
+  getPlayers,
+} from './lib/players'
 import { createSolarSystem } from './utils'
 
 const PORT = 6969
@@ -14,6 +19,12 @@ const main = async () => {
   app.use(cors())
 
   // --- db admin -------------------------------------------------------------
+
+  /**
+   * Reset the database by dropping and recreating all tables, and creating a new solar system.
+   * @route GET /api/db-up
+   * @returns {Object} Response with the new solar system data.
+   */
   app.get('/api/db-up', async (req, res) => {
     try {
       await runQuery('db-down.sql')
@@ -27,6 +38,11 @@ const main = async () => {
     }
   })
 
+  /**
+   * Drop all tables in the database.
+   * @route GET /api/db-down
+   * @returns {Object} Response with a success message.
+   */
   app.get('/api/db-down', async (req, res) => {
     try {
       await runQuery('db-down.sql')
@@ -39,6 +55,12 @@ const main = async () => {
   })
 
   // --- player routes --------------------------------------------------------
+
+  /**
+   * Create a new player.
+   * @route POST /api/players/create
+   * @returns {Object} Response with the created player ID.
+   */
   app.post('/api/players/create', async (req, res) => {
     try {
       const playerId = await createPlayer()
@@ -51,14 +73,75 @@ const main = async () => {
     }
   })
 
-  // TODO
+  /**
+   * Get all players or a set of players by their IDs.
+   * If `ids` query param is provided, fetch players by those IDs.
+   * @route GET /api/players
+   * @queryparam {string} [ids] - Comma-separated list of player IDs to fetch.
+   * @returns {Object[]} Response with the list of players or an error message.
+   */
   app.get('/api/players', async (req, res) => {
-    res.json({ msg: 'ok' })
+    try {
+      const playerIdsParam = req.query.ids
+
+      if (playerIdsParam) {
+        const playerIds = Array.isArray(playerIdsParam)
+          ? playerIdsParam.map(Number)
+          : typeof playerIdsParam === 'string'
+          ? playerIdsParam.split(',').map(Number)
+          : []
+
+        if (playerIds.some(isNaN)) {
+          return res.status(400).json({ error: 'invalid player ids' })
+        }
+
+        const players = await getPlayers(playerIds)
+
+        if (!players || players.length === 0) {
+          return res.status(404).json({ error: 'no players found' })
+        }
+
+        return res.status(200).json(players)
+      } else {
+        const players = await getAllPlayers()
+
+        if (!players) {
+          return res.status(404).json({ error: 'no players found' })
+        }
+
+        return res.status(200).json(players)
+      }
+    } catch (error) {
+      console.error('error fetching players:', error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
   })
 
-  // TODO
+  /**
+   * Get a single player by their ID.
+   * @route GET /api/players/:id
+   * @param {number} id - The player ID.
+   * @returns {Object} Response with the player data or an error message.
+   */
   app.get('/api/players/:id', async (req, res) => {
-    res.json({ msg: req.params.id })
+    try {
+      const playerId = parseInt(req.params.id, 10)
+
+      if (isNaN(playerId)) {
+        return res.status(400).json({ error: 'invalid player id' })
+      }
+
+      const player = await getPlayer(playerId)
+
+      if (!player) {
+        return res.status(404).json({ error: 'player not found' })
+      }
+
+      return res.status(200).json(player)
+    } catch (error) {
+      console.error(`error fetching player ${req.params.id}:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
   })
 
   // --- run server -----------------------------------------------------------
