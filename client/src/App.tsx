@@ -1,4 +1,8 @@
+import { useRef } from 'react'
+
 const API_URL = 'http://localhost:6969'
+
+const LineDivider = () => <span>&nbsp;|&nbsp;</span>
 
 const Section = ({
   children,
@@ -10,7 +14,6 @@ const Section = ({
   <div
     style={{
       display: flex ? 'flex' : 'block',
-      justifyContent: flex ? 'space-evenly' : 'initial',
       border: '2px dotted black',
       marginBottom: '1rem',
       padding: '1rem',
@@ -50,31 +53,51 @@ const App = () => {
     console.log(data)
   }
 
+  const onGetPlayers = async () => {
+    const data = await request(`${API_URL}/api/players`)
+    console.log(data)
+  }
+
+  const refGetPlayer_PlayerId = useRef<HTMLInputElement>(null)
+  const onGetPlayer = async () => {
+    const id = refGetPlayer_PlayerId.current?.value
+    if (!id) {
+      alert('player_id is required')
+      return
+    }
+
+    const data = await request(`${API_URL}/api/players/${id}`)
+    console.log(data)
+  }
+
   return (
-    <main>
+    <main style={{ padding: '0 1rem' }}>
       <h1>spacemfers</h1>
+      <p>(output in console)</p>
       <Section flex>
         <div>
           <button onClick={onDbUp}>db up</button>
-          <pre>[output here]</pre>
         </div>
+        <LineDivider />
         <div>
           <button onClick={onDbDown}>db down</button>
-          <pre>[output here]</pre>
         </div>
       </Section>
       <Section>
         <button onClick={onCreatePlayer}>create player</button>
-        <pre>[output here]</pre>
       </Section>
       <Section>
-        <button>get all players</button>
-        <pre>[output here]</pre>
+        <button onClick={onGetPlayers}>get players</button>
       </Section>
       <Section>
-        <button>get player</button>
-        <input type="number" min="1" placeholder="player_id" />
-        <pre>[output here]</pre>
+        <button onClick={onGetPlayer}>get player</button>
+        <LineDivider />
+        <input
+          ref={refGetPlayer_PlayerId}
+          type="number"
+          min="1"
+          placeholder="player_id"
+        />
       </Section>
     </main>
   )
