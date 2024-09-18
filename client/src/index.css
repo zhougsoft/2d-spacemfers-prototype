@@ -1,5 +1,40 @@
+:root {
+  --font-primary: monospace;
+  --color-bg: white;
+  --color-text: black;
+}
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-size: 16px;
+  font-family: var(--font-primary);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 1rem;
+}
+
+input {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+}
+
+pre {
+  font-size: 1rem;
 }
