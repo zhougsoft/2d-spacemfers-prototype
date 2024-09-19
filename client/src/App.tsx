@@ -48,6 +48,11 @@ const App = () => {
     console.log(data)
   }
 
+  const onGetSolarSystem = async () => {
+    const data = await request(`${API_URL}/api/solar-system`)
+    console.log(data)
+  }
+
   const onCreatePlayer = async () => {
     const data = await request(`${API_URL}/api/players/create`, 'POST')
     console.log(data)
@@ -82,6 +87,9 @@ const App = () => {
         <div>
           <button onClick={onDbDown}>db down</button>
         </div>
+      </Section>
+      <Section>
+        <button onClick={onGetSolarSystem}>get solar system</button>
       </Section>
       <Section>
         <button onClick={onCreatePlayer}>create player</button>

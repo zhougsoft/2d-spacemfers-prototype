@@ -1,4 +1,5 @@
 :root {
+  --root-font-size: 12px;
   --font-primary: monospace;
   --color-bg: white;
   --color-text: black;
@@ -15,10 +16,10 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  font-size: var(--root-font-size);
 }
 
 body {
-  font-size: 16px;
   font-family: var(--font-primary);
   color: var(--color-text);
   background-color: var(--color-bg);

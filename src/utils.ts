@@ -42,36 +42,39 @@ export const createSolarSystem = async () => {
     systemId,
     planets: {
       mercury: {
-        id: mercuryResults.planetId,
+        planetId: mercuryResults.planetId,
         locationId: mercuryResults.locationId,
       },
       venus: {
-        id: venusResults.planetId,
+        planetId: venusResults.planetId,
         locationId: venusResults.locationId,
       },
       earth: {
-        id: earthResults.planetId,
+        planetId: earthResults.planetId,
         locationId: earthResults.locationId,
       },
-      mars: { id: marsResults.planetId, locationId: marsResults.locationId },
+      mars: {
+        planetId: marsResults.planetId,
+        locationId: marsResults.locationId,
+      },
       jupiter: {
-        id: jupiterResults.planetId,
+        planetId: jupiterResults.planetId,
         locationId: jupiterResults.locationId,
       },
       saturn: {
-        id: saturnResults.planetId,
+        planetId: saturnResults.planetId,
         locationId: saturnResults.locationId,
       },
       uranus: {
-        id: uranusResults.planetId,
+        planetId: uranusResults.planetId,
         locationId: uranusResults.locationId,
       },
       neptune: {
-        id: neptuneResults.planetId,
+        planetId: neptuneResults.planetId,
         locationId: neptuneResults.locationId,
       },
       pluto: {
-        id: plutoResults.planetId,
+        planetId: plutoResults.planetId,
         locationId: plutoResults.locationId,
       },
     },

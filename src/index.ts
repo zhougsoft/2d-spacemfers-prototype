@@ -18,18 +18,20 @@ const main = async () => {
   const app = express()
   app.use(cors())
 
-  // --- db admin -------------------------------------------------------------
+  let solarSystem: Record<any, any> | null = null
+
+  // --- db admin routes ------------------------------------------------------
 
   /**
    * Reset the database by dropping and recreating all tables, and creating a new solar system.
    * @route GET /api/db-up
    * @returns {Object} Response with the new solar system data.
    */
-  app.get('/api/db-up', async (req, res) => {
+  app.get('/api/db-up', async (_req, res) => {
     try {
       await runQuery('db-down.sql')
       await runQuery('db-up.sql')
-      const solarSystem = await createSolarSystem()
+      solarSystem = await createSolarSystem()
 
       console.log('reset database')
       res.json({ solarSystem })
@@ -43,12 +45,32 @@ const main = async () => {
    * @route GET /api/db-down
    * @returns {Object} Response with a success message.
    */
-  app.get('/api/db-down', async (req, res) => {
+  app.get('/api/db-down', async (_req, res) => {
     try {
       await runQuery('db-down.sql')
+      solarSystem = null
 
       console.log('dropped tables')
       res.json({ msg: 'success' })
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  })
+
+  // --- universe routes ------------------------------------------------------
+
+  /**
+   * Get the solar system data.
+   * @route GET /api/solar-system
+   * @returns {Object} Response with the solar system data or an error message.
+   */
+  app.get('/api/solar-system', async (_req, res) => {
+    try {
+      if (!solarSystem) {
+        return res.status(404).json({ error: 'no solar system found' })
+      }
+
+      res.json(solarSystem)
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
@@ -61,7 +83,7 @@ const main = async () => {
    * @route POST /api/players/create
    * @returns {Object} Response with the created player ID.
    */
-  app.post('/api/players/create', async (req, res) => {
+  app.post('/api/players/create', async (_req, res) => {
     try {
       const playerId = await createPlayer()
       if (!playerId) throw Error('error creating player')
