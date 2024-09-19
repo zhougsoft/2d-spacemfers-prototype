@@ -7,7 +7,7 @@ import {
   getPlayer,
   getPlayers,
 } from './lib/players'
-import { createSolarSystem } from './utils'
+import { createGameShips, createSolarSystem } from './utils'
 
 const PORT = 6969
 
@@ -19,6 +19,7 @@ const main = async () => {
   app.use(cors())
 
   let solarSystem: Record<any, any> | null = null
+  let gameShips: Record<any, any> | null = null
 
   // --- db admin routes ------------------------------------------------------
 
@@ -31,10 +32,12 @@ const main = async () => {
     try {
       await runQuery('db-down.sql')
       await runQuery('db-up.sql')
-      solarSystem = await createSolarSystem()
-
       console.log('reset database')
-      res.json({ solarSystem })
+
+      solarSystem = await createSolarSystem()
+      gameShips = await createGameShips()
+
+      res.json({ solarSystem, gameShips })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
@@ -48,9 +51,11 @@ const main = async () => {
   app.get('/api/db-down', async (_req, res) => {
     try {
       await runQuery('db-down.sql')
-      solarSystem = null
-
       console.log('dropped tables')
+
+      solarSystem = null
+      gameShips = null
+
       res.json({ msg: 'success' })
     } catch (error) {
       res.status(500).json({ error: error.message })
@@ -71,6 +76,23 @@ const main = async () => {
       }
 
       res.json(solarSystem)
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  })
+
+  /**
+   * Get the game ships data.
+   * @route GET /api/game-ships
+   * @returns {Object} Response with the game ships data or an error message.
+   */
+  app.get('/api/game-ships', async (_req, res) => {
+    try {
+      if (!gameShips) {
+        return res.status(404).json({ error: 'no game ships found' })
+      }
+
+      res.json(gameShips)
     } catch (error) {
       res.status(500).json({ error: error.message })
     }

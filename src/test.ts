@@ -48,9 +48,15 @@ const main = async () => {
 
     // create an initial ship type
     const shipName = 'shuttle'
-    const shipSize = 10
-    const shipMaxCargoSize = 100
-    const shipId = await createShip(shipName, shipSize, shipMaxCargoSize)
+    const shipSpeed = 500
+    const shipSize = 5000
+    const shipMaxCargoSize = 10
+    const shipId = await createShip(
+      shipName,
+      shipSpeed,
+      shipSize,
+      shipMaxCargoSize
+    )
     if (!shipId) throw Error('error creating ship')
 
     // create some players

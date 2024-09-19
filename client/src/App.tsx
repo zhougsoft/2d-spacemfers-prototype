@@ -53,6 +53,11 @@ const App = () => {
     console.log(data)
   }
 
+  const onGetGameShips = async () => {
+    const data = await request(`${API_URL}/api/game-ships`)
+    console.log(data)
+  }
+
   const onCreatePlayer = async () => {
     const data = await request(`${API_URL}/api/players/create`, 'POST')
     console.log(data)
@@ -79,6 +84,7 @@ const App = () => {
     <main style={{ padding: '0 1rem' }}>
       <h1>spacemfers</h1>
       <p>(output in console)</p>
+      <h2>db admin</h2>
       <Section flex>
         <div>
           <button onClick={onDbUp}>db up</button>
@@ -88,9 +94,14 @@ const App = () => {
           <button onClick={onDbDown}>db down</button>
         </div>
       </Section>
+      <h2>universe</h2>
       <Section>
         <button onClick={onGetSolarSystem}>get solar system</button>
       </Section>
+      <Section>
+        <button onClick={onGetGameShips}>get game ships</button>
+      </Section>
+      <h2>player admin</h2>
       <Section>
         <button onClick={onCreatePlayer}>create player</button>
       </Section>
@@ -107,6 +118,8 @@ const App = () => {
           placeholder="player_id"
         />
       </Section>
+      <h2>player state</h2>
+      <Section>todo</Section>
     </main>
   )
 }

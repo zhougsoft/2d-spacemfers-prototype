@@ -52,15 +52,18 @@ export const createStation = async (planetId: number, name: string) => {
 
 export const createShip = async (
   name: string,
+  speed: number,
   size: number,
   maxCargoSize: number
 ) => {
   if (!name || typeof name !== 'string') throw Error('invalid ship name')
+  if (typeof speed !== 'number') throw Error('invalid ship speed')
   if (typeof size !== 'number') throw Error('invalid ship size')
   if (typeof maxCargoSize !== 'number') throw Error('invalid max cargo size')
 
   const shipResult = await runQuery('ships/create-ship.sql', [
     name,
+    speed,
     size,
     maxCargoSize,
   ])

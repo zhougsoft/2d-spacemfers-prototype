@@ -63,6 +63,7 @@ represents the different space ships in the game
 
 - ship_id (pk)
 - name
+- speed
 - size
 - max_cargo_size
 

@@ -49,6 +49,7 @@ CREATE TABLE belts (
 CREATE TABLE ships (
     ship_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    speed INTEGER NOT NULL,
     size INTEGER NOT NULL,
     max_cargo_size INTEGER NOT NULL
 );
