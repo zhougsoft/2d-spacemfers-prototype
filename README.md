@@ -2,7 +2,7 @@
 
 > mfers, in space
 
-![spacemfers](spacemfers.png)
+![spacemfers](assets/spacemfers.png)
 
 spacemfers is a web-based, open-universe, idle-clicker, lofi space sandbox MMO inspired by EVE Online.
 
