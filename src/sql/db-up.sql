@@ -1,3 +1,8 @@
+CREATE TABLE systems (
+    system_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE location_types (
     location_type_id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL
@@ -12,37 +17,34 @@ VALUES
 
 CREATE TABLE locations (
     location_id SERIAL PRIMARY KEY,
-    location_type_id INTEGER NOT NULL REFERENCES location_types(location_type_id),
-    location_entity_id INTEGER NOT NULL,
-    UNIQUE (location_type_id, location_entity_id)
-);
-
-CREATE TABLE systems (
-    system_id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    location_type_id INTEGER NOT NULL REFERENCES location_types(location_type_id)
 );
 
 CREATE TABLE planets (
     planet_id SERIAL PRIMARY KEY,
     system_id INTEGER REFERENCES systems(system_id),
+    location_id INTEGER REFERENCES locations(location_id),
     name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE stations (
     station_id SERIAL PRIMARY KEY,
     planet_id INTEGER REFERENCES planets(planet_id),
+    location_id INTEGER REFERENCES locations(location_id),
     name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE moons (
     moon_id SERIAL PRIMARY KEY,
     planet_id INTEGER REFERENCES planets(planet_id),
+    location_id INTEGER REFERENCES locations(location_id),
     name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE belts (
     belt_id SERIAL PRIMARY KEY,
     planet_id INTEGER REFERENCES planets(planet_id),
+    location_id INTEGER REFERENCES locations(location_id),
     name VARCHAR(255) NOT NULL
 );
 
@@ -101,7 +103,6 @@ CREATE TABLE player_station_inventory (
 );
 
 CREATE INDEX idx_locations_location_type_id ON locations(location_type_id);
-CREATE INDEX idx_locations_location_entity_id ON locations(location_entity_id);
 CREATE INDEX idx_planets_system_id ON planets(system_id);
 CREATE INDEX idx_moons_planet_id ON moons(planet_id);
 CREATE INDEX idx_belts_planet_id ON belts(planet_id);

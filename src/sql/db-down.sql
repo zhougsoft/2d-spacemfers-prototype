@@ -6,7 +6,6 @@ DROP INDEX IF EXISTS idx_stations_planet_id;
 DROP INDEX IF EXISTS idx_belts_planet_id;
 DROP INDEX IF EXISTS idx_moons_planet_id;
 DROP INDEX IF EXISTS idx_planets_system_id;
-DROP INDEX IF EXISTS idx_locations_location_entity_id;
 DROP INDEX IF EXISTS idx_locations_location_type_id;
 
 DROP TABLE IF EXISTS player_station_inventory;
@@ -21,6 +20,6 @@ DROP TABLE IF EXISTS belts;
 DROP TABLE IF EXISTS moons;
 DROP TABLE IF EXISTS stations;
 DROP TABLE IF EXISTS planets;
-DROP TABLE IF EXISTS systems;
 DROP TABLE IF EXISTS locations;
 DROP TABLE IF EXISTS location_types;
+DROP TABLE IF EXISTS systems;

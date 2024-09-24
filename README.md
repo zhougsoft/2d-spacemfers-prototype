@@ -10,31 +10,30 @@ spacemfers is a web-based, open-universe, idle-clicker, lofi space sandbox MMO i
 
 each table in the spacemfers game database
 
+#### systems
+represents solar systems in the universe, the parent element of all locations players can travel
+
+- system_id (pk)
+- name
+
 #### location_types
-types of locations in the game universe
+types of locations in the game universe that can be found in systems
 
 - location_type_id (pk)
 - name (unique)
 
 #### locations
-represents locations in the game universe, combining types with entities (e.g. planets, stations)
+represents specific locations within the game universe
 
 - location_id (pk)
 - location_type_id (fk location_types)
-- location_entity_id
-- (unique location_type_id, location_entity_id)
-
-#### systems
-represents solar systems in the universe
-
-- system_id (pk)
-- name
 
 #### planets
 the planets that orbit the star of a solar system
 
 - planet_id (pk)
 - system_id (fk systems)
+- location_id (fk locations)
 - name
 
 #### stations
@@ -42,6 +41,7 @@ space stations that orbit planets where players can store items & do business
 
 - station_id (pk)
 - planet_id (fk planets)
+- location_id (fk locations)
 - name
 
 #### moons
@@ -49,6 +49,7 @@ moons that orbit planets where player actions can be taken
 
 - moon_id (pk)
 - planet_id (fk planets)
+- location_id (fk locations)
 - name
 
 #### belts
@@ -56,6 +57,7 @@ asteroid belts that orbit planets where player actions can be taken
 
 - belt_id (pk)
 - planet_id (fk planets)
+- location_id (fk locations)
 - name
 
 #### ships
