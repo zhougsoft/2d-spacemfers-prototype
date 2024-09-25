@@ -96,7 +96,6 @@ represents ships owned by a player
 - player_ship_id (pk)
 - player_id (fk players)
 - ship_id (fk ships)
-- condition
 - station_id (fk stations, nullable)
 
 #### player_active_ship

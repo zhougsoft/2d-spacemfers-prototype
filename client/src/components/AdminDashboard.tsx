@@ -94,7 +94,7 @@ const AdminDashboard = () => {
           <button onClick={onDbDown}>db down</button>
         </div>
       </Section>
-      <h2>universe</h2>
+      <h2>universe admin</h2>
       <Section>
         <button onClick={onGetSolarSystem}>get solar system</button>
       </Section>
@@ -119,6 +119,11 @@ const AdminDashboard = () => {
         />
       </Section>
       <h2>player state</h2>
+      <Section>
+        <button onClick={() => console.log('todo')}>
+          todo: get player location
+        </button>
+      </Section>
       <Section>
         <button onClick={() => console.log('todo')}>
           todo: set player location

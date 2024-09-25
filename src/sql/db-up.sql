@@ -78,7 +78,6 @@ CREATE TABLE player_ships (
     player_ship_id SERIAL PRIMARY KEY,
     player_id INTEGER REFERENCES players(player_id) NOT NULL,
     ship_id INTEGER REFERENCES ships(ship_id) NOT NULL,
-    condition INTEGER NOT NULL,
     station_id INTEGER REFERENCES stations(station_id)
 );
 

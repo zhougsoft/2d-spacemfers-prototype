@@ -2,6 +2,13 @@ import cors from 'cors'
 import express from 'express'
 import { client, runQuery } from './db'
 import {
+  addPlayerShip,
+  getPlayerLocation,
+  initiatePlayerTravel,
+  setPlayerActiveShip,
+  setPlayerLocation,
+} from './lib/player-state'
+import {
   createPlayer,
   getAllPlayers,
   getPlayer,
@@ -18,6 +25,7 @@ const main = async () => {
   const app = express()
   app.use(cors())
 
+  // some in-memory state for easy access
   let solarSystem: Record<any, any> | null = null
   let gameShips: Record<any, any> | null = null
 
@@ -53,6 +61,7 @@ const main = async () => {
       await runQuery('db-down.sql')
       console.log('dropped tables')
 
+      // clear in-memory state
       solarSystem = null
       gameShips = null
 
@@ -62,7 +71,7 @@ const main = async () => {
     }
   })
 
-  // --- universe routes ------------------------------------------------------
+  // --- universe admin routes ------------------------------------------------
 
   /**
    * Get the solar system data.
@@ -98,7 +107,7 @@ const main = async () => {
     }
   })
 
-  // --- player routes --------------------------------------------------------
+  // --- player admin routes --------------------------------------------------
 
   /**
    * Create a new player.
@@ -111,7 +120,7 @@ const main = async () => {
       if (!playerId) throw Error('error creating player')
 
       console.log('created player - id:', playerId)
-      res.json({ playerId })
+      res.json({ player_id: playerId })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
@@ -171,7 +180,7 @@ const main = async () => {
     try {
       const playerId = parseInt(req.params.id, 10)
 
-      if (isNaN(playerId)) {
+      if (isNaN(playerId) || playerId < 1) {
         return res.status(400).json({ error: 'invalid player id' })
       }
 
@@ -187,6 +196,211 @@ const main = async () => {
       return res.status(500).json({ error: 'internal server error' })
     }
   })
+
+  // --- player state routes --------------------------------------------------
+
+  /**
+   * Get the location of a player by their ID.
+   * @route GET /api/player-state/get-location/:playerId
+   * @param {number} playerId - The ID of the player whose location is being fetched.
+   * @returns {Object} Response with the player's location or an error message.
+   */
+  app.get('/api/player-state/get-location/:playerId', async (req, res) => {
+    try {
+      const playerId = parseInt(req.params.playerId, 10)
+
+      if (isNaN(playerId) || playerId < 1) {
+        return res.status(400).json({ error: 'invalid player id' })
+      }
+
+      const playerLocation = await getPlayerLocation(playerId)
+
+      if (!playerLocation) {
+        return res.status(404).json({ error: 'no player location found' })
+      }
+
+      return res.status(200).json(playerLocation)
+    } catch (error) {
+      console.error(`error fetching player ${req.params.playerId}:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Set the location of a player by their ID.
+   * @route POST /api/player-state/set-location/:playerId/:locationId
+   * @param {number} playerId - The ID of the player whose location is being updated.
+   * @param {number} locationId - The ID of the new location to set for the player.
+   * @returns {Object} Response with the result of setting the player's location or an error message.
+   */
+  app.post(
+    '/api/player-state/set-location/:playerId/:locationId',
+    async (req, res) => {
+      try {
+        const playerId = parseInt(req.params.playerId, 10)
+        const locationId = parseInt(req.params.locationId, 10)
+
+        if (isNaN(playerId) || playerId < 1) {
+          return res.status(400).json({ error: 'invalid player id' })
+        }
+
+        if (isNaN(locationId) || locationId < 1) {
+          return res.status(400).json({ error: 'invalid location id' })
+        }
+
+        const playerLocationResult = await setPlayerLocation(
+          playerId,
+          locationId
+        )
+
+        if (!playerLocationResult) {
+          return res
+            .status(500)
+            .json({ error: 'error setting player location' })
+        }
+
+        return res.status(200).json(playerLocationResult)
+      } catch (error) {
+        const errorMsg = `error setting player id ${req.params.playerId} to location id ${req.params.locationId}:`
+        console.error(errorMsg, error)
+        return res.status(500).json({ error: 'internal server error' })
+      }
+    }
+  )
+
+  /**
+   * Add a ship to the player's ship inventory.
+   * @route POST /api/player-state/add-ship/:playerId/:shipId
+   * @param {number} playerId - The ID of the player.
+   * @param {number} shipId - The ID of the ship to add.
+   * @param {number} stationId - ID of the station where the ship is docked.
+   * @returns {Object} Response with the added player ship ID or an error message.
+   */
+  app.post(
+    '/api/player-state/add-ship/:playerId/:shipId/:stationId',
+    async (req, res) => {
+      try {
+        const playerId = parseInt(req.params.playerId, 10)
+        const shipId = parseInt(req.params.shipId, 10)
+        const stationId = parseInt(req.params.stationId, 10)
+
+        if (isNaN(playerId) || playerId < 1) {
+          return res.status(400).json({ error: 'invalid player id' })
+        }
+
+        if (isNaN(shipId) || shipId < 1) {
+          return res.status(400).json({ error: 'invalid ship id' })
+        }
+
+        if (isNaN(stationId) || stationId < 1) {
+          return res.status(400).json({ error: 'invalid station id' })
+        }
+
+        const playerShipResult = await addPlayerShip(
+          playerId,
+          shipId,
+          stationId
+        )
+
+        if (!playerShipResult) {
+          return res.status(500).json({ error: 'error adding player ship' })
+        }
+
+        return res.status(200).json(playerShipResult)
+      } catch (error) {
+        const errorMsg = `error adding ship id ${req.params.shipId} to player id ${req.params.playerId}:`
+        console.error(errorMsg, error)
+        return res.status(500).json({ error: 'internal server error' })
+      }
+    }
+  )
+
+  /**
+   * Set the active ship for a player by their ID.
+   * If ship ID 0 is passed, it will unset the active ship.
+   * @route POST /api/player-state/set-active-ship/:playerId/:shipId
+   * @param {number} playerId - The ID of the player whose active ship is being updated.
+   * @param {number} shipId - The ID of the ship to set as active. Use 0 to unset the active ship.
+   * @returns {Object} Response with the result of setting the active ship or an error message.
+   */
+  app.post(
+    '/api/player-state/set-active-ship/:playerId/:shipId',
+    async (req, res) => {
+      try {
+        const playerId = parseInt(req.params.playerId, 10)
+        const shipId = parseInt(req.params.shipId, 10)
+
+        if (isNaN(playerId) || playerId < 1) {
+          return res.status(400).json({ error: 'invalid player id' })
+        }
+
+        if (isNaN(shipId) || shipId < 0) {
+          return res.status(400).json({ error: 'invalid active ship id' })
+        }
+
+        const activeShipId = shipId === 0 ? null : shipId
+
+        const playerActiveShipResult = await setPlayerActiveShip(
+          playerId,
+          activeShipId
+        )
+
+        if (!playerActiveShipResult) {
+          return res
+            .status(500)
+            .json({ error: 'error setting player active ship' })
+        }
+
+        return res.status(200).json(playerActiveShipResult)
+      } catch (error) {
+        const errorMsg = `error setting ship id ${req.params.shipId} as player id ${req.params.playerId} active ship:`
+        console.error(errorMsg, error)
+        return res.status(500).json({ error: 'internal server error' })
+      }
+    }
+  )
+
+  /**
+   * Initiate travel for a player to a new location.
+   * @route POST /api/player-state/initiate-travel/:playerId/:locationId
+   * @param {number} playerId - The ID of the player initiating travel.
+   * @param {number} locationId - The ID of the destination location.
+   * @returns {Object} Response with the result of the travel initiation or an error message.
+   */
+  app.post(
+    '/api/player-state/initiate-travel/:playerId/:locationId',
+    async (req, res) => {
+      try {
+        const playerId = parseInt(req.params.playerId, 10)
+        const locationId = parseInt(req.params.locationId, 10)
+
+        if (isNaN(playerId) || playerId < 1) {
+          return res.status(400).json({ error: 'invalid player id' })
+        }
+
+        if (isNaN(locationId) || locationId < 1) {
+          return res.status(400).json({ error: 'invalid location id' })
+        }
+
+        const playerTravelResult = await initiatePlayerTravel(
+          playerId,
+          locationId
+        )
+
+        if (!playerTravelResult) {
+          return res
+            .status(500)
+            .json({ error: 'error initiating player travel' })
+        }
+
+        return res.status(200).json(playerTravelResult)
+      } catch (error) {
+        const errorMsg = `error initiating travel for player id ${req.params.playerId} to location id ${req.params.locationId}:`
+        console.error(errorMsg, error)
+        return res.status(500).json({ error: 'internal server error' })
+      }
+    }
+  )
 
   // --- run server -----------------------------------------------------------
   app.listen(PORT, () => {

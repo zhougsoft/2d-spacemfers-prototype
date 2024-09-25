@@ -83,14 +83,19 @@ const main = async () => {
       throw Error('error setting player locations')
 
     // give starter ships to the players
-    const addShipArgs: [number, number, number] = [
-      shipId,
-      100, // starting condition 100%
-      stationId,
-    ]
-    const ship1Id = await addPlayerShip(player1Id, ...addShipArgs)
-    const ship2Id = await addPlayerShip(player2Id, ...addShipArgs)
-    const ship3Id = await addPlayerShip(player3Id, ...addShipArgs)
+    const addShipArgs: [number, number] = [shipId, stationId]
+    const { player_ship_id: ship1Id } = await addPlayerShip(
+      player1Id,
+      ...addShipArgs
+    )
+    const { player_ship_id: ship2Id } = await addPlayerShip(
+      player2Id,
+      ...addShipArgs
+    )
+    const { player_ship_id: ship3Id } = await addPlayerShip(
+      player3Id,
+      ...addShipArgs
+    )
     if (!ship1Id || !ship2Id || !ship3Id)
       throw Error('error adding player ships')
 
@@ -102,9 +107,18 @@ const main = async () => {
       throw Error('error setting active player ships')
 
     // give player one some extra starter ships
-    const extraShipResult1 = await addPlayerShip(player1Id, ...addShipArgs)
-    const extraShipResult2 = await addPlayerShip(player1Id, ...addShipArgs)
-    const extraShipResult3 = await addPlayerShip(player1Id, ...addShipArgs)
+    const { player_ship_id: extraShipResult1 } = await addPlayerShip(
+      player1Id,
+      ...addShipArgs
+    )
+    const { player_ship_id: extraShipResult2 } = await addPlayerShip(
+      player1Id,
+      ...addShipArgs
+    )
+    const { player_ship_id: extraShipResult3 } = await addPlayerShip(
+      player1Id,
+      ...addShipArgs
+    )
     if (!extraShipResult1 || !extraShipResult2 || !extraShipResult3)
       throw Error('error giving extra ships to player')
 
