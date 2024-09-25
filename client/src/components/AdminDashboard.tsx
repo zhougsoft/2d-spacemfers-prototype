@@ -1,6 +1,18 @@
 import { forwardRef, useRef, type InputHTMLAttributes } from 'react'
-
-const API_URL = 'http://localhost:6969'
+import {
+  addPlayerShip,
+  dbUp,
+  dbDown,
+  createPlayer,
+  getGameShips,
+  getPlayer,
+  getPlayerLocation,
+  getPlayers,
+  getSolarSystem,
+  initiatePlayerTravel,
+  setPlayerLocation,
+  setActivePlayerShip,
+} from '../api'
 
 const LineDivider = () => <span>&nbsp;|&nbsp;</span>
 
@@ -36,57 +48,18 @@ const Section = ({
   </div>
 )
 
-const request = async (url: string, method?: string) => {
-  try {
-    const res = await fetch(url, {
-      method: method ?? 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    const data = await res.json()
-    return data
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 const AdminDashboard = () => {
   // --- database admin -------------------------------------------------------
-
-  const onDbUp = async () => {
-    const data = await request(`${API_URL}/api/db-up`)
-    console.log(data)
-  }
-
-  const onDbDown = async () => {
-    const data = await request(`${API_URL}/api/db-down`)
-    console.log(data)
-  }
+  const onDbUp = () => dbUp()
+  const onDbDown = () => dbDown()
 
   // --- universe admin -------------------------------------------------------
-
-  const onGetSolarSystem = async () => {
-    const data = await request(`${API_URL}/api/solar-system`)
-    console.log(data)
-  }
-
-  const onGetGameShips = async () => {
-    const data = await request(`${API_URL}/api/game-ships`)
-    console.log(data)
-  }
+  const onGetSolarSystem = () => getSolarSystem()
+  const onGetGameShips = () => getGameShips()
 
   // --- player admin ---------------------------------------------------------
-
-  const onCreatePlayer = async () => {
-    const data = await request(`${API_URL}/api/players/create`, 'POST')
-    console.log(data)
-  }
-
-  const onGetPlayers = async () => {
-    const data = await request(`${API_URL}/api/players`)
-    console.log(data)
-  }
+  const onCreatePlayer = () => createPlayer()
+  const onGetPlayers = () => getPlayers()
 
   const refGetPlayer_PlayerId = useRef<HTMLInputElement>(null)
   const onGetPlayer = async () => {
@@ -96,8 +69,7 @@ const AdminDashboard = () => {
       return
     }
 
-    const data = await request(`${API_URL}/api/players/${id}`)
-    console.log(data)
+    getPlayer(parseInt(id))
   }
 
   // --- player state ---------------------------------------------------------
@@ -110,10 +82,9 @@ const AdminDashboard = () => {
       return
     }
 
-    const url = `${API_URL}/api/player-state/get-location/${id}`
-    const data = await request(url)
-    console.log(data)
+    getPlayerLocation(parseInt(id))
   }
+
   const refSetPlayerLocation_PlayerId = useRef<HTMLInputElement>(null)
   const refSetPlayerLocation_LocationId = useRef<HTMLInputElement>(null)
   const onSetPlayerLocation = async () => {
@@ -124,10 +95,9 @@ const AdminDashboard = () => {
       return
     }
 
-    const url = `${API_URL}/api/player-state/set-location/${playerId}/${locationId}`
-    const data = await request(url, 'POST')
-    console.log(data)
+    setPlayerLocation(parseInt(playerId), parseInt(locationId))
   }
+
   const refAddPlayerShip_PlayerId = useRef<HTMLInputElement>(null)
   const refAddPlayerShip_ShipId = useRef<HTMLInputElement>(null)
   const refAddPlayerShip_StationId = useRef<HTMLInputElement>(null)
@@ -140,10 +110,9 @@ const AdminDashboard = () => {
       return
     }
 
-    const url = `${API_URL}/api/player-state/add-ship/${playerId}/${shipId}/${stationId}`
-    const data = await request(url, 'POST')
-    console.log(data)
+    addPlayerShip(parseInt(playerId), parseInt(shipId), parseInt(stationId))
   }
+
   const refSetActivePlayerShip_PlayerId = useRef<HTMLInputElement>(null)
   const refSetActivePlayerShip_ShipId = useRef<HTMLInputElement>(null)
   const onSetActivePlayerShip = async () => {
@@ -154,10 +123,9 @@ const AdminDashboard = () => {
       return
     }
 
-    const url = `${API_URL}/api/player-state/set-active-ship/${playerId}/${shipId}`
-    const data = await request(url, 'POST')
-    console.log(data)
+    setActivePlayerShip(parseInt(playerId), parseInt(shipId))
   }
+
   const refInitiatePlayerTravel_PlayerId = useRef<HTMLInputElement>(null)
   const refInitiatePlayerTravel_LocationId = useRef<HTMLInputElement>(null)
   const onInitiatePlayerTravel = async () => {
@@ -168,9 +136,7 @@ const AdminDashboard = () => {
       return
     }
 
-    const url = `${API_URL}/api/player-state/initiate-travel/${playerId}/${locationId}`
-    const data = await request(url, 'POST')
-    console.log(data)
+    initiatePlayerTravel(parseInt(playerId), parseInt(locationId))
   }
 
   return (
