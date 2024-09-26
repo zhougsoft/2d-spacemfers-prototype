@@ -40,7 +40,7 @@ const planetDistances: Record<string, number> = {
   pluto: 39.5,
 }
 
-const TravelPrototype = () => {
+const MapPrototype = () => {
   const [solarSystem, setSolarSystem] = useState<Record<string, any> | null>(
     null
   )
@@ -52,7 +52,7 @@ const TravelPrototype = () => {
 
   return (
     <>
-      <h1>🚀 travel prototype</h1>
+      <h1>🚀 map prototype</h1>
       <p>wip...</p>
       <hr />
 
@@ -127,4 +127,4 @@ const TravelPrototype = () => {
   )
 }
 
-export default TravelPrototype
+export default MapPrototype
