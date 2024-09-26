@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import AdminDashboard from './components/AdminDashboard'
 import { LineDivider } from './components/Shared'
-import MapPrototype from './components/MapPrototype'
+import PlayerDashboard from './components/PlayerDashboard'
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('admin')
@@ -11,9 +11,9 @@ const App = () => {
       <header>
         <button onClick={() => setActiveTab('admin')}>admin</button>
         <LineDivider />
-        <button onClick={() => setActiveTab('travel')}>travel prototype</button>
+        <button onClick={() => setActiveTab('travel')}>player</button>
       </header>
-      {activeTab === 'admin' ? <AdminDashboard /> : <MapPrototype />}
+      {activeTab === 'admin' ? <AdminDashboard /> : <PlayerDashboard />}
     </main>
   )
 }
