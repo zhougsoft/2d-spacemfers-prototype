@@ -13,8 +13,7 @@ import {
   setPlayerLocation,
   setActivePlayerShip,
 } from '../api'
-
-const LineDivider = () => <span>&nbsp;|&nbsp;</span>
+import { LineDivider } from './Shared'
 
 const NumberInput = forwardRef<
   HTMLInputElement,
@@ -140,9 +139,10 @@ const AdminDashboard = () => {
   }
 
   return (
-    <main style={{ padding: '0 1rem' }}>
+    <>
       <h1>📡 spacemfers admin</h1>
-      <p>(output in console)</p>
+      <p>output in console</p>
+      <hr />
       <h2>db admin</h2>
       <Section flex>
         <div>
@@ -236,7 +236,7 @@ const AdminDashboard = () => {
           placeholder="location_id"
         />
       </Section>
-    </main>
+    </>
   )
 }
 
