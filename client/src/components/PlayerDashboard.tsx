@@ -1,132 +1,210 @@
 import { useEffect, useState } from 'react'
-import { getSolarSystem } from '../api'
+import { getPlayer } from '../api'
 
-const planetOrder = [
-  'mercury',
-  'venus',
-  'earth',
-  'mars',
-  'jupiter',
-  'saturn',
-  'uranus',
-  'neptune',
-  'pluto',
+const planetsData = [
+  {
+    name: 'sun',
+    color: '#ffdd00',
+    distance: 0,
+    description: 'The Sun is the star at the center of the solar system.',
+  },
+  {
+    name: 'mercury',
+    color: '#b3b3b3',
+    distance: 0.4,
+    description: 'Mercury is the smallest planet and closest to the Sun.',
+  },
+  {
+    name: 'venus',
+    color: '#e0c865',
+    distance: 0.7,
+    description: 'Venus has a thick, toxic atmosphere and the hottest surface.',
+  },
+  {
+    name: 'earth',
+    color: '#2a6db8',
+    distance: 1,
+    description: 'Earth is the only planet known to support life.',
+  },
+  {
+    name: 'mars',
+    color: '#d14c32',
+    distance: 1.5,
+    description: 'Mars is home to the tallest volcano in the solar system.',
+  },
+  {
+    name: 'jupiter',
+    color: '#d5b495',
+    distance: 5.2,
+    description: 'Jupiter is the largest planet with a massive storm.',
+  },
+  {
+    name: 'saturn',
+    color: '#e3d9b7',
+    distance: 9.5,
+    description: 'Saturn is famous for its prominent ring system.',
+  },
+  {
+    name: 'uranus',
+    color: '#82d4d4',
+    distance: 19.8,
+    description: 'Uranus rotates on its side and has faint rings.',
+  },
+  {
+    name: 'neptune',
+    color: '#2e3b7b',
+    distance: 30,
+    description: 'Neptune is the furthest planet and has strong winds.',
+  },
+  {
+    name: 'pluto',
+    color: '#deb887',
+    distance: 39.5,
+    description: 'Pluto is a dwarf planet with a very elliptical orbit.',
+  },
 ]
 
-const planetColors: Record<string, string> = {
-  mercury: '#b3b3b3', // Gray
-  venus: '#e0c865', // Pale yellow
-  earth: '#2a6db8', // Blue and green
-  mars: '#d14c32', // Reddish
-  jupiter: '#d5b495', // Brown and white
-  saturn: '#e3d9b7', // Pale gold
-  uranus: '#82d4d4', // Light blue
-  neptune: '#2e3b7b', // Dark blue
-  pluto: '#deb887', // Brownish
-}
+const Sun = ({
+  onClick,
+  selected,
+}: {
+  onClick: () => void
+  selected: boolean
+}) => (
+  <div
+    style={{
+      minWidth: '100px',
+      minHeight: '100px',
+      borderRadius: '50%',
+      backgroundColor: planetsData[0].color,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontSize: '20px',
+      color: 'black',
+      marginRight: '50px',
+      cursor: 'pointer',
+      border: selected ? '3px solid white' : 'none', // Highlight the selected sun
+    }}
+    onClick={onClick}>
+    sun
+  </div>
+)
 
-// todo: add "distance_to_star" to the planet object in the database to create space in solar system (will need for travel time calculation later)
-const planetDistances: Record<string, number> = {
-  mercury: 0.4, // Scaled distance from the sun (arbitrary scaling)
-  venus: 0.7,
-  earth: 1,
-  mars: 1.5,
-  jupiter: 5.2,
-  saturn: 9.5,
-  uranus: 19.8,
-  neptune: 30,
-  pluto: 39.5,
-}
+const Planet = ({
+  name,
+  index,
+  onClick,
+  selected,
+}: {
+  name: string
+  index: number
+  onClick: () => void
+  selected: boolean
+}) => {
+  const planet = planetsData.find(p => p.name === name)
+  const previousDistance = index === 0 ? 0 : planetsData[index]?.distance ?? 0
 
-const Sun = () => {
   return (
     <div
-      style={{
-        minWidth: '100px',
-        minHeight: '100px',
-        borderRadius: '50%',
-        backgroundColor: 'yellow',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: '20px',
-        color: 'black',
-        marginRight: '50px', // space between first planet and sun
-      }}>
-      sun
-    </div>
-  )
-}
-
-const Planet = ({ name, index }: { name: string; index: number }) => {
-  return (
-    <div
-      key={name}
       style={{
         position: 'relative',
         minWidth: '50px',
         minHeight: '50px',
         borderRadius: '50%',
-        backgroundColor: planetColors[name],
+        backgroundColor: planet?.color,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         color: 'black',
         fontSize: '10px',
         textAlign: 'center',
-        marginLeft: `${
-          (planetDistances[name] -
-            (index === 0 ? 0 : planetDistances[planetOrder[index - 1]])) *
-          100
-        }px`, // Relative distance between planets
-      }}>
+        marginLeft: `${((planet?.distance ?? 0) - previousDistance) * 100}px`,
+        cursor: 'pointer',
+        border: selected ? '3px solid white' : 'none', // Highlight the selected planet
+      }}
+      onClick={onClick}>
       {name}
     </div>
   )
 }
 
 const PlayerDashboard = () => {
-  const [solarSystem, setSolarSystem] = useState<Record<string, any> | null>(
-    null
-  )
+  const [player, setPlayer] = useState<{ player_id: number } | null>(null)
+  const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null)
 
   useEffect(() => {
-    if (solarSystem !== null) return
-    getSolarSystem().then(setSolarSystem).catch(console.error)
-  }, [solarSystem])
+    getPlayer(1).then(setPlayer).catch(console.error)
+  }, [])
 
   return (
     <>
       <h1>🚀 map prototype</h1>
-      <p>wip...</p>
       <hr />
-      {/* Solar system scrollable window */}
+      {player && (
+        <div
+          style={{
+            marginBottom: '20px',
+            padding: '10px',
+            border: '2px solid black',
+            backgroundColor: '#f4f4f4',
+            maxWidth: '400px',
+          }}>
+          <h2>Player Info</h2>
+          <p>
+            <strong>Player ID:</strong> {player.player_id}
+          </p>
+        </div>
+      )}
+
       <div
         style={{
           width: '100%',
           maxWidth: '800px',
           height: '350px',
           border: '2px solid black',
-          overflowX: 'auto', // Enable horizontal scrolling
-          overflowY: 'hidden', // Prevent vertical scrolling
-          whiteSpace: 'nowrap', // Ensure elements don't wrap onto the next line
+          overflowX: 'auto',
           backgroundColor: '#111',
         }}>
-        {/* Solar system scroll content */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             height: '100%',
             padding: '0 20px',
-            position: 'relative',
           }}>
-          <Sun />
-          {planetOrder.map((name, index) => (
-            <Planet name={name} index={index} />
+          <Sun
+            onClick={() => setSelectedPlanet('sun')}
+            selected={selectedPlanet === 'sun'}
+          />
+          {planetsData.slice(1).map((planet, index) => (
+            <Planet
+              key={planet.name}
+              name={planet.name}
+              index={index}
+              onClick={() => setSelectedPlanet(planet.name)}
+              selected={selectedPlanet === planet.name}
+            />
           ))}
         </div>
       </div>
+
+      {selectedPlanet && (
+        <div
+          style={{
+            marginTop: '20px',
+            width: '100%',
+            maxWidth: '800px',
+            maxHeight: '200px',
+            border: '2px solid black',
+            overflowY: 'auto',
+            backgroundColor: '#f4f4f4',
+            padding: '10px',
+          }}>
+          <h2>{selectedPlanet.toUpperCase()}</h2>
+          <p>{planetsData.find(p => p.name === selectedPlanet)?.description}</p>
+        </div>
+      )}
     </>
   )
 }
