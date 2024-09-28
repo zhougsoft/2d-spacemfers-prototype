@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getSolarSystem } from '../api'
 
-// TODO: MAKE A MINI-MAP UNDERNEATH THE MAIN SCROLLABLE SOLAR SYSTEM MAP
-
 const planetOrder = [
   'mercury',
   'venus',
@@ -40,6 +38,53 @@ const planetDistances: Record<string, number> = {
   pluto: 39.5,
 }
 
+const Sun = () => {
+  return (
+    <div
+      style={{
+        minWidth: '100px',
+        minHeight: '100px',
+        borderRadius: '50%',
+        backgroundColor: 'yellow',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: '20px',
+        color: 'black',
+        marginRight: '50px', // space between first planet and sun
+      }}>
+      sun
+    </div>
+  )
+}
+
+const Planet = ({ name, index }: { name: string; index: number }) => {
+  return (
+    <div
+      key={name}
+      style={{
+        position: 'relative',
+        minWidth: '50px',
+        minHeight: '50px',
+        borderRadius: '50%',
+        backgroundColor: planetColors[name],
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'black',
+        fontSize: '10px',
+        textAlign: 'center',
+        marginLeft: `${
+          (planetDistances[name] -
+            (index === 0 ? 0 : planetDistances[planetOrder[index - 1]])) *
+          100
+        }px`, // Relative distance between planets
+      }}>
+      {name}
+    </div>
+  )
+}
+
 const PlayerDashboard = () => {
   const [solarSystem, setSolarSystem] = useState<Record<string, any> | null>(
     null
@@ -55,7 +100,6 @@ const PlayerDashboard = () => {
       <h1>🚀 map prototype</h1>
       <p>wip...</p>
       <hr />
-
       {/* Solar system scrollable window */}
       <div
         style={{
@@ -77,49 +121,9 @@ const PlayerDashboard = () => {
             padding: '0 20px',
             position: 'relative',
           }}>
-          {/* Sun on the far left */}
-          <div
-            style={{
-              minWidth: '100px',
-              minHeight: '100px',
-              borderRadius: '50%',
-              backgroundColor: 'yellow',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              fontSize: '20px',
-              color: 'black',
-              marginRight: '50px', // Space between sun and Mercury
-            }}>
-            sun
-          </div>
-
-          {/* Planets displayed in order from closest to furthest */}
+          <Sun />
           {planetOrder.map((name, index) => (
-            <div
-              key={name}
-              style={{
-                position: 'relative',
-                minWidth: '50px',
-                minHeight: '50px',
-                borderRadius: '50%',
-                backgroundColor: planetColors[name],
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: 'black',
-                fontSize: '10px',
-                textAlign: 'center',
-                marginLeft: `${
-                  (planetDistances[name] -
-                    (index === 0
-                      ? 0
-                      : planetDistances[planetOrder[index - 1]])) *
-                  100
-                }px`, // Relative distance between planets
-              }}>
-              {name}
-            </div>
+            <Planet name={name} index={index} />
           ))}
         </div>
       </div>
