@@ -1,73 +1,12 @@
 import { useEffect, useState } from 'react'
-import { getPlayer } from '../api'
-
-const planetsData = [
-  {
-    name: 'sun',
-    color: '#ffdd00',
-    distance: 0,
-    description: 'The Sun is the star at the center of the solar system.',
-  },
-  {
-    name: 'mercury',
-    color: '#b3b3b3',
-    distance: 0.4,
-    description: 'Mercury is the smallest planet and closest to the Sun.',
-  },
-  {
-    name: 'venus',
-    color: '#e0c865',
-    distance: 0.7,
-    description: 'Venus has a thick, toxic atmosphere and the hottest surface.',
-  },
-  {
-    name: 'earth',
-    color: '#2a6db8',
-    distance: 1,
-    description: 'Earth is the only planet known to support life.',
-  },
-  {
-    name: 'mars',
-    color: '#d14c32',
-    distance: 1.5,
-    description: 'Mars is home to the tallest volcano in the solar system.',
-  },
-  {
-    name: 'jupiter',
-    color: '#d5b495',
-    distance: 5.2,
-    description: 'Jupiter is the largest planet with a massive storm.',
-  },
-  {
-    name: 'saturn',
-    color: '#e3d9b7',
-    distance: 9.5,
-    description: 'Saturn is famous for its prominent ring system.',
-  },
-  {
-    name: 'uranus',
-    color: '#82d4d4',
-    distance: 19.8,
-    description: 'Uranus rotates on its side and has faint rings.',
-  },
-  {
-    name: 'neptune',
-    color: '#2e3b7b',
-    distance: 30,
-    description: 'Neptune is the furthest planet and has strong winds.',
-  },
-  {
-    name: 'pluto',
-    color: '#deb887',
-    distance: 39.5,
-    description: 'Pluto is a dwarf planet with a very elliptical orbit.',
-  },
-]
+import { getPlayer, getSolarSystem } from '../api' // Assuming these are API calls
 
 const Sun = ({
+  systemName,
   onClick,
   selected,
 }: {
+  systemName: string
   onClick: () => void
   selected: boolean
 }) => (
@@ -76,7 +15,7 @@ const Sun = ({
       minWidth: '100px',
       minHeight: '100px',
       borderRadius: '50%',
-      backgroundColor: planetsData[0].color,
+      backgroundColor: '#ffdd00',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -84,26 +23,26 @@ const Sun = ({
       color: 'black',
       marginRight: '50px',
       cursor: 'pointer',
-      border: selected ? '3px solid white' : 'none', // Highlight the selected sun
+      border: selected ? '3px solid white' : 'none',
     }}
     onClick={onClick}>
-    sun
+    {systemName}
   </div>
 )
 
 const Planet = ({
-  name,
-  index,
+  planet,
+  previousDistance,
   onClick,
   selected,
 }: {
-  name: string
-  index: number
+  planet: any
+  previousDistance: number
   onClick: () => void
   selected: boolean
 }) => {
-  const planet = planetsData.find(p => p.name === name)
-  const previousDistance = index === 0 ? 0 : planetsData[index]?.distance ?? 0
+  // Scale factor to ensure the distances are not too far apart
+  const distanceScale = 100 // Adjust this scale factor as needed
 
   return (
     <div
@@ -112,29 +51,34 @@ const Planet = ({
         minWidth: '50px',
         minHeight: '50px',
         borderRadius: '50%',
-        backgroundColor: planet?.color,
+        backgroundColor: planet.color,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         color: 'black',
         fontSize: '10px',
         textAlign: 'center',
-        marginLeft: `${((planet?.distance ?? 0) - previousDistance) * 100}px`,
+        marginLeft: `${
+          (planet.distance_from_star - previousDistance) * distanceScale
+        }px`, // Relative distance
         cursor: 'pointer',
-        border: selected ? '3px solid white' : 'none', // Highlight the selected planet
+        border: selected ? '3px solid white' : 'none',
       }}
       onClick={onClick}>
-      {name}
+      {planet.name}
     </div>
   )
 }
 
 const PlayerDashboard = () => {
   const [player, setPlayer] = useState<{ player_id: number } | null>(null)
+  const [solarSystem, setSolarSystem] = useState<any | null>(null)
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null)
 
   useEffect(() => {
+    // Fetch player and solar system data
     getPlayer(1).then(setPlayer).catch(console.error)
+    getSolarSystem().then(setSolarSystem).catch(console.error)
   }, [])
 
   return (
@@ -157,39 +101,46 @@ const PlayerDashboard = () => {
         </div>
       )}
 
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '800px',
-          height: '350px',
-          border: '2px solid black',
-          overflowX: 'auto',
-          backgroundColor: '#111',
-        }}>
+      {solarSystem && (
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            height: '100%',
-            padding: '0 20px',
+            width: '100%',
+            maxWidth: '800px',
+            height: '350px',
+            border: '2px solid black',
+            overflowX: 'auto',
+            backgroundColor: '#111',
           }}>
-          <Sun
-            onClick={() => setSelectedPlanet('sun')}
-            selected={selectedPlanet === 'sun'}
-          />
-          {planetsData.slice(1).map((planet, index) => (
-            <Planet
-              key={planet.name}
-              name={planet.name}
-              index={index}
-              onClick={() => setSelectedPlanet(planet.name)}
-              selected={selectedPlanet === planet.name}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              height: '100%',
+              padding: '0 20px',
+            }}>
+            <Sun
+              systemName={solarSystem.systemName}
+              onClick={() => setSelectedPlanet('sun')}
+              selected={selectedPlanet === 'sun'}
             />
-          ))}
+            {solarSystem.planets.map((planet: any, index: number) => (
+              <Planet
+                key={planet.planetId}
+                planet={planet}
+                previousDistance={
+                  index === 0
+                    ? 0
+                    : solarSystem.planets[index - 1].distance_from_star
+                }
+                onClick={() => setSelectedPlanet(planet.name)}
+                selected={selectedPlanet === planet.name}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {selectedPlanet && (
+      {selectedPlanet && solarSystem && (
         <div
           style={{
             marginTop: '20px',
@@ -202,7 +153,12 @@ const PlayerDashboard = () => {
             padding: '10px',
           }}>
           <h2>{selectedPlanet.toUpperCase()}</h2>
-          <p>{planetsData.find(p => p.name === selectedPlanet)?.description}</p>
+          <p>
+            {
+              solarSystem.planets.find((p: any) => p.name === selectedPlanet)
+                ?.description
+            }
+          </p>
         </div>
       )}
     </>

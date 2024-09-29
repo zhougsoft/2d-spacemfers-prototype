@@ -1,4 +1,6 @@
 import {
+  createBelt,
+  createMoon,
   createPlanet,
   createShip,
   createStation,
@@ -6,7 +8,8 @@ import {
 } from './lib/universe'
 
 export const createSolarSystem = async () => {
-  const systemId = await createSystem('sol')
+  const systemName = 'sol'
+  const systemId = await createSystem(systemName)
   if (!systemId) throw Error('error creating system')
 
   const mercuryResults = await createPlanet(systemId, 'mercury')
@@ -33,60 +36,99 @@ export const createSolarSystem = async () => {
   const neptuneResults = await createPlanet(systemId, 'neptune')
   if (!neptuneResults) throw Error('error creating neptune')
 
-  const plutoResults = await createPlanet(systemId, 'pluto')
-  if (!plutoResults) throw Error('error creating pluto')
-
-  const stationResult = await createStation(
+  const earthStationResult = await createStation(
     earthResults.planetId,
-    'starter outpost'
+    'international space station'
   )
-  if (!stationResult) throw Error('error creating station')
-  const { stationId, locationId: stationLocationId } = stationResult
+  if (!earthStationResult) throw Error('error creating station')
+
+  const earthMoonResult = await createMoon(earthResults.planetId, 'the moon')
+  if (!earthMoonResult) throw Error('error creating moon')
+
+  const earthBeltResult = await createBelt(earthResults.planetId, 'lil belt')
+  if (!earthBeltResult) throw Error('error creating belt')
 
   return {
     systemId,
-    planets: {
-      mercury: {
+    systemName,
+    planets: [
+      {
         planetId: mercuryResults.planetId,
         locationId: mercuryResults.locationId,
+        name: 'mercury',
+        description: 'mercury is the smallest planet and closest to the sun',
+        color: '#b3b3b3',
+        distance_from_star: 0.39,
+        radius: 2440,
       },
-      venus: {
+      {
         planetId: venusResults.planetId,
         locationId: venusResults.locationId,
+        name: 'venus',
+        description:
+          'venus has a thick, toxic atmosphere and the hottest surface',
+        color: '#e0c865',
+        distance_from_star: 0.72,
+        radius: 6052,
       },
-      earth: {
+      {
         planetId: earthResults.planetId,
         locationId: earthResults.locationId,
+        name: 'earth',
+        description: 'earth is the only planet known to support life',
+        color: '#2a6db8',
+        distance_from_star: 1,
+        radius: 6371,
+        stations: [earthStationResult],
+        moons: [earthMoonResult],
+        belts: [earthBeltResult],
       },
-      mars: {
+      {
         planetId: marsResults.planetId,
         locationId: marsResults.locationId,
+        name: 'mars',
+        description: 'mars is home to the tallest volcano in the solar system',
+        color: '#d14c32',
+        distance_from_star: 1.52,
+        radius: 3390,
       },
-      jupiter: {
+      {
         planetId: jupiterResults.planetId,
         locationId: jupiterResults.locationId,
+        name: 'jupiter',
+        description: 'jupiter is the largest planet with a massive storm',
+        color: '#d5b495',
+        distance_from_star: 5.2,
+        radius: 69911,
       },
-      saturn: {
+      {
         planetId: saturnResults.planetId,
         locationId: saturnResults.locationId,
+        name: 'saturn',
+        description: 'saturn is famous for its prominent ring system',
+        color: '#e3d9b7',
+        distance_from_star: 9.58,
+        radius: 58232,
       },
-      uranus: {
+      {
         planetId: uranusResults.planetId,
         locationId: uranusResults.locationId,
+        name: 'uranus',
+        description: 'uranus rotates on its side and has faint rings',
+        color: '#82d4d4',
+        distance_from_star: 19.22,
+        radius: 25362,
       },
-      neptune: {
+      {
         planetId: neptuneResults.planetId,
         locationId: neptuneResults.locationId,
+        name: 'neptune',
+        description: 'neptune is the furthest planet and has strong winds',
+        color: '#2e3b7b',
+        distance_from_star: 30.05,
+        radius: 24622,
       },
-      pluto: {
-        planetId: plutoResults.planetId,
-        locationId: plutoResults.locationId,
-      },
-    },
-    station: {
-      stationId,
-      stationLocationId,
-    },
+    ],
   }
 }
 

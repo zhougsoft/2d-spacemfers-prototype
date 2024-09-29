@@ -50,6 +50,38 @@ export const createStation = async (planetId: number, name: string) => {
   return { stationId: station_id as number, locationId: location_id as number }
 }
 
+export const createMoon = async (planetId: number, name: string) => {
+  if (typeof planetId !== 'number') throw Error('invalid planet id')
+  if (!name || typeof name !== 'string') throw Error('invalid moon name')
+
+  const moonResult = await runQuery('moons/create-moon.sql', [planetId, name])
+
+  if (!moonResult) return null
+  const { moon_id, location_id } = moonResult[0]
+
+  if (typeof moon_id !== 'number' || typeof location_id !== 'number') {
+    return null
+  }
+
+  return { moonId: moon_id as number, locationId: location_id as number }
+}
+
+export const createBelt = async (planetId: number, name: string) => {
+  if (typeof planetId !== 'number') throw Error('invalid planet id')
+  if (!name || typeof name !== 'string') throw Error('invalid belt name')
+
+  const beltResult = await runQuery('belts/create-belt.sql', [planetId, name])
+
+  if (!beltResult) return null
+  const { belt_id, location_id } = beltResult[0]
+
+  if (typeof belt_id !== 'number' || typeof location_id !== 'number') {
+    return null
+  }
+
+  return { beltId: belt_id as number, locationId: location_id as number }
+}
+
 export const createShip = async (
   name: string,
   speed: number,
