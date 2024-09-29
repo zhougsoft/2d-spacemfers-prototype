@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
-import { getPlayer, getSolarSystem } from '../api' // Assuming these are API calls
+import { getPlayer, getSolarSystem } from '../api'
 
 const Sun = ({
   systemName,
   onClick,
-  selected,
+  isSelected,
 }: {
   systemName: string
   onClick: () => void
-  selected: boolean
+  isSelected: boolean
 }) => (
   <div
     style={{
@@ -23,7 +23,7 @@ const Sun = ({
       color: 'black',
       marginRight: '50px',
       cursor: 'pointer',
-      border: selected ? '3px solid white' : 'none',
+      border: isSelected ? '3px solid white' : 'none',
     }}
     onClick={onClick}>
     {systemName}
@@ -34,15 +34,14 @@ const Planet = ({
   planet,
   previousDistance,
   onClick,
-  selected,
+  isSelected,
 }: {
   planet: any
   previousDistance: number
   onClick: () => void
-  selected: boolean
+  isSelected: boolean
 }) => {
-  // Scale factor to ensure the distances are not too far apart
-  const distanceScale = 100 // Adjust this scale factor as needed
+  const distanceScale = 100
 
   return (
     <div
@@ -60,9 +59,9 @@ const Planet = ({
         textAlign: 'center',
         marginLeft: `${
           (planet.distance_from_star - previousDistance) * distanceScale
-        }px`, // Relative distance
+        }px`,
         cursor: 'pointer',
-        border: selected ? '3px solid white' : 'none',
+        border: isSelected ? '3px solid white' : 'none',
       }}
       onClick={onClick}>
       {planet.name}
@@ -73,18 +72,32 @@ const Planet = ({
 const PlayerDashboard = () => {
   const [player, setPlayer] = useState<{ player_id: number } | null>(null)
   const [solarSystem, setSolarSystem] = useState<any | null>(null)
-  const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null)
+  const [selectedPlanet, setSelectedPlanet] = useState<any | null>(null)
 
   useEffect(() => {
-    // Fetch player and solar system data
     getPlayer(1).then(setPlayer).catch(console.error)
     getSolarSystem().then(setSolarSystem).catch(console.error)
   }, [])
 
+  const handlePlanetClick = (planet: any) => {
+    setSelectedPlanet(planet)
+  }
+
+  const handleSunClick = () => {
+    setSelectedPlanet({
+      name: 'sol',
+      description: 'the sun is the star at the center of the solar system',
+      radius: 696340,
+      distance_from_star: 0,
+    })
+  }
+
   return (
     <>
-      <h1>🚀 map prototype</h1>
+      <h1>🚀 player dashboard</h1>
+      <p>wip...</p>
       <hr />
+
       {player && (
         <div
           style={{
@@ -94,9 +107,9 @@ const PlayerDashboard = () => {
             backgroundColor: '#f4f4f4',
             maxWidth: '400px',
           }}>
-          <h2>Player Info</h2>
+          <h2>player</h2>
           <p>
-            <strong>Player ID:</strong> {player.player_id}
+            <strong>id:</strong> {player.player_id}
           </p>
         </div>
       )}
@@ -120,8 +133,8 @@ const PlayerDashboard = () => {
             }}>
             <Sun
               systemName={solarSystem.systemName}
-              onClick={() => setSelectedPlanet('sun')}
-              selected={selectedPlanet === 'sun'}
+              onClick={handleSunClick}
+              isSelected={selectedPlanet?.name === 'Sun'}
             />
             {solarSystem.planets.map((planet: any, index: number) => (
               <Planet
@@ -132,15 +145,15 @@ const PlayerDashboard = () => {
                     ? 0
                     : solarSystem.planets[index - 1].distance_from_star
                 }
-                onClick={() => setSelectedPlanet(planet.name)}
-                selected={selectedPlanet === planet.name}
+                onClick={() => handlePlanetClick(planet)}
+                isSelected={selectedPlanet?.name === planet.name}
               />
             ))}
           </div>
         </div>
       )}
 
-      {selectedPlanet && solarSystem && (
+      {selectedPlanet && (
         <div
           style={{
             marginTop: '20px',
@@ -152,13 +165,52 @@ const PlayerDashboard = () => {
             backgroundColor: '#f4f4f4',
             padding: '10px',
           }}>
-          <h2>{selectedPlanet.toUpperCase()}</h2>
+          <h2>{selectedPlanet.name.toUpperCase()}</h2>
           <p>
-            {
-              solarSystem.planets.find((p: any) => p.name === selectedPlanet)
-                ?.description
-            }
+            <strong>description:</strong> {selectedPlanet.description}
           </p>
+          <p>
+            <strong>radius:</strong> {selectedPlanet.radius} km
+          </p>
+          {selectedPlanet.name !== 'Sun' && (
+            <p>
+              <strong>distance from star:</strong>{' '}
+              {selectedPlanet.distance_from_star} AU
+            </p>
+          )}
+
+          {selectedPlanet.moons && (
+            <>
+              <h3>moons</h3>
+              <ul>
+                {selectedPlanet.moons.map((moon: any, index: number) => (
+                  <li key={index}>{moon.name}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {selectedPlanet.stations && (
+            <>
+              <h3>stations</h3>
+              <ul>
+                {selectedPlanet.stations.map((station: any, index: number) => (
+                  <li key={index}>{station.name}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {selectedPlanet.belts && (
+            <>
+              <h3>belts</h3>
+              <ul>
+                {selectedPlanet.belts.map((belt: any, index: number) => (
+                  <li key={index}>{belt.name}</li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       )}
     </>
