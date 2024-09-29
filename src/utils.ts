@@ -9,8 +9,9 @@ import {
 
 export const createSolarSystem = async () => {
   const systemName = 'sol'
-  const systemId = await createSystem(systemName)
-  if (!systemId) throw Error('error creating system')
+  const systemResults = await createSystem(systemName)
+  if (!systemResults) throw Error('error creating system')
+  const systemId: number = systemResults.system_id
 
   const mercuryResults = await createPlanet(systemId, 'mercury')
   if (!mercuryResults) throw Error('error creating mercury')
@@ -37,15 +38,15 @@ export const createSolarSystem = async () => {
   if (!neptuneResults) throw Error('error creating neptune')
 
   const earthStationResult = await createStation(
-    earthResults.planetId,
+    earthResults.planet_id,
     'international space station'
   )
   if (!earthStationResult) throw Error('error creating station')
 
-  const earthMoonResult = await createMoon(earthResults.planetId, 'the moon')
+  const earthMoonResult = await createMoon(earthResults.planet_id, 'the moon')
   if (!earthMoonResult) throw Error('error creating moon')
 
-  const earthBeltResult = await createBelt(earthResults.planetId, 'lil belt')
+  const earthBeltResult = await createBelt(earthResults.planet_id, 'lil belt')
   if (!earthBeltResult) throw Error('error creating belt')
 
   return {
@@ -53,8 +54,8 @@ export const createSolarSystem = async () => {
     systemName,
     planets: [
       {
-        planetId: mercuryResults.planetId,
-        locationId: mercuryResults.locationId,
+        planetId: mercuryResults.planet_id,
+        locationId: mercuryResults.location_id,
         name: 'mercury',
         description: 'mercury is the smallest planet and closest to the sun',
         color: '#b3b3b3',
@@ -62,8 +63,8 @@ export const createSolarSystem = async () => {
         radius: 2440,
       },
       {
-        planetId: venusResults.planetId,
-        locationId: venusResults.locationId,
+        planetId: venusResults.planet_id,
+        locationId: venusResults.location_id,
         name: 'venus',
         description:
           'venus has a thick, toxic atmosphere and the hottest surface',
@@ -72,8 +73,8 @@ export const createSolarSystem = async () => {
         radius: 6052,
       },
       {
-        planetId: earthResults.planetId,
-        locationId: earthResults.locationId,
+        planetId: earthResults.planet_id,
+        locationId: earthResults.location_id,
         name: 'earth',
         description: 'earth is the only planet known to support life',
         color: '#2a6db8',
@@ -84,8 +85,8 @@ export const createSolarSystem = async () => {
         belts: [earthBeltResult],
       },
       {
-        planetId: marsResults.planetId,
-        locationId: marsResults.locationId,
+        planetId: marsResults.planet_id,
+        locationId: marsResults.location_id,
         name: 'mars',
         description: 'mars is home to the tallest volcano in the solar system',
         color: '#d14c32',
@@ -93,8 +94,8 @@ export const createSolarSystem = async () => {
         radius: 3390,
       },
       {
-        planetId: jupiterResults.planetId,
-        locationId: jupiterResults.locationId,
+        planetId: jupiterResults.planet_id,
+        locationId: jupiterResults.location_id,
         name: 'jupiter',
         description: 'jupiter is the largest planet with a massive storm',
         color: '#d5b495',
@@ -102,8 +103,8 @@ export const createSolarSystem = async () => {
         radius: 69911,
       },
       {
-        planetId: saturnResults.planetId,
-        locationId: saturnResults.locationId,
+        planetId: saturnResults.planet_id,
+        locationId: saturnResults.location_id,
         name: 'saturn',
         description: 'saturn is famous for its prominent ring system',
         color: '#e3d9b7',
@@ -111,8 +112,8 @@ export const createSolarSystem = async () => {
         radius: 58232,
       },
       {
-        planetId: uranusResults.planetId,
-        locationId: uranusResults.locationId,
+        planetId: uranusResults.planet_id,
+        locationId: uranusResults.location_id,
         name: 'uranus',
         description: 'uranus rotates on its side and has faint rings',
         color: '#82d4d4',
@@ -120,8 +121,8 @@ export const createSolarSystem = async () => {
         radius: 25362,
       },
       {
-        planetId: neptuneResults.planetId,
-        locationId: neptuneResults.locationId,
+        planetId: neptuneResults.planet_id,
+        locationId: neptuneResults.location_id,
         name: 'neptune',
         description: 'neptune is the furthest planet and has strong winds',
         color: '#2e3b7b',

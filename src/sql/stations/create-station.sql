@@ -5,8 +5,6 @@ WITH new_location AS (
 ), new_station AS (
     INSERT INTO stations (location_id, planet_id, name)
     VALUES ((SELECT location_id FROM new_location), $1, $2)
-    RETURNING station_id
+    RETURNING *
 )
-SELECT 
-    (SELECT station_id FROM new_station) AS station_id,
-    (SELECT location_id FROM new_location) AS location_id;
+SELECT * FROM new_station;

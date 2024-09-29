@@ -6,10 +6,7 @@ export const createSystem = async (name: string) => {
   const systemResult = await runQuery('systems/create-system.sql', [name])
 
   if (!systemResult) return null
-  const { system_id } = systemResult[0]
-
-  if (typeof system_id !== 'number') return null
-  return system_id as number
+  return systemResult[0]
 }
 
 export const createPlanet = async (systemId: number, name: string) => {
@@ -22,13 +19,7 @@ export const createPlanet = async (systemId: number, name: string) => {
   ])
 
   if (!planetResult) return null
-  const { planet_id, location_id } = planetResult[0]
-
-  if (typeof planet_id !== 'number' || typeof location_id !== 'number') {
-    return null
-  }
-
-  return { planetId: planet_id as number, locationId: location_id as number }
+  return planetResult[0]
 }
 
 export const createStation = async (planetId: number, name: string) => {
@@ -41,13 +32,7 @@ export const createStation = async (planetId: number, name: string) => {
   ])
 
   if (!stationResult) return null
-  const { station_id, location_id } = stationResult[0]
-
-  if (typeof station_id !== 'number' || typeof location_id !== 'number') {
-    return null
-  }
-
-  return { stationId: station_id as number, locationId: location_id as number }
+  return stationResult[0]
 }
 
 export const createMoon = async (planetId: number, name: string) => {
@@ -57,13 +42,7 @@ export const createMoon = async (planetId: number, name: string) => {
   const moonResult = await runQuery('moons/create-moon.sql', [planetId, name])
 
   if (!moonResult) return null
-  const { moon_id, location_id } = moonResult[0]
-
-  if (typeof moon_id !== 'number' || typeof location_id !== 'number') {
-    return null
-  }
-
-  return { moonId: moon_id as number, locationId: location_id as number }
+  return moonResult[0]
 }
 
 export const createBelt = async (planetId: number, name: string) => {
@@ -73,13 +52,7 @@ export const createBelt = async (planetId: number, name: string) => {
   const beltResult = await runQuery('belts/create-belt.sql', [planetId, name])
 
   if (!beltResult) return null
-  const { belt_id, location_id } = beltResult[0]
-
-  if (typeof belt_id !== 'number' || typeof location_id !== 'number') {
-    return null
-  }
-
-  return { beltId: belt_id as number, locationId: location_id as number }
+  return beltResult[0]
 }
 
 export const createShip = async (
@@ -101,10 +74,7 @@ export const createShip = async (
   ])
 
   if (!shipResult) return null
-  const { ship_id } = shipResult[0]
-
-  if (typeof ship_id !== 'number') return null
-  return ship_id as number
+  return shipResult[0]
 }
 
 export const getLocation = async (locationId: number) => {

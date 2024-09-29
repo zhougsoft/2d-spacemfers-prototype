@@ -5,8 +5,6 @@ WITH new_location AS (
 ), new_moon AS (
     INSERT INTO moons (location_id, planet_id, name)
     VALUES ((SELECT location_id FROM new_location), $1, $2)
-    RETURNING moon_id
+    RETURNING *
 )
-SELECT 
-    (SELECT moon_id FROM new_moon) AS moon_id,
-    (SELECT location_id FROM new_location) AS location_id;
+SELECT * FROM new_moon;
