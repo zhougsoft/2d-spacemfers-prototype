@@ -75,7 +75,13 @@ const PlayerDashboard = () => {
   const [selectedPlanet, setSelectedPlanet] = useState<any | null>(null)
 
   useEffect(() => {
-    getPlayer(1).then(setPlayer).catch(console.error)
+    getPlayer(1)
+      .then(data => {
+        console.log('player data:', data)
+        setPlayer(data)
+      })
+      .catch(console.error)
+
     getSolarSystem().then(setSolarSystem).catch(console.error)
   }, [])
 
