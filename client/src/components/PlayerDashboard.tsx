@@ -1,5 +1,16 @@
 import { useEffect, useState } from 'react'
-import { getPlayer, getSolarSystem } from '../api'
+import { getLocation, getPlayer, getSolarSystem } from '../api'
+
+type DataObject = Record<string, any> // generic type to hold TBD data from api
+
+const PLANET_DISTANCE_SCALE = 100
+
+const sunData = {
+  name: 'Sun',
+  description: 'the sun is the star at the center of the solar system',
+  radius: 696340,
+  distance_from_star: 0,
+}
 
 const Sun = ({
   systemName,
@@ -41,8 +52,6 @@ const Planet = ({
   onClick: () => void
   isSelected: boolean
 }) => {
-  const distanceScale = 100
-
   return (
     <div
       style={{
@@ -58,7 +67,7 @@ const Planet = ({
         fontSize: '10px',
         textAlign: 'center',
         marginLeft: `${
-          (planet.distance_from_star - previousDistance) * distanceScale
+          (planet.distance_from_star - previousDistance) * PLANET_DISTANCE_SCALE
         }px`,
         cursor: 'pointer',
         border: isSelected ? '3px solid white' : 'none',
@@ -70,33 +79,40 @@ const Planet = ({
 }
 
 const PlayerDashboard = () => {
-  const [player, setPlayer] = useState<{ player_id: number } | null>(null)
-  const [solarSystem, setSolarSystem] = useState<any | null>(null)
-  const [selectedPlanet, setSelectedPlanet] = useState<any | null>(null)
+  const [solarSystem, setSolarSystem] = useState<DataObject | null>(null)
+  const [selectedPlanet, setSelectedPlanet] = useState<DataObject | null>(null)
 
+  const [player, setPlayer] = useState<DataObject | null>(null)
+  const [playerLocation, setPlayerLocation] = useState<DataObject | null>(null)
+
+  // fetch api data on component mount
   useEffect(() => {
+    getSolarSystem().then(setSolarSystem).catch(console.error)
+
     getPlayer(1)
-      .then(data => {
-        console.log('player data:', data)
-        setPlayer(data)
+      .then(playerData => {
+        console.log('player data:', playerData)
+        setPlayer(playerData)
+        getLocation(playerData.player_id)
+          .then(locationData => {
+            console.log('location data:', locationData)
+            setPlayerLocation(locationData)
+          })
+          .catch(console.error)
       })
       .catch(console.error)
-
-    getSolarSystem().then(setSolarSystem).catch(console.error)
   }, [])
 
-  const handlePlanetClick = (planet: any) => {
-    setSelectedPlanet(planet)
-  }
+  // do stuff with the api data
+  useEffect(() => {
+    if (!player || !playerLocation) return
 
-  const handleSunClick = () => {
-    setSelectedPlanet({
-      name: 'sol',
-      description: 'the sun is the star at the center of the solar system',
-      radius: 696340,
-      distance_from_star: 0,
-    })
-  }
+    // TODO: check stuff out here
+    console.log({ player, playerLocation })
+  }, [player, playerLocation])
+
+  const handleSunClick = () => setSelectedPlanet(sunData)
+  const handlePlanetClick = (planet: DataObject) => setSelectedPlanet(planet)
 
   return (
     <>
@@ -142,7 +158,7 @@ const PlayerDashboard = () => {
               onClick={handleSunClick}
               isSelected={selectedPlanet?.name === 'Sun'}
             />
-            {solarSystem.planets.map((planet: any, index: number) => (
+            {solarSystem.planets.map((planet: DataObject, index: number) => (
               <Planet
                 key={planet.planetId}
                 planet={planet}

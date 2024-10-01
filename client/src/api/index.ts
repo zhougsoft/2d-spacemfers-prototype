@@ -41,6 +41,13 @@ export const getGameShips = async () => {
   return data
 }
 
+export const getLocation = async (locationId: number) => {
+  const url = `${API_URL}/api/locations/${locationId}`
+  const data = await request(url)
+  console.log(data)
+  return data
+}
+
 // --- player admin ---------------------------------------------------------
 
 export const createPlayer = async () => {
@@ -69,6 +76,7 @@ export const getPlayerLocation = async (playerId: number) => {
   console.log(data)
   return data
 }
+
 export const setPlayerLocation = async (
   playerId: number,
   locationId: number
