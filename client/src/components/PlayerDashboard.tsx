@@ -3,6 +3,7 @@ import { getLocation, getPlayer, getSolarSystem } from '../api'
 
 type DataObject = Record<string, any> // generic type to hold TBD data from api
 
+const TEST_PLAYER_ID = 1
 const PLANET_DISTANCE_SCALE = 100
 
 const sunData = {
@@ -83,21 +84,22 @@ const PlayerDashboard = () => {
   const [selectedPlanet, setSelectedPlanet] = useState<DataObject | null>(null)
 
   const [player, setPlayer] = useState<DataObject | null>(null)
-  const [playerLocation, setPlayerLocation] = useState<DataObject | null>(null)
+  const [playerTargetLocation, setPlayerTargetLocation] =
+    useState<DataObject | null>(null)
 
   // fetch api data on component mount
   useEffect(() => {
+    // fetch the game universe data
     getSolarSystem().then(setSolarSystem).catch(console.error)
 
-    getPlayer(1)
+    // fetch the player data
+    getPlayer(TEST_PLAYER_ID)
       .then(playerData => {
-        console.log('player data:', playerData)
         setPlayer(playerData)
-        getLocation(playerData.player_id)
-          .then(locationData => {
-            console.log('location data:', locationData)
-            setPlayerLocation(locationData)
-          })
+
+        if (!playerData.target_location_id) return
+        getLocation(playerData.target_location_id)
+          .then(setPlayerTargetLocation)
           .catch(console.error)
       })
       .catch(console.error)
@@ -105,11 +107,11 @@ const PlayerDashboard = () => {
 
   // do stuff with the api data
   useEffect(() => {
-    if (!player || !playerLocation) return
+    if (!player || !playerTargetLocation) return
 
     // TODO: check stuff out here
-    console.log({ player, playerLocation })
-  }, [player, playerLocation])
+    console.log({ player, playerTargetLocation })
+  }, [player, playerTargetLocation])
 
   const handleSunClick = () => setSelectedPlanet(sunData)
   const handlePlanetClick = (planet: DataObject) => setSelectedPlanet(planet)
