@@ -14,7 +14,7 @@ import {
   getPlayer,
   getPlayers,
 } from './lib/players'
-import { getLocation } from './lib/universe'
+import { getAllLocations, getLocation } from './lib/universe'
 import { createGameShips, createSolarSystem } from './utils'
 
 const PORT = 6969
@@ -131,6 +131,26 @@ const main = async () => {
       return res.status(200).json(location)
     } catch (error) {
       console.error(`error fetching location ${req.params.id}:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get all locations in the game.
+   * @route GET /api/locations
+   * @returns {Object} Response with the locations data or an error message.
+   */
+  app.get('/api/locations', async (_req, res) => {
+    try {
+      const locations = await getAllLocations()
+
+      if (!locations) {
+        return res.status(404).json({ error: 'locations not found' })
+      }
+
+      return res.status(200).json(locations)
+    } catch (error) {
+      console.error(`error fetching locations:`, error)
       return res.status(500).json({ error: 'internal server error' })
     }
   })

@@ -88,6 +88,13 @@ export const getLocation = async (locationId: number) => {
   return locationResult[0]
 }
 
+export const getAllLocations = async () => {
+  const locationsResult = await runQuery('locations/get-all-locations.sql')
+
+  if (!locationsResult) return null
+  return locationsResult
+}
+
 export const getStation = async (stationId: number) => {
   if (typeof stationId !== 'number') throw Error('invalid station id')
 

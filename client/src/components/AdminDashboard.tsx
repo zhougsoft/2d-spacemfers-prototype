@@ -12,6 +12,8 @@ import {
   initiatePlayerTravel,
   setPlayerLocation,
   setActivePlayerShip,
+  getLocation,
+  getAllLocations,
 } from '../api'
 import { LineDivider } from './Shared'
 
@@ -56,6 +58,19 @@ const AdminDashboard = () => {
   const onGetSolarSystem = () => getSolarSystem()
   const onGetGameShips = () => getGameShips()
 
+  const refGetLocation_LocationId = useRef<HTMLInputElement>(null)
+  const onGetLocation = async () => {
+    const id = refGetLocation_LocationId.current?.value
+    if (!id) {
+      alert('location_id is required')
+      return
+    }
+
+    getLocation(parseInt(id))
+  }
+
+  const onGetAllLocations = () => getAllLocations()
+
   // --- player admin ---------------------------------------------------------
   const onCreatePlayer = () => createPlayer()
   const onGetPlayers = () => getPlayers()
@@ -72,7 +87,6 @@ const AdminDashboard = () => {
   }
 
   // --- player state ---------------------------------------------------------
-
   const refGetPlayerLocation_PlayerId = useRef<HTMLInputElement>(null)
   const onGetPlayerLocation = async () => {
     const id = refGetPlayerLocation_PlayerId.current?.value
@@ -159,6 +173,17 @@ const AdminDashboard = () => {
       </Section>
       <Section>
         <button onClick={onGetGameShips}>get game ships</button>
+      </Section>
+      <Section>
+        <button onClick={onGetLocation}>get location</button>
+        <LineDivider />
+        <NumberInput
+          ref={refGetLocation_LocationId}
+          placeholder="location_id"
+        />
+      </Section>
+      <Section>
+        <button onClick={onGetAllLocations}>get all locations</button>
       </Section>
       <h2>player admin</h2>
       <Section>

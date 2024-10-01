@@ -48,6 +48,12 @@ export const getLocation = async (locationId: number) => {
   return data
 }
 
+export const getAllLocations = async () => {
+  const data = await request(`${API_URL}/api/locations`)
+  console.log(data)
+  return data
+}
+
 // --- player admin ---------------------------------------------------------
 
 export const createPlayer = async () => {
