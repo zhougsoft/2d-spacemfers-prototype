@@ -55,26 +55,32 @@ export const getSystem = async (systemId: number) => {
   return data as Record<string, any>
 }
 
+export const getPlanetsBySystem = async (systemId: number) => {
+  const data = await request(`${API_URL}/api/planets/system/${systemId}`)
+  console.log(data)
+  return data
+}
+
 export const getPlanetByLocation = async (locationId: number) => {
-  const data = await request(`${API_URL}/api/planets/${locationId}`)
+  const data = await request(`${API_URL}/api/planets/location/${locationId}`)
   console.log(data)
   return data
 }
 
 export const getStationByLocation = async (locationId: number) => {
-  const data = await request(`${API_URL}/api/stations/${locationId}`)
+  const data = await request(`${API_URL}/api/stations/location/${locationId}`)
   console.log(data)
   return data
 }
 
 export const getMoonByLocation = async (locationId: number) => {
-  const data = await request(`${API_URL}/api/moons/${locationId}`)
+  const data = await request(`${API_URL}/api/moons/location/${locationId}`)
   console.log(data)
   return data
 }
 
 export const getBeltByLocation = async (locationId: number) => {
-  const data = await request(`${API_URL}/api/belts/${locationId}`)
+  const data = await request(`${API_URL}/api/belts/location/${locationId}`)
   console.log(data)
   return data
 }

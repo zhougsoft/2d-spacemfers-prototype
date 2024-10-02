@@ -91,22 +91,8 @@ const PlayerDashboard = () => {
   useEffect(() => {
 
 
-
-
-
-
-
-
-    // !!! TODO: this is broken since we were using that shitty in-memory endpoint
-    // make a real endpoint that pulls current data from the db
-    // getSystem or something; does hella joins and builds the system tree object
-    // getSolarSystem().then(setSolarSystem).catch(console.error)
-
-
-
-
-
-
+    
+    // TODO: get an endpoint that provides system data with nested planets (just ids are fine for now)
 
 
 

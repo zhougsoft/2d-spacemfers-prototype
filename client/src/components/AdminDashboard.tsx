@@ -20,6 +20,7 @@ import {
   getAllShips,
   getShip,
   getAllSystems,
+  getPlanetsBySystem,
 } from '../api'
 import { LineDivider } from './Shared'
 
@@ -87,9 +88,20 @@ const AdminDashboard = () => {
     getSystem(parseInt(id))
   }
 
-  const refGetPlanet_LocationId = useRef<HTMLInputElement>(null)
-  const onGetPlanet = async () => {
-    const id = refGetPlanet_LocationId.current?.value
+  const refGetPlanetsBySystem_SystemId = useRef<HTMLInputElement>(null)
+  const onGetPlanetsBySystem = async () => {
+    const id = refGetPlanetsBySystem_SystemId.current?.value
+    if (!id) {
+      alert('system_id is required')
+      return
+    }
+
+    getPlanetsBySystem(parseInt(id))
+  }
+
+  const refGetPlanetByLocation_LocationId = useRef<HTMLInputElement>(null)
+  const onGetPlanetByLocation = async () => {
+    const id = refGetPlanetByLocation_LocationId.current?.value
     if (!id) {
       alert('location_id is required')
       return
@@ -261,22 +273,33 @@ const AdminDashboard = () => {
         <NumberInput ref={refGetSystem_SystemId} placeholder="system_id" />
       </Section>
       <Section>
-        <button onClick={onGetPlanet}>get planet</button>
+        <button onClick={onGetPlanetsBySystem}>get planets by system</button>
         <LineDivider />
-        <NumberInput ref={refGetPlanet_LocationId} placeholder="location_id" />
+        <NumberInput
+          ref={refGetPlanetsBySystem_SystemId}
+          placeholder="system_id"
+        />
       </Section>
       <Section>
-        <button onClick={onGetStation}>get station</button>
+        <button onClick={onGetPlanetByLocation}>get planet by location</button>
+        <LineDivider />
+        <NumberInput
+          ref={refGetPlanetByLocation_LocationId}
+          placeholder="location_id"
+        />
+      </Section>
+      <Section>
+        <button onClick={onGetStation}>get station by location</button>
         <LineDivider />
         <NumberInput ref={refGetStation_LocationId} placeholder="location_id" />
       </Section>
       <Section>
-        <button onClick={onGetMoon}>get moon</button>
+        <button onClick={onGetMoon}>get moon by location</button>
         <LineDivider />
         <NumberInput ref={refGetMoon_LocationId} placeholder="location_id" />
       </Section>
       <Section>
-        <button onClick={onGetBelt}>get belt</button>
+        <button onClick={onGetBelt}>get belt by location</button>
         <LineDivider />
         <NumberInput ref={refGetBelt_LocationId} placeholder="location_id" />
       </Section>

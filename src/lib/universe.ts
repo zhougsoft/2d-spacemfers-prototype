@@ -56,6 +56,17 @@ export const createPlanet = async (systemId: number, name: string) => {
   return planetResult[0]
 }
 
+export const getPlanetsBySystem = async (systemId: number) => {
+  if (typeof systemId !== 'number') throw Error('invalid system id')
+
+  const planetResults = await runQuery('planets/get-planets-by-system.sql', [
+    systemId,
+  ])
+
+  if (!planetResults) return null
+  return planetResults
+}
+
 export const getPlanet = async (planetId: number) => {
   if (typeof planetId !== 'number') throw Error('invalid planet id')
 
