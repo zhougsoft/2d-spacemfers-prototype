@@ -16,10 +16,12 @@ import {
 } from './lib/players'
 import {
   getAllLocations,
+  getAllShips,
   getBeltByLocation,
   getLocation,
   getMoonByLocation,
   getPlanetByLocation,
+  getShip,
   getStationByLocation,
 } from './lib/universe'
 import { createGameShips, createSolarSystem } from './utils'
@@ -270,6 +272,53 @@ const main = async () => {
     } catch (error) {
       const msg = `error fetching belt ${req.params.locationId}:`
       console.error(msg, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get all ships in the game.
+   * @route GET /api/ships
+   * @returns {Object} Response with the ships data or an error message.
+   */
+  app.get('/api/ships', async (_req, res) => {
+    try {
+      const ships = await getAllShips()
+
+      if (!ships) {
+        return res.status(404).json({ error: 'ships not found' })
+      }
+
+      return res.status(200).json(ships)
+    } catch (error) {
+      console.error(`error fetching ships:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get data for a ship by its ID.
+   * @route GET /api/ships/:id
+   * @param {number} id - The ship ID.
+   * @returns {Object} Response with the ship data or an error message.
+   */
+  app.get('/api/ships/:id', async (req, res) => {
+    try {
+      const shipId = parseInt(req.params.id, 10)
+
+      if (isNaN(shipId) || shipId < 1) {
+        return res.status(400).json({ error: 'invalid ship id' })
+      }
+
+      const ship = await getShip(shipId)
+
+      if (!ship) {
+        return res.status(404).json({ error: 'ship not found' })
+      }
+
+      return res.status(200).json(ship)
+    } catch (error) {
+      console.error(`error fetching ship ${req.params.id}:`, error)
       return res.status(500).json({ error: 'internal server error' })
     }
   })

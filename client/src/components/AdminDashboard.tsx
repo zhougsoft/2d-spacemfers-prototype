@@ -4,7 +4,6 @@ import {
   dbUp,
   dbDown,
   createPlayer,
-  getGameShips,
   getPlayer,
   getPlayerLocation,
   getPlayers,
@@ -18,6 +17,8 @@ import {
   getStationByLocation,
   getMoonByLocation,
   getBeltByLocation,
+  getAllShips,
+  getShip,
 } from '../api'
 import { LineDivider } from './Shared'
 
@@ -60,7 +61,6 @@ const AdminDashboard = () => {
 
   // --- universe admin -------------------------------------------------------
   const onGetSolarSystem = () => getSolarSystem()
-  const onGetGameShips = () => getGameShips()
 
   const onGetAllLocations = () => getAllLocations()
 
@@ -117,6 +117,19 @@ const AdminDashboard = () => {
     }
 
     getBeltByLocation(parseInt(id))
+  }
+
+  const onGetAllShips = () => getAllShips()
+
+  const refGetShip_ShipId = useRef<HTMLInputElement>(null)
+  const onGetShip = async () => {
+    const id = refGetShip_ShipId.current?.value
+    if (!id) {
+      alert('ship_id is required')
+      return
+    }
+
+    getShip(parseInt(id))
   }
 
   // --- player admin ---------------------------------------------------------
@@ -220,9 +233,6 @@ const AdminDashboard = () => {
         <button onClick={onGetSolarSystem}>get solar system</button>
       </Section>
       <Section>
-        <button onClick={onGetGameShips}>get game ships</button>
-      </Section>
-      <Section>
         <button onClick={onGetAllLocations}>get all locations</button>
       </Section>
       <Section>
@@ -252,6 +262,14 @@ const AdminDashboard = () => {
         <button onClick={onGetBelt}>get belt</button>
         <LineDivider />
         <NumberInput ref={refGetBelt_LocationId} placeholder="location_id" />
+      </Section>
+      <Section>
+        <button onClick={onGetAllShips}>get all ships</button>
+      </Section>
+      <Section>
+        <button onClick={onGetShip}>get ship</button>
+        <LineDivider />
+        <NumberInput ref={refGetShip_ShipId} placeholder="ship_id" />
       </Section>
       <h2>player admin</h2>
       <Section>

@@ -35,12 +35,6 @@ export const getSolarSystem = async () => {
   return data as Record<string, any>
 }
 
-export const getGameShips = async () => {
-  const data = await request(`${API_URL}/api/game-ships`)
-  console.log(data)
-  return data
-}
-
 export const getAllLocations = async () => {
   const data = await request(`${API_URL}/api/locations`)
   console.log(data)
@@ -48,36 +42,43 @@ export const getAllLocations = async () => {
 }
 
 export const getLocation = async (locationId: number) => {
-  const url = `${API_URL}/api/locations/${locationId}`
-  const data = await request(url)
+  const data = await request(`${API_URL}/api/locations/${locationId}`)
   console.log(data)
   return data
 }
 
 export const getPlanetByLocation = async (locationId: number) => {
-  const url = `${API_URL}/api/planets/${locationId}`
-  const data = await request(url)
+  const data = await request(`${API_URL}/api/planets/${locationId}`)
   console.log(data)
   return data
 }
 
 export const getStationByLocation = async (locationId: number) => {
-  const url = `${API_URL}/api/stations/${locationId}`
-  const data = await request(url)
+  const data = await request(`${API_URL}/api/stations/${locationId}`)
   console.log(data)
   return data
 }
 
 export const getMoonByLocation = async (locationId: number) => {
-  const url = `${API_URL}/api/moons/${locationId}`
-  const data = await request(url)
+  const data = await request(`${API_URL}/api/moons/${locationId}`)
   console.log(data)
   return data
 }
 
 export const getBeltByLocation = async (locationId: number) => {
-  const url = `${API_URL}/api/belts/${locationId}`
-  const data = await request(url)
+  const data = await request(`${API_URL}/api/belts/${locationId}`)
+  console.log(data)
+  return data
+}
+
+export const getAllShips = async () => {
+  const data = await request(`${API_URL}/api/ships`)
+  console.log(data)
+  return data
+}
+
+export const getShip = async (shipId: number) => {
+  const data = await request(`${API_URL}/api/ships/${shipId}`)
   console.log(data)
   return data
 }

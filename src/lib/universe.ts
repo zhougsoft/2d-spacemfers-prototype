@@ -174,3 +174,19 @@ export const createShip = async (
   if (!shipResult) return null
   return shipResult[0]
 }
+
+export const getAllShips = async () => {
+  const shipsResult = await runQuery('ships/get-all-ships.sql')
+
+  if (!shipsResult) return null
+  return shipsResult
+}
+
+export const getShip = async (shipId: number) => {
+  if (typeof shipId !== 'number') throw Error('invalid ship id')
+
+  const shipResult = await runQuery('ships/get-ship.sql', [shipId])
+
+  if (!shipResult) return null
+  return shipResult[0]
+}
