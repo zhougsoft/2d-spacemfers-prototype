@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getLocation, getPlayer, getSolarSystem } from '../api'
+import { getLocation, getPlayer } from '../api'
 
 type DataObject = Record<string, any> // generic type to hold TBD data from api
 
@@ -100,7 +100,7 @@ const PlayerDashboard = () => {
     // !!! TODO: this is broken since we were using that shitty in-memory endpoint
     // make a real endpoint that pulls current data from the db
     // getSystem or something; does hella joins and builds the system tree object
-    getSolarSystem().then(setSolarSystem).catch(console.error)
+    // getSolarSystem().then(setSolarSystem).catch(console.error)
 
 
 
