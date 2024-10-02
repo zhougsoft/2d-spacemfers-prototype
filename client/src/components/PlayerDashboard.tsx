@@ -9,7 +9,8 @@ const PlayerDashboard = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const [player, setPlayer] = useState<DataObject | null>(null)
-  const [playLocation, setPlayerLocation] = useState<DataObject | null>(null)
+  const [playerLocation, setPlayerLocation] = useState<DataObject | null>(null)
+  const [playerShip, setPlayerShip] = useState<DataObject | null>(null)
 
   // fetch player data from api data on component mount
   useEffect(() => {
@@ -24,13 +25,22 @@ const PlayerDashboard = () => {
   useEffect(() => {
     if (!player) return
 
-    if (!player.target_location_id) {
+    if (player.target_location_id) {
+      // TODO: fetch the player's target location data
+      // consider arrival_time logic (if player is en route or already arrived)
+      setPlayerLocation({ msg: 'player has a target location' })
+    } else {
       setPlayerLocation(null)
-      return
     }
 
-    // TODO: fetch the player's current location system, then fetch that system's planets
-    // use that data to build the solar system object & set it in state
+    if (player.active_ship_id) {
+      // TODO: fetch the player's ship data
+      setPlayerShip({ msg: 'player has an active ship' })
+    } else {
+      setPlayerShip(null)
+    }
+
+    // TODO: fetch the player's current location & active ship data
     console.log({ player })
   }, [player])
 
@@ -51,10 +61,24 @@ const PlayerDashboard = () => {
             backgroundColor: '#f4f4f4',
             maxWidth: '400px',
           }}>
-          <h2>player</h2>
-          <p>
-            <strong>id:</strong> {player.player_id}
-          </p>
+          <h3>player</h3>
+          <span>id:&nbsp;</span>
+          <span>{player.player_id}</span>
+          <br />
+          <br />
+          <br />
+          <span>location:</span>
+          <pre>
+            {playerLocation
+              ? JSON.stringify(playerLocation)
+              : 'no location set'}
+          </pre>
+          <br />
+          <br />
+          <span>active ship:</span>
+          <pre>
+            {playerShip ? JSON.stringify(playerShip) : 'no active ship'}
+          </pre>
         </div>
       ) : (
         <div>no player...</div>
