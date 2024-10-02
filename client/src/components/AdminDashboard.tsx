@@ -14,6 +14,10 @@ import {
   setActivePlayerShip,
   getLocation,
   getAllLocations,
+  getPlanetByLocation,
+  getStationByLocation,
+  getMoonByLocation,
+  getBeltByLocation,
 } from '../api'
 import { LineDivider } from './Shared'
 
@@ -58,6 +62,8 @@ const AdminDashboard = () => {
   const onGetSolarSystem = () => getSolarSystem()
   const onGetGameShips = () => getGameShips()
 
+  const onGetAllLocations = () => getAllLocations()
+
   const refGetLocation_LocationId = useRef<HTMLInputElement>(null)
   const onGetLocation = async () => {
     const id = refGetLocation_LocationId.current?.value
@@ -69,7 +75,49 @@ const AdminDashboard = () => {
     getLocation(parseInt(id))
   }
 
-  const onGetAllLocations = () => getAllLocations()
+  const refGetPlanet_LocationId = useRef<HTMLInputElement>(null)
+  const onGetPlanet = async () => {
+    const id = refGetPlanet_LocationId.current?.value
+    if (!id) {
+      alert('location_id is required')
+      return
+    }
+
+    getPlanetByLocation(parseInt(id))
+  }
+
+  const refGetStation_LocationId = useRef<HTMLInputElement>(null)
+  const onGetStation = async () => {
+    const id = refGetStation_LocationId.current?.value
+    if (!id) {
+      alert('location_id is required')
+      return
+    }
+
+    getStationByLocation(parseInt(id))
+  }
+
+  const refGetMoon_LocationId = useRef<HTMLInputElement>(null)
+  const onGetMoon = async () => {
+    const id = refGetMoon_LocationId.current?.value
+    if (!id) {
+      alert('location_id is required')
+      return
+    }
+
+    getMoonByLocation(parseInt(id))
+  }
+
+  const refGetBelt_LocationId = useRef<HTMLInputElement>(null)
+  const onGetBelt = async () => {
+    const id = refGetBelt_LocationId.current?.value
+    if (!id) {
+      alert('location_id is required')
+      return
+    }
+
+    getBeltByLocation(parseInt(id))
+  }
 
   // --- player admin ---------------------------------------------------------
   const onCreatePlayer = () => createPlayer()
@@ -175,6 +223,9 @@ const AdminDashboard = () => {
         <button onClick={onGetGameShips}>get game ships</button>
       </Section>
       <Section>
+        <button onClick={onGetAllLocations}>get all locations</button>
+      </Section>
+      <Section>
         <button onClick={onGetLocation}>get location</button>
         <LineDivider />
         <NumberInput
@@ -183,7 +234,24 @@ const AdminDashboard = () => {
         />
       </Section>
       <Section>
-        <button onClick={onGetAllLocations}>get all locations</button>
+        <button onClick={onGetPlanet}>get planet</button>
+        <LineDivider />
+        <NumberInput ref={refGetPlanet_LocationId} placeholder="location_id" />
+      </Section>
+      <Section>
+        <button onClick={onGetStation}>get station</button>
+        <LineDivider />
+        <NumberInput ref={refGetStation_LocationId} placeholder="location_id" />
+      </Section>
+      <Section>
+        <button onClick={onGetMoon}>get moon</button>
+        <LineDivider />
+        <NumberInput ref={refGetMoon_LocationId} placeholder="location_id" />
+      </Section>
+      <Section>
+        <button onClick={onGetBelt}>get belt</button>
+        <LineDivider />
+        <NumberInput ref={refGetBelt_LocationId} placeholder="location_id" />
       </Section>
       <h2>player admin</h2>
       <Section>

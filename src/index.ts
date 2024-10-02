@@ -14,7 +14,14 @@ import {
   getPlayer,
   getPlayers,
 } from './lib/players'
-import { getAllLocations, getLocation } from './lib/universe'
+import {
+  getAllLocations,
+  getBeltByLocation,
+  getLocation,
+  getMoonByLocation,
+  getPlanetByLocation,
+  getStationByLocation,
+} from './lib/universe'
 import { createGameShips, createSolarSystem } from './utils'
 
 const PORT = 6969
@@ -109,6 +116,26 @@ const main = async () => {
   })
 
   /**
+   * Get all locations in the game.
+   * @route GET /api/locations
+   * @returns {Object} Response with the locations data or an error message.
+   */
+  app.get('/api/locations', async (_req, res) => {
+    try {
+      const locations = await getAllLocations()
+
+      if (!locations) {
+        return res.status(404).json({ error: 'locations not found' })
+      }
+
+      return res.status(200).json(locations)
+    } catch (error) {
+      console.error(`error fetching locations:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
    * Get data for a location by its ID.
    * @route GET /api/locations/:id
    * @param {number} id - The location ID.
@@ -136,21 +163,113 @@ const main = async () => {
   })
 
   /**
-   * Get all locations in the game.
-   * @route GET /api/locations
-   * @returns {Object} Response with the locations data or an error message.
+   * Get a single planet by its location ID.
+   * @route GET /api/planets/:locationId
+   * @param {number} id - The planet location ID.
+   * @returns {Object} Response with the planet data or an error message.
    */
-  app.get('/api/locations', async (_req, res) => {
+  app.get('/api/planets/:locationId', async (req, res) => {
     try {
-      const locations = await getAllLocations()
+      const locationId = parseInt(req.params.locationId, 10)
 
-      if (!locations) {
-        return res.status(404).json({ error: 'locations not found' })
+      if (isNaN(locationId) || locationId < 1) {
+        return res.status(400).json({ error: 'invalid location id' })
       }
 
-      return res.status(200).json(locations)
+      const planet = await getPlanetByLocation(locationId)
+
+      if (!planet) {
+        return res.status(404).json({ error: 'planet not found' })
+      }
+
+      return res.status(200).json(planet)
     } catch (error) {
-      console.error(`error fetching locations:`, error)
+      const msg = `error fetching planet location ${req.params.locationId}:`
+      console.error(msg, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get a single station by its location ID.
+   * @route GET /api/stations/:locationId
+   * @param {number} id - The station location ID.
+   * @returns {Object} Response with the station data or an error message.
+   */
+  app.get('/api/stations/:locationId', async (req, res) => {
+    try {
+      const locationId = parseInt(req.params.locationId, 10)
+
+      if (isNaN(locationId) || locationId < 1) {
+        return res.status(400).json({ error: 'invalid location id' })
+      }
+
+      const station = await getStationByLocation(locationId)
+
+      if (!station) {
+        return res.status(404).json({ error: 'station not found' })
+      }
+
+      return res.status(200).json(station)
+    } catch (error) {
+      const msg = `error fetching station ${req.params.locationId}:`
+      console.error(msg, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get a single moon by its location ID.
+   * @route GET /api/moons/:locationId
+   * @param {number} id - The moon location ID.
+   * @returns {Object} Response with the moon data or an error message.
+   */
+  app.get('/api/moons/:locationId', async (req, res) => {
+    try {
+      const locationId = parseInt(req.params.locationId, 10)
+
+      if (isNaN(locationId) || locationId < 1) {
+        return res.status(400).json({ error: 'invalid location id' })
+      }
+
+      const moon = await getMoonByLocation(locationId)
+
+      if (!moon) {
+        return res.status(404).json({ error: 'moon not found' })
+      }
+
+      return res.status(200).json(moon)
+    } catch (error) {
+      const msg = `error fetching moon ${req.params.locationId}:`
+      console.error(msg, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get a single belt by its location ID.
+   * @route GET /api/belts/:locationId
+   * @param {number} id - The belt location ID.
+   * @returns {Object} Response with the belt data or an error message.
+   */
+  app.get('/api/belts/:locationId', async (req, res) => {
+    try {
+      const locationId = parseInt(req.params.locationId, 10)
+
+      if (isNaN(locationId) || locationId < 1) {
+        return res.status(400).json({ error: 'invalid location id' })
+      }
+
+      const belt = await getBeltByLocation(locationId)
+
+      if (!belt) {
+        return res.status(404).json({ error: 'belt not found' })
+      }
+
+      return res.status(200).json(belt)
+    } catch (error) {
+      const msg = `error fetching belt ${req.params.locationId}:`
+      console.error(msg, error)
       return res.status(500).json({ error: 'internal server error' })
     }
   })
