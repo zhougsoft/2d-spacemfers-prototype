@@ -33,6 +33,9 @@ represents specific locations within the game universe
 
 - location_id (pk)
 - location_type_id (fk location_types)
+- system_id (fk systems)
+- distance_from_star_au (applicable to planets or other future star orbital bodies)
+- distance_from_planet_km (applicable to stations, moons, belts or other future planet orbital bodies)
 
 #### planets
 the planets that orbit the star of a solar system
