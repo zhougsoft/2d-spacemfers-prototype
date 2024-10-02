@@ -8,129 +8,56 @@ import {
 } from './lib/universe'
 
 export const createSolarSystem = async () => {
-  const systemName = 'sol'
-  const systemResults = await createSystem(systemName)
+  const systemResults = await createSystem('sol')
   if (!systemResults) throw Error('error creating system')
   const systemId: number = systemResults.system_id
 
-  const mercuryResults = await createPlanet(systemId, 'mercury')
+  const mercuryResults = await createPlanet(systemId, 'mercury', 0.39)
   if (!mercuryResults) throw Error('error creating mercury')
 
-  const venusResults = await createPlanet(systemId, 'venus')
+  const venusResults = await createPlanet(systemId, 'venus', 0.72)
   if (!venusResults) throw Error('error creating venus')
 
-  const earthResults = await createPlanet(systemId, 'earth')
+  const earthResults = await createPlanet(systemId, 'earth', 1)
   if (!earthResults) throw Error('error creating earth')
 
-  const marsResults = await createPlanet(systemId, 'mars')
+  const marsResults = await createPlanet(systemId, 'mars', 1.52)
   if (!marsResults) throw Error('error creating mars')
 
-  const jupiterResults = await createPlanet(systemId, 'jupiter')
+  const jupiterResults = await createPlanet(systemId, 'jupiter', 5.2)
   if (!jupiterResults) throw Error('error creating jupiter')
 
-  const saturnResults = await createPlanet(systemId, 'saturn')
+  const saturnResults = await createPlanet(systemId, 'saturn', 9.58)
   if (!saturnResults) throw Error('error creating saturn')
 
-  const uranusResults = await createPlanet(systemId, 'uranus')
+  const uranusResults = await createPlanet(systemId, 'uranus', 19.22)
   if (!uranusResults) throw Error('error creating uranus')
 
-  const neptuneResults = await createPlanet(systemId, 'neptune')
+  const neptuneResults = await createPlanet(systemId, 'neptune', 30.05)
   if (!neptuneResults) throw Error('error creating neptune')
 
   const earthStationResult = await createStation(
     earthResults.planet_id,
-    'international space station'
+    'international space station',
+    10000
   )
   if (!earthStationResult) throw Error('error creating station')
 
-  const earthMoonResult = await createMoon(earthResults.planet_id, 'the moon')
+  const earthMoonResult = await createMoon(
+    earthResults.planet_id,
+    'the moon',
+    384400
+  )
   if (!earthMoonResult) throw Error('error creating moon')
 
-  const earthBeltResult = await createBelt(earthResults.planet_id, 'lil belt')
-  if (!earthBeltResult) throw Error('error creating belt')
+  const marsBeltResult = await createBelt(
+    marsResults.planet_id,
+    'the main belt',
+    50000000
+  )
+  if (!marsBeltResult) throw Error('error creating belt')
 
-  return {
-    systemId,
-    systemName,
-    planets: [
-      {
-        planetId: mercuryResults.planet_id,
-        locationId: mercuryResults.location_id,
-        name: 'mercury',
-        description: 'mercury is the smallest planet and closest to the sun',
-        color: '#b3b3b3',
-        distance_from_star: 0.39,
-        radius: 2440,
-      },
-      {
-        planetId: venusResults.planet_id,
-        locationId: venusResults.location_id,
-        name: 'venus',
-        description:
-          'venus has a thick, toxic atmosphere and the hottest surface',
-        color: '#e0c865',
-        distance_from_star: 0.72,
-        radius: 6052,
-      },
-      {
-        planetId: earthResults.planet_id,
-        locationId: earthResults.location_id,
-        name: 'earth',
-        description: 'earth is the only planet known to support life',
-        color: '#2a6db8',
-        distance_from_star: 1,
-        radius: 6371,
-        stations: [earthStationResult],
-        moons: [earthMoonResult],
-        belts: [earthBeltResult],
-      },
-      {
-        planetId: marsResults.planet_id,
-        locationId: marsResults.location_id,
-        name: 'mars',
-        description: 'mars is home to the tallest volcano in the solar system',
-        color: '#d14c32',
-        distance_from_star: 1.52,
-        radius: 3390,
-      },
-      {
-        planetId: jupiterResults.planet_id,
-        locationId: jupiterResults.location_id,
-        name: 'jupiter',
-        description: 'jupiter is the largest planet with a massive storm',
-        color: '#d5b495',
-        distance_from_star: 5.2,
-        radius: 69911,
-      },
-      {
-        planetId: saturnResults.planet_id,
-        locationId: saturnResults.location_id,
-        name: 'saturn',
-        description: 'saturn is famous for its prominent ring system',
-        color: '#e3d9b7',
-        distance_from_star: 9.58,
-        radius: 58232,
-      },
-      {
-        planetId: uranusResults.planet_id,
-        locationId: uranusResults.location_id,
-        name: 'uranus',
-        description: 'uranus rotates on its side and has faint rings',
-        color: '#82d4d4',
-        distance_from_star: 19.22,
-        radius: 25362,
-      },
-      {
-        planetId: neptuneResults.planet_id,
-        locationId: neptuneResults.location_id,
-        name: 'neptune',
-        description: 'neptune is the furthest planet and has strong winds',
-        color: '#2e3b7b',
-        distance_from_star: 30.05,
-        radius: 24622,
-      },
-    ],
-  }
+  return true
 }
 
 export const createGameShips = async () => {
@@ -149,11 +76,5 @@ export const createGameShips = async () => {
   const haulerId = await createShip('hauler', 100, 200000, 4000)
   if (!haulerId) throw Error('error creating hauler')
 
-  return {
-    shuttleId,
-    corvetteId,
-    frigateId,
-    cruiserId,
-    haulerId,
-  }
+  return true
 }

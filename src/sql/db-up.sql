@@ -1,3 +1,8 @@
+CREATE TABLE systems (
+    system_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE location_types (
     location_type_id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL
@@ -12,12 +17,10 @@ VALUES
 
 CREATE TABLE locations (
     location_id SERIAL PRIMARY KEY,
-    location_type_id INTEGER NOT NULL REFERENCES location_types(location_type_id)
-);
-
-CREATE TABLE systems (
-    system_id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    location_type_id INTEGER NOT NULL REFERENCES location_types(location_type_id),
+    system_id INTEGER NOT NULL REFERENCES systems(system_id),
+    distance_from_star_au FLOAT NOT NULL, -- applicable to planets
+    distance_from_planet_km FLOAT NOT NULL -- applicable to stations, moons, belts
 );
 
 CREATE TABLE planets (

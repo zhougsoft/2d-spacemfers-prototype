@@ -56,10 +56,15 @@ const main = async () => {
       await runQuery('db-up.sql')
       console.log('reset database')
 
-      solarSystem = await createSolarSystem()
-      gameShips = await createGameShips()
+      const solarSystemResult = await createSolarSystem()
+      const gameShipsResult = await createGameShips()
 
-      res.json({ solarSystem, gameShips })
+      if (!solarSystemResult || !gameShipsResult) {
+        throw Error('error creating universe')
+      }
+
+      console.log('created universe')
+      res.json({ msg: 'db up success' })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
@@ -75,11 +80,7 @@ const main = async () => {
       await runQuery('db-down.sql')
       console.log('dropped tables')
 
-      // clear in-memory state
-      solarSystem = null
-      gameShips = null
-
-      res.json({ msg: 'success' })
+      res.json({ msg: 'db down success' })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }

@@ -7,9 +7,7 @@ const TEST_PLAYER_ID = 1
 const PLANET_DISTANCE_SCALE = 100
 
 const sunData = {
-  name: 'Sun',
-  description: 'the sun is the star at the center of the solar system',
-  radius: 696340,
+  name: 'sun',
   distance_from_star: 0,
 }
 
@@ -80,42 +78,24 @@ const Planet = ({
 }
 
 const PlayerDashboard = () => {
+  const [player, setPlayer] = useState<DataObject | null>(null)
+
   const [solarSystem, setSolarSystem] = useState<DataObject | null>(null)
   const [selectedPlanet, setSelectedPlanet] = useState<DataObject | null>(null)
 
-  const [player, setPlayer] = useState<DataObject | null>(null)
-  const [playerTargetLocation, setPlayerTargetLocation] =
-    useState<DataObject | null>(null)
-
-  // fetch api data on component mount
+  // fetch player data from api data on component mount
   useEffect(() => {
-
-
-    
-    // TODO: get an endpoint that provides system data with nested planets (just ids are fine for now)
-
-
-
-    // fetch the player data
-    getPlayer(TEST_PLAYER_ID)
-      .then(playerData => {
-        setPlayer(playerData)
-
-        if (!playerData.target_location_id) return
-        getLocation(playerData.target_location_id)
-          .then(setPlayerTargetLocation)
-          .catch(console.error)
-      })
-      .catch(console.error)
+    getPlayer(TEST_PLAYER_ID).then(setPlayer).catch(console.error)
   }, [])
 
-  // do stuff with the api data
+  // do stuff with the player data
   useEffect(() => {
-    if (!player || !playerTargetLocation) return
+    if (!player) return
 
-    // TODO: check stuff out here
-    console.log({ player, playerTargetLocation })
-  }, [player, playerTargetLocation])
+    // TODO: fetch the player's current location system, then fetch that system's planets
+    // use that data to build the solar system object & set it in state
+    console.log({ player })
+  }, [player])
 
   const handleSunClick = () => setSelectedPlanet(sunData)
   const handlePlanetClick = (planet: DataObject) => setSelectedPlanet(planet)
@@ -194,12 +174,6 @@ const PlayerDashboard = () => {
             padding: '10px',
           }}>
           <h2>{selectedPlanet.name.toUpperCase()}</h2>
-          <p>
-            <strong>description:</strong> {selectedPlanet.description}
-          </p>
-          <p>
-            <strong>radius:</strong> {selectedPlanet.radius} km
-          </p>
           {selectedPlanet.name !== 'Sun' && (
             <p>
               <strong>distance from star:</strong>{' '}
