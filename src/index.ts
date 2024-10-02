@@ -17,12 +17,14 @@ import {
 import {
   getAllLocations,
   getAllShips,
+  getAllSystems,
   getBeltByLocation,
   getLocation,
   getMoonByLocation,
   getPlanetByLocation,
   getShip,
   getStationByLocation,
+  getSystem,
 } from './lib/universe'
 import { createGameShips, createSolarSystem } from './utils'
 
@@ -84,40 +86,6 @@ const main = async () => {
   // --- universe admin routes ------------------------------------------------
 
   /**
-   * Get the solar system data.
-   * @route GET /api/solar-system
-   * @returns {Object} Response with the solar system data or an error message.
-   */
-  app.get('/api/solar-system', async (_req, res) => {
-    try {
-      if (!solarSystem) {
-        return res.status(404).json({ error: 'no solar system found' })
-      }
-
-      res.json(solarSystem)
-    } catch (error) {
-      res.status(500).json({ error: error.message })
-    }
-  })
-
-  /**
-   * Get the game ships data.
-   * @route GET /api/game-ships
-   * @returns {Object} Response with the game ships data or an error message.
-   */
-  app.get('/api/game-ships', async (_req, res) => {
-    try {
-      if (!gameShips) {
-        return res.status(404).json({ error: 'no game ships found' })
-      }
-
-      res.json(gameShips)
-    } catch (error) {
-      res.status(500).json({ error: error.message })
-    }
-  })
-
-  /**
    * Get all locations in the game.
    * @route GET /api/locations
    * @returns {Object} Response with the locations data or an error message.
@@ -160,6 +128,53 @@ const main = async () => {
       return res.status(200).json(location)
     } catch (error) {
       console.error(`error fetching location ${req.params.id}:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get all star systems in the game.
+   * @route GET /api/systems
+   * @returns {Object} Response with the star systems data or an error message.
+   */
+  app.get('/api/systems', async (_req, res) => {
+    try {
+      const systems = await getAllSystems()
+
+      if (!systems) {
+        return res.status(404).json({ error: 'star systems not found' })
+      }
+
+      return res.status(200).json(systems)
+    } catch (error) {
+      console.error(`error fetching star systems:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get data for a star system by its ID.
+   * @route GET /api/systems/:id
+   * @param {number} id - The star system ID.
+   * @returns {Object} Response with the star system data or an error message.
+   */
+  app.get('/api/systems/:id', async (req, res) => {
+    try {
+      const systemId = parseInt(req.params.id, 10)
+
+      if (isNaN(systemId) || systemId < 1) {
+        return res.status(400).json({ error: 'invalid system id' })
+      }
+
+      const system = await getSystem(systemId)
+
+      if (!system) {
+        return res.status(404).json({ error: 'system not found' })
+      }
+
+      return res.status(200).json(system)
+    } catch (error) {
+      console.error(`error fetching system ${req.params.id}:`, error)
       return res.status(500).json({ error: 'internal server error' })
     }
   })

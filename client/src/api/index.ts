@@ -6,6 +6,8 @@ const request = async (url: string, method?: string) => {
       method: method ?? 'GET',
       headers: { 'Content-Type': 'application/json' },
     })
+
+    if (!res.ok) throw new Error('network response was not ok')
     const data = await res.json()
     return data
   } catch (error) {
@@ -29,12 +31,6 @@ export const dbDown = async () => {
 
 // --- universe admin -------------------------------------------------------
 
-export const getSolarSystem = async () => {
-  const data = await request(`${API_URL}/api/solar-system`)
-  console.log(data)
-  return data as Record<string, any>
-}
-
 export const getAllLocations = async () => {
   const data = await request(`${API_URL}/api/locations`)
   console.log(data)
@@ -45,6 +41,18 @@ export const getLocation = async (locationId: number) => {
   const data = await request(`${API_URL}/api/locations/${locationId}`)
   console.log(data)
   return data
+}
+
+export const getAllSystems = async () => {
+  const data = await request(`${API_URL}/api/systems`)
+  console.log(data)
+  return data
+}
+
+export const getSystem = async (systemId: number) => {
+  const data = await request(`${API_URL}/api/systems/${systemId}`)
+  console.log(data)
+  return data as Record<string, any>
 }
 
 export const getPlanetByLocation = async (locationId: number) => {

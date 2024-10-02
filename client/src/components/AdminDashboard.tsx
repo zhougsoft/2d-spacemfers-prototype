@@ -7,7 +7,7 @@ import {
   getPlayer,
   getPlayerLocation,
   getPlayers,
-  getSolarSystem,
+  getSystem,
   initiatePlayerTravel,
   setPlayerLocation,
   setActivePlayerShip,
@@ -19,6 +19,7 @@ import {
   getBeltByLocation,
   getAllShips,
   getShip,
+  getAllSystems,
 } from '../api'
 import { LineDivider } from './Shared'
 
@@ -60,8 +61,6 @@ const AdminDashboard = () => {
   const onDbDown = () => dbDown()
 
   // --- universe admin -------------------------------------------------------
-  const onGetSolarSystem = () => getSolarSystem()
-
   const onGetAllLocations = () => getAllLocations()
 
   const refGetLocation_LocationId = useRef<HTMLInputElement>(null)
@@ -73,6 +72,19 @@ const AdminDashboard = () => {
     }
 
     getLocation(parseInt(id))
+  }
+
+  const onGetAllSystems = () => getAllSystems()
+
+  const refGetSystem_SystemId = useRef<HTMLInputElement>(null)
+  const onGetSystem = async () => {
+    const id = refGetSystem_SystemId.current?.value
+    if (!id) {
+      alert('system_id is required')
+      return
+    }
+
+    getSystem(parseInt(id))
   }
 
   const refGetPlanet_LocationId = useRef<HTMLInputElement>(null)
@@ -230,9 +242,6 @@ const AdminDashboard = () => {
       </Section>
       <h2>universe admin</h2>
       <Section>
-        <button onClick={onGetSolarSystem}>get solar system</button>
-      </Section>
-      <Section>
         <button onClick={onGetAllLocations}>get all locations</button>
       </Section>
       <Section>
@@ -242,6 +251,14 @@ const AdminDashboard = () => {
           ref={refGetLocation_LocationId}
           placeholder="location_id"
         />
+      </Section>
+      <Section>
+        <button onClick={onGetAllSystems}>get all systems</button>
+      </Section>
+      <Section>
+        <button onClick={onGetSystem}>get system</button>
+        <LineDivider />
+        <NumberInput ref={refGetSystem_SystemId} placeholder="system_id" />
       </Section>
       <Section>
         <button onClick={onGetPlanet}>get planet</button>

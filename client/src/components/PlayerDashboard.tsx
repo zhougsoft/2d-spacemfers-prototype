@@ -89,8 +89,26 @@ const PlayerDashboard = () => {
 
   // fetch api data on component mount
   useEffect(() => {
-    // fetch the game universe data
+
+
+
+
+
+
+
+
+    // !!! TODO: this is broken since we were using that shitty in-memory endpoint
+    // make a real endpoint that pulls current data from the db
+    // getSystem or something; does hella joins and builds the system tree object
     getSolarSystem().then(setSolarSystem).catch(console.error)
+
+
+
+
+
+
+
+
 
     // fetch the player data
     getPlayer(TEST_PLAYER_ID)
