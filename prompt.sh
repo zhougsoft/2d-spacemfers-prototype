@@ -27,7 +27,7 @@ create_planet=$(generateCodeBlock "src/sql/planets/create-planet.sql")
 create_station=$(generateCodeBlock "src/sql/stations/create-station.sql")
 
 # game item admin
-create_ship=$(generateCodeBlock "src/sql/ships/create-ship.sql")
+create_ship=$(generateCodeBlock "src/sql/ships/create-ship-type.sql")
 
 # player admin
 create_player=$(generateCodeBlock "src/sql/players/create-player.sql")
@@ -36,10 +36,10 @@ delete_player=$(generateCodeBlock "src/sql/players/delete-player.sql")
 # player state
 get_location=$(generateCodeBlock "src/sql/player-state/get-player-location.sql")
 set_location=$(generateCodeBlock "src/sql/player-state/set-player-location.sql")
-add_owned_ship=$(generateCodeBlock "src/sql/player-state/add-player-owned-ship.sql")
-remove_owned_ship=$(generateCodeBlock "src/sql/player-state/remove-player-owned-ship.sql")
-get_active_ship=$(generateCodeBlock "src/sql/player-state/get-player-active-ship.sql")
-set_active_ship=$(generateCodeBlock "src/sql/player-state/set-player-active-ship.sql")
+add_owned_ship=$(generateCodeBlock "src/sql/player-state/add-player-ship.sql")
+remove_owned_ship=$(generateCodeBlock "src/sql/player-state/remove-player-ship.sql")
+get_active_ship=$(generateCodeBlock "src/sql/player-state/get-active-player-ship.sql")
+set_active_ship=$(generateCodeBlock "src/sql/player-state/set-active-player-ship.sql")
 initiate_player_travel=$(generateCodeBlock "src/sql/player-state/initiate-player-travel.sql")
 
 echo -e "You are a world-class Postgres engineer, SQL wizard and senior relational database systems expert. \

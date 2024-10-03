@@ -2,7 +2,7 @@ import {
   createBelt,
   createMoon,
   createPlanet,
-  createShip,
+  createShipType,
   createStation,
   createSystem,
 } from './lib/universe'
@@ -61,19 +61,19 @@ export const createSolarSystem = async () => {
 }
 
 export const createGameShips = async () => {
-  const shuttleId = await createShip('shuttle', 500, 5000, 10)
+  const shuttleId = await createShipType('shuttle', 500, 5000, 10)
   if (!shuttleId) throw Error('error creating shuttle')
 
-  const corvetteId = await createShip('corvette', 300, 15000, 125)
+  const corvetteId = await createShipType('corvette', 300, 15000, 125)
   if (!corvetteId) throw Error('error creating corvette')
 
-  const frigateId = await createShip('frigate', 400, 20000, 150)
+  const frigateId = await createShipType('frigate', 400, 20000, 150)
   if (!frigateId) throw Error('error creating frigate')
 
-  const cruiserId = await createShip('cruiser', 200, 100000, 500)
+  const cruiserId = await createShipType('cruiser', 200, 100000, 500)
   if (!cruiserId) throw Error('error creating cruiser')
 
-  const haulerId = await createShip('hauler', 100, 200000, 4000)
+  const haulerId = await createShipType('hauler', 100, 200000, 4000)
   if (!haulerId) throw Error('error creating hauler')
 
   return true

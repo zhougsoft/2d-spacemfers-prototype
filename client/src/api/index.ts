@@ -85,13 +85,13 @@ export const getBeltByLocation = async (locationId: number) => {
   return data
 }
 
-export const getAllShips = async () => {
+export const getAllShipTypes = async () => {
   const data = await request(`${API_URL}/api/ships`)
   console.log(data)
   return data
 }
 
-export const getShip = async (shipId: number) => {
+export const getShipType = async (shipId: number) => {
   const data = await request(`${API_URL}/api/ships/${shipId}`)
   console.log(data)
   return data
@@ -138,18 +138,35 @@ export const setPlayerLocation = async (
 
 export const addPlayerShip = async (
   playerId: number,
-  shipId: number,
+  shipTypeId: number,
   stationId: number
 ) => {
-  const url = `${API_URL}/api/player-state/add-ship/${playerId}/${shipId}/${stationId}`
+  const url = `${API_URL}/api/player-state/add-ship/${playerId}/${shipTypeId}/${stationId}`
   const data = await request(url, 'POST')
   console.log(data)
   return data
 }
 
-export const setActivePlayerShip = async (playerId: number, shipId: number) => {
-  const url = `${API_URL}/api/player-state/set-active-ship/${playerId}/${shipId}`
+export const getPlayerShips = async (playerId: number) => {
+  const url = `${API_URL}/api/player-state/get-ships/${playerId}`
+  const data = await request(url)
+  console.log(data)
+  return data
+}
+
+export const setActivePlayerShip = async (
+  playerId: number,
+  playerShipId: number
+) => {
+  const url = `${API_URL}/api/player-state/set-active-ship/${playerId}/${playerShipId}`
   const data = await request(url, 'POST')
+  console.log(data)
+  return data
+}
+
+export const getActivePlayerShip = async (playerId: number) => {
+  const url = `${API_URL}/api/player-state/get-active-ship/${playerId}`
+  const data = await request(url)
   console.log(data)
   return data
 }

@@ -17,10 +17,12 @@ import {
   getStationByLocation,
   getMoonByLocation,
   getBeltByLocation,
-  getAllShips,
-  getShip,
+  getAllShipTypes,
+  getShipType,
   getAllSystems,
   getPlanetsBySystem,
+  getActivePlayerShip,
+  getPlayerShips,
 } from '../api'
 import { LineDivider } from './Shared'
 
@@ -143,17 +145,17 @@ const AdminDashboard = () => {
     getBeltByLocation(parseInt(id))
   }
 
-  const onGetAllShips = () => getAllShips()
+  const onGetAllShipTypes = () => getAllShipTypes()
 
-  const refGetShip_ShipId = useRef<HTMLInputElement>(null)
-  const onGetShip = async () => {
-    const id = refGetShip_ShipId.current?.value
+  const refgetShipType_ShipId = useRef<HTMLInputElement>(null)
+  const onGetShipType = async () => {
+    const id = refgetShipType_ShipId.current?.value
     if (!id) {
       alert('ship_id is required')
       return
     }
 
-    getShip(parseInt(id))
+    getShipType(parseInt(id))
   }
 
   // --- player admin ---------------------------------------------------------
@@ -197,31 +199,53 @@ const AdminDashboard = () => {
   }
 
   const refAddPlayerShip_PlayerId = useRef<HTMLInputElement>(null)
-  const refAddPlayerShip_ShipId = useRef<HTMLInputElement>(null)
+  const refAddPlayerShip_ShipTypeId = useRef<HTMLInputElement>(null)
   const refAddPlayerShip_StationId = useRef<HTMLInputElement>(null)
   const onAddPlayerShip = async () => {
     const playerId = refAddPlayerShip_PlayerId.current?.value
-    const shipId = refAddPlayerShip_ShipId.current?.value
+    const shipTypeId = refAddPlayerShip_ShipTypeId.current?.value
     const stationId = refAddPlayerShip_StationId.current?.value
-    if (!playerId || !shipId || !stationId) {
-      alert('player_id, ship_id, and station_id are required')
+    if (!playerId || !shipTypeId || !stationId) {
+      alert('player_id, ship_type_id, and station_id are required')
       return
     }
 
-    addPlayerShip(parseInt(playerId), parseInt(shipId), parseInt(stationId))
+    addPlayerShip(parseInt(playerId), parseInt(shipTypeId), parseInt(stationId))
+  }
+
+  const refGetPlayerShips_PlayerId = useRef<HTMLInputElement>(null)
+  const onGetPlayerShips = () => {
+    const playerId = refGetPlayerShips_PlayerId.current?.value
+    if (!playerId) {
+      alert('player_id is required')
+      return
+    }
+
+    getPlayerShips(parseInt(playerId))
   }
 
   const refSetActivePlayerShip_PlayerId = useRef<HTMLInputElement>(null)
-  const refSetActivePlayerShip_ShipId = useRef<HTMLInputElement>(null)
+  const refSetActivePlayerShip_PlayerShipId = useRef<HTMLInputElement>(null)
   const onSetActivePlayerShip = async () => {
     const playerId = refSetActivePlayerShip_PlayerId.current?.value
-    const shipId = refSetActivePlayerShip_ShipId.current?.value
-    if (!playerId || !shipId) {
-      alert('player_id and ship_id are required')
+    const playerShipId = refSetActivePlayerShip_PlayerShipId.current?.value
+    if (!playerId || !playerShipId) {
+      alert('player_id and player_ship_id are required')
       return
     }
 
-    setActivePlayerShip(parseInt(playerId), parseInt(shipId))
+    setActivePlayerShip(parseInt(playerId), parseInt(playerShipId))
+  }
+
+  const refGetActivePlayerShip_PlayerId = useRef<HTMLInputElement>(null)
+  const onGetActivePlayerShip = async () => {
+    const playerId = refGetActivePlayerShip_PlayerId.current?.value
+    if (!playerId) {
+      alert('player_id is required')
+      return
+    }
+
+    getActivePlayerShip(parseInt(playerId))
   }
 
   const refInitiatePlayerTravel_PlayerId = useRef<HTMLInputElement>(null)
@@ -304,12 +328,12 @@ const AdminDashboard = () => {
         <NumberInput ref={refGetBelt_LocationId} placeholder="location_id" />
       </Section>
       <Section>
-        <button onClick={onGetAllShips}>get all ships</button>
+        <button onClick={onGetAllShipTypes}>get all ship types</button>
       </Section>
       <Section>
-        <button onClick={onGetShip}>get ship</button>
+        <button onClick={onGetShipType}>get ship type</button>
         <LineDivider />
-        <NumberInput ref={refGetShip_ShipId} placeholder="ship_id" />
+        <NumberInput ref={refgetShipType_ShipId} placeholder="ship_id" />
       </Section>
       <h2>player admin</h2>
       <Section>
@@ -351,8 +375,8 @@ const AdminDashboard = () => {
         <NumberInput ref={refAddPlayerShip_PlayerId} placeholder="player_id" />
         <LineDivider />
         <NumberInput
-          ref={refAddPlayerShip_ShipId}
-          placeholder="ship_id"
+          ref={refAddPlayerShip_ShipTypeId}
+          placeholder="ship_type_id"
           min="0"
         />
         <LineDivider />
@@ -360,6 +384,11 @@ const AdminDashboard = () => {
           ref={refAddPlayerShip_StationId}
           placeholder="station_id"
         />
+      </Section>
+      <Section>
+        <button onClick={onGetPlayerShips}>get player ships</button>
+        <LineDivider />
+        <NumberInput ref={refGetPlayerShips_PlayerId} placeholder="player_id" />
       </Section>
       <Section>
         <button onClick={onSetActivePlayerShip}>set active player ship</button>
@@ -370,8 +399,16 @@ const AdminDashboard = () => {
         />
         <LineDivider />
         <NumberInput
-          ref={refSetActivePlayerShip_ShipId}
-          placeholder="ship_id"
+          ref={refSetActivePlayerShip_PlayerShipId}
+          placeholder="player_ship_id"
+        />
+      </Section>
+      <Section>
+        <button onClick={onGetActivePlayerShip}>get active player ship</button>
+        <LineDivider />
+        <NumberInput
+          ref={refGetActivePlayerShip_PlayerId}
+          placeholder="player_id"
         />
       </Section>
       <Section>

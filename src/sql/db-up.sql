@@ -51,8 +51,8 @@ CREATE TABLE belts (
     name VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE ships (
-    ship_id SERIAL PRIMARY KEY,
+CREATE TABLE ship_types (
+    ship_type_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     speed INTEGER NOT NULL,
     size INTEGER NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE player_location (
 CREATE TABLE player_ships (
     player_ship_id SERIAL PRIMARY KEY,
     player_id INTEGER REFERENCES players(player_id) NOT NULL,
-    ship_id INTEGER REFERENCES ships(ship_id) NOT NULL,
+    ship_type_id INTEGER REFERENCES ship_types(ship_type_id) NOT NULL,
     station_id INTEGER REFERENCES stations(station_id)
 );
 

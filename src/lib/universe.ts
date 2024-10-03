@@ -214,7 +214,7 @@ export const getBeltByLocation = async (locationId: number) => {
   return beltResult[0]
 }
 
-export const createShip = async (
+export const createShipType = async (
   name: string,
   speed: number,
   size: number,
@@ -225,29 +225,29 @@ export const createShip = async (
   if (typeof size !== 'number') throw Error('invalid ship size')
   if (typeof maxCargoSize !== 'number') throw Error('invalid max cargo size')
 
-  const shipResult = await runQuery('ships/create-ship.sql', [
+  const shipTypeResult = await runQuery('ships/create-ship-type.sql', [
     name,
     speed,
     size,
     maxCargoSize,
   ])
 
-  if (!shipResult) return null
-  return shipResult[0]
+  if (!shipTypeResult) return null
+  return shipTypeResult[0]
 }
 
-export const getAllShips = async () => {
-  const shipsResult = await runQuery('ships/get-all-ships.sql')
+export const getAllShipTypes = async () => {
+  const shipTypesResult = await runQuery('ships/get-all-ship-types.sql')
 
-  if (!shipsResult) return null
-  return shipsResult
+  if (!shipTypesResult) return null
+  return shipTypesResult
 }
 
-export const getShip = async (shipId: number) => {
-  if (typeof shipId !== 'number') throw Error('invalid ship id')
+export const getShipType = async (shipTypeId: number) => {
+  if (typeof shipTypeId !== 'number') throw Error('invalid ship id')
 
-  const shipResult = await runQuery('ships/get-ship.sql', [shipId])
+  const shipTypeResult = await runQuery('ships/get-ship-type.sql', [shipTypeId])
 
-  if (!shipResult) return null
-  return shipResult[0]
+  if (!shipTypeResult) return null
+  return shipTypeResult[0]
 }

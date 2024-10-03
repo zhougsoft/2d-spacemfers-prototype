@@ -69,10 +69,10 @@ asteroid belts that orbit planets where player actions can be taken
 - location_id (fk locations)
 - name
 
-#### ships
-represents the different space ships in the game
+#### ship_types
+represents the different types of space ships in the game
 
-- ship_id (pk)
+- ship_type_id (pk)
 - name
 - speed
 - size

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getPlayer } from '../api'
+import { getActivePlayerShip, getLocation, getPlayer } from '../api'
 
 type DataObject = Record<string, any> // generic type to hold TBD data from api
 
@@ -26,22 +26,20 @@ const PlayerDashboard = () => {
     if (!player) return
 
     if (player.target_location_id) {
-      // TODO: fetch the player's target location data
-      // consider arrival_time logic (if player is en route or already arrived)
-      setPlayerLocation({ msg: 'player has a target location' })
+      getLocation(player.target_location_id)
+        .then(setPlayerLocation)
+        .catch(console.error)
     } else {
       setPlayerLocation(null)
     }
 
     if (player.active_ship_id) {
-      // TODO: fetch the player's ship data
-      setPlayerShip({ msg: 'player has an active ship' })
+      getActivePlayerShip(player.player_id)
+        .then(setPlayerShip)
+        .catch(console.error)
     } else {
       setPlayerShip(null)
     }
-
-    // TODO: fetch the player's current location & active ship data
-    console.log({ player })
   }, [player])
 
   if (isLoading) return <div>...</div>
@@ -61,23 +59,24 @@ const PlayerDashboard = () => {
             backgroundColor: '#f4f4f4',
             maxWidth: '400px',
           }}>
-          <h3>player</h3>
-          <span>id:&nbsp;</span>
-          <span>{player.player_id}</span>
+          <h3>player:</h3>
+          <pre>{JSON.stringify(player, null, 2)}</pre>
           <br />
           <br />
           <br />
-          <span>location:</span>
+          <h3>player location:</h3>
           <pre>
             {playerLocation
-              ? JSON.stringify(playerLocation)
+              ? JSON.stringify(playerLocation, null, 2)
               : 'no location set'}
           </pre>
           <br />
           <br />
-          <span>active ship:</span>
+          <h3>player active ship:</h3>
           <pre>
-            {playerShip ? JSON.stringify(playerShip) : 'no active ship'}
+            {playerShip
+              ? JSON.stringify(playerShip, null, 2)
+              : 'no active ship'}
           </pre>
         </div>
       ) : (

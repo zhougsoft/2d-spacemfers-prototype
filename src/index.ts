@@ -3,9 +3,11 @@ import express from 'express'
 import { client, runQuery } from './db'
 import {
   addPlayerShip,
+  getActivePlayerShip,
   getPlayerLocation,
+  getPlayerShips,
   initiatePlayerTravel,
-  setPlayerActiveShip,
+  setActivePlayerShip,
   setPlayerLocation,
 } from './lib/player-state'
 import {
@@ -16,7 +18,7 @@ import {
 } from './lib/players'
 import {
   getAllLocations,
-  getAllShips,
+  getAllShipTypes,
   getAllSystems,
   getBeltByLocation,
   getLocation,
@@ -24,7 +26,7 @@ import {
   getPlanet,
   getPlanetByLocation,
   getPlanetsBySystem,
-  getShip,
+  getShipType,
   getStationByLocation,
   getSystem,
 } from './lib/universe'
@@ -357,7 +359,7 @@ const main = async () => {
    */
   app.get('/api/ships', async (_req, res) => {
     try {
-      const ships = await getAllShips()
+      const ships = await getAllShipTypes()
 
       if (!ships) {
         return res.status(404).json({ error: 'ships not found' })
@@ -384,7 +386,7 @@ const main = async () => {
         return res.status(400).json({ error: 'invalid ship id' })
       }
 
-      const ship = await getShip(shipId)
+      const ship = await getShipType(shipId)
 
       if (!ship) {
         return res.status(404).json({ error: 'ship not found' })
@@ -560,25 +562,25 @@ const main = async () => {
 
   /**
    * Add a ship to the player's ship inventory.
-   * @route POST /api/player-state/add-ship/:playerId/:shipId
+   * @route POST /api/player-state/add-ship/:playerId/:shipTypeId
    * @param {number} playerId - The ID of the player.
-   * @param {number} shipId - The ID of the ship to add.
+   * @param {number} shipTypeId - The ID of the ship to add.
    * @param {number} stationId - ID of the station where the ship is docked.
    * @returns {Object} Response with the added player ship ID or an error message.
    */
   app.post(
-    '/api/player-state/add-ship/:playerId/:shipId/:stationId',
+    '/api/player-state/add-ship/:playerId/:shipTypeId/:stationId',
     async (req, res) => {
       try {
         const playerId = parseInt(req.params.playerId, 10)
-        const shipId = parseInt(req.params.shipId, 10)
+        const shipTypeId = parseInt(req.params.shipTypeId, 10)
         const stationId = parseInt(req.params.stationId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
           return res.status(400).json({ error: 'invalid player id' })
         }
 
-        if (isNaN(shipId) || shipId < 1) {
+        if (isNaN(shipTypeId) || shipTypeId < 1) {
           return res.status(400).json({ error: 'invalid ship id' })
         }
 
@@ -588,7 +590,7 @@ const main = async () => {
 
         const playerShipResult = await addPlayerShip(
           playerId,
-          shipId,
+          shipTypeId,
           stationId
         )
 
@@ -598,7 +600,7 @@ const main = async () => {
 
         return res.status(200).json(playerShipResult)
       } catch (error) {
-        const errorMsg = `error adding ship id ${req.params.shipId} to player id ${req.params.playerId}:`
+        const errorMsg = `error adding ship type id ${req.params.shipTypeId} to player id ${req.params.playerId}:`
         console.error(errorMsg, error)
         return res.status(500).json({ error: 'internal server error' })
       }
@@ -606,31 +608,61 @@ const main = async () => {
   )
 
   /**
+   * Get the ships owned by a player by their ID.
+   * @route GET /api/player-state/get-ships/:playerId
+   * @param {number} playerId - The ID of the player whose owned ships are being fetched.
+   * @returns {Object} Response with the player's owned ships or an error message.
+   */
+  app.get('/api/player-state/get-ships/:playerId', async (req, res) => {
+    try {
+      const playerId = parseInt(req.params.playerId, 10)
+
+      if (isNaN(playerId) || playerId < 1) {
+        return res.status(400).json({ error: 'invalid player id' })
+      }
+
+      const playerShips = await getPlayerShips(playerId)
+
+      if (!playerShips) {
+        return res.status(404).json({ error: 'no player ships found' })
+      }
+
+      return res.status(200).json(playerShips)
+    } catch (error) {
+      console.error(
+        `error fetching ships for player ${req.params.playerId}:`,
+        error
+      )
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
    * Set the active ship for a player by their ID.
    * If ship ID 0 is passed, it will unset the active ship.
    * @route POST /api/player-state/set-active-ship/:playerId/:shipId
    * @param {number} playerId - The ID of the player whose active ship is being updated.
-   * @param {number} shipId - The ID of the ship to set as active. Use 0 to unset the active ship.
+   * @param {number} playerShipId - The ID of the player ship to set as active. Use 0 to unset the active ship.
    * @returns {Object} Response with the result of setting the active ship or an error message.
    */
   app.post(
-    '/api/player-state/set-active-ship/:playerId/:shipId',
+    '/api/player-state/set-active-ship/:playerId/:playerShipId',
     async (req, res) => {
       try {
         const playerId = parseInt(req.params.playerId, 10)
-        const shipId = parseInt(req.params.shipId, 10)
+        const playerShipId = parseInt(req.params.playerShipId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
           return res.status(400).json({ error: 'invalid player id' })
         }
 
-        if (isNaN(shipId) || shipId < 0) {
+        if (isNaN(playerShipId) || playerShipId < 0) {
           return res.status(400).json({ error: 'invalid active ship id' })
         }
 
-        const activeShipId = shipId === 0 ? null : shipId
+        const activeShipId = playerShipId === 0 ? null : playerShipId
 
-        const playerActiveShipResult = await setPlayerActiveShip(
+        const playerActiveShipResult = await setActivePlayerShip(
           playerId,
           activeShipId
         )
@@ -643,12 +675,39 @@ const main = async () => {
 
         return res.status(200).json(playerActiveShipResult)
       } catch (error) {
-        const errorMsg = `error setting ship id ${req.params.shipId} as player id ${req.params.playerId} active ship:`
+        const errorMsg = `error setting player ship id ${req.params.playerShipId} as active ship for player id ${req.params.playerId}:`
         console.error(errorMsg, error)
         return res.status(500).json({ error: 'internal server error' })
       }
     }
   )
+
+  /**
+   * Get the active ship of a player by their ID.
+   * @route GET /api/player-state/get-active-ship/:playerId
+   * @param {number} playerId - The ID of the player whose active ship is being fetched.
+   * @returns {Object} Response with the player's active ship or an error message.
+   */
+  app.get('/api/player-state/get-active-ship/:playerId', async (req, res) => {
+    try {
+      const playerId = parseInt(req.params.playerId, 10)
+
+      if (isNaN(playerId) || playerId < 1) {
+        return res.status(400).json({ error: 'invalid player id' })
+      }
+
+      const activePlayerShip = await getActivePlayerShip(playerId)
+
+      if (!activePlayerShip) {
+        return res.status(404).json({ error: 'no player active ship found' })
+      }
+
+      return res.status(200).json(activePlayerShip)
+    } catch (error) {
+      console.error(`error fetching player ${req.params.playerId}:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
 
   /**
    * Initiate travel for a player to a new location.
