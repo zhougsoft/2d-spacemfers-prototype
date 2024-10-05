@@ -1,29 +1,5 @@
 import { createShipType } from './lib/universe'
 
-// the moon (moon - earth)
-// 0.002570
-
-// ganyemede (moon - jupiter)
-// 0.007155
-
-// titan (moon - saturn)
-// 0.008168
-
-// io (moon - jupiter)
-// 0.002819
-
-// asteroid belt (belt - sun)
-// 2.697231
-
-// ceres (planet - sun)
-// 2.765414
-
-// pluto (planet - sun)
-// 39.439064
-
-// kuiper belt (belt - sun)
-// 42.0
-
 const CELESTIAL_TYPE = {
   STAR: 1,
   PLANET: 2,
@@ -52,6 +28,13 @@ const systemData = {
         celestial_type_id: CELESTIAL_TYPE.PLANET,
         name: 'earth',
         distance_from_parent: 1.0,
+        moons: [
+          {
+            celestial_type_id: CELESTIAL_TYPE.MOON,
+            name: 'the moon',
+            distance_from_parent: 0.00257,
+          },
+        ],
       },
       {
         celestial_type_id: CELESTIAL_TYPE.PLANET,
@@ -59,14 +42,43 @@ const systemData = {
         distance_from_parent: 1.523685,
       },
       {
+        celestial_type_id: CELESTIAL_TYPE.BELT,
+        name: 'asteroid belt',
+        distance_from_parent: 2.697231,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'ceres',
+        distance_from_parent: 2.765414,
+      },
+      {
         celestial_type_id: CELESTIAL_TYPE.PLANET,
         name: 'jupiter',
         distance_from_parent: 5.202815,
+        moons: [
+          {
+            celestial_type_id: CELESTIAL_TYPE.MOON,
+            name: 'io',
+            distance_from_parent: 0.002819,
+          },
+          {
+            celestial_type_id: CELESTIAL_TYPE.MOON,
+            name: 'ganyemede',
+            distance_from_parent: 0.007155,
+          },
+        ],
       },
       {
         celestial_type_id: CELESTIAL_TYPE.PLANET,
         name: 'saturn',
         distance_from_parent: 9.554949,
+        moons: [
+          {
+            celestial_type_id: CELESTIAL_TYPE.MOON,
+            name: 'titan',
+            distance_from_parent: 0.008168,
+          },
+        ],
       },
       {
         celestial_type_id: CELESTIAL_TYPE.PLANET,
@@ -77,6 +89,16 @@ const systemData = {
         celestial_type_id: CELESTIAL_TYPE.PLANET,
         name: 'neptune',
         distance_from_parent: 30.109386,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'pluto',
+        distance_from_parent: 39.439064,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.BELT,
+        name: 'kuiper belt',
+        distance_from_parent: 42.0,
       },
     ],
   },
