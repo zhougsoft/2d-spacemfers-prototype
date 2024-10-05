@@ -17,27 +17,48 @@ CREATE TABLE celestials (
     parent_celestial_id INTEGER REFERENCES celestials(celestial_id),
     distance_from_parent FLOAT NOT NULL, -- in AU (astronomical units); 1 AU = 149,597,870.7 km
     name VARCHAR(255) NOT NULL,
-    UNIQUE (celestial_id, parent_celestial_id)
+    UNIQUE (celestial_id, parent_celestial_id),
+    CHECK (
+        -- celestials WITH a parent must have a distance greater than 0 from parent
+        (parent_celestial_id IS NOT NULL AND distance_from_parent > 0) OR
+        -- celestials WITHOUT a parent must have a distance of 0 from parent
+        (parent_celestial_id IS NULL AND distance_from_parent = 0)
+    )
 );
 
 CREATE TABLE star_info (
     star_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    CHECK (
+        star_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 1)
+    )
 )
 
 CREATE TABLE planet_info (
     planet_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    CHECK (
+        planet_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 2)
+    )
 )
 
 CREATE TABLE station_info (
     station_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    CHECK (
+        station_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 3)
+    )
 )
 
 CREATE TABLE moon_info (
     moon_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    CHECK (
+        moon_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 4)
+    )
 )
 
 CREATE TABLE belt_info (
     belt_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    CHECK (
+        belt_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 5)
+    )
 )
 
 CREATE TABLE ship_types (
@@ -69,9 +90,10 @@ CREATE TABLE player_ships (
     player_id INTEGER REFERENCES players(player_id) NOT NULL,
     ship_type_id INTEGER REFERENCES ship_types(ship_type_id) NOT NULL,
     station_id INTEGER REFERENCES celestials(celestial_id),
-    CONSTRAINT fk_station CHECK (
-        station_id IS NULL OR 
-        station_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 3)  -- ensure it's a station
+    CHECK (
+        -- ensure the station id is either NULL or a station
+        station_id IS NULL OR
+        station_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 3)
     )
 );
 
@@ -93,8 +115,9 @@ CREATE TABLE player_station_inventory (
     item_id INTEGER REFERENCES items(item_id),
     amount INTEGER NOT NULL,
     PRIMARY KEY (player_id, station_id, item_id),
-    CONSTRAINT fk_station CHECK (
-        station_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 3)  -- ensure it's a station
+    CHECK (
+        -- ensure the station id is a station
+        station_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 3)
     )
 );
 

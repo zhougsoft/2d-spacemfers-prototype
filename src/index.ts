@@ -240,30 +240,30 @@ const main = async () => {
   })
 
   /**
-   * Set the location of a player by their ID.
-   * @route POST /api/player-state/set-location/:playerId/:locationId
+   * Set the celestial location of a player by their ID.
+   * @route POST /api/player-state/set-location/:playerId/:celestialId
    * @param {number} playerId - The ID of the player whose location is being updated.
-   * @param {number} locationId - The ID of the new location to set for the player.
+   * @param {number} celestialId - The celestial ID of the new location to set for the player.
    * @returns {Object} Response with the result of setting the player's location or an error message.
    */
   app.post(
-    '/api/player-state/set-location/:playerId/:locationId',
+    '/api/player-state/set-location/:playerId/:celestialId',
     async (req, res) => {
       try {
         const playerId = parseInt(req.params.playerId, 10)
-        const locationId = parseInt(req.params.locationId, 10)
+        const celestialId = parseInt(req.params.celestialId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
           return res.status(400).json({ error: 'invalid player id' })
         }
 
-        if (isNaN(locationId) || locationId < 1) {
-          return res.status(400).json({ error: 'invalid location id' })
+        if (isNaN(celestialId) || celestialId < 1) {
+          return res.status(400).json({ error: 'invalid celestial id' })
         }
 
         const playerLocationResult = await setPlayerLocation(
           playerId,
-          locationId
+          celestialId
         )
 
         if (!playerLocationResult) {
@@ -274,7 +274,7 @@ const main = async () => {
 
         return res.status(200).json(playerLocationResult)
       } catch (error) {
-        const errorMsg = `error setting player id ${req.params.playerId} to location id ${req.params.locationId}:`
+        const errorMsg = `error setting player id ${req.params.playerId} to celestial id ${req.params.celestialId}:`
         console.error(errorMsg, error)
         return res.status(500).json({ error: 'internal server error' })
       }
@@ -431,30 +431,30 @@ const main = async () => {
   })
 
   /**
-   * Initiate travel for a player to a new location.
-   * @route POST /api/player-state/initiate-travel/:playerId/:locationId
+   * Initiate travel for a player to a new celestial location.
+   * @route POST /api/player-state/initiate-travel/:playerId/:celestialId
    * @param {number} playerId - The ID of the player initiating travel.
-   * @param {number} locationId - The ID of the destination location.
+   * @param {number} celestialId - The ID of the destination celestial.
    * @returns {Object} Response with the result of the travel initiation or an error message.
    */
   app.post(
-    '/api/player-state/initiate-travel/:playerId/:locationId',
+    '/api/player-state/initiate-travel/:playerId/:celestialId',
     async (req, res) => {
       try {
         const playerId = parseInt(req.params.playerId, 10)
-        const locationId = parseInt(req.params.locationId, 10)
+        const celestialId = parseInt(req.params.celestialId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
           return res.status(400).json({ error: 'invalid player id' })
         }
 
-        if (isNaN(locationId) || locationId < 1) {
-          return res.status(400).json({ error: 'invalid location id' })
+        if (isNaN(celestialId) || celestialId < 1) {
+          return res.status(400).json({ error: 'invalid celestial id' })
         }
 
         const playerTravelResult = await initiatePlayerTravel(
           playerId,
-          locationId
+          celestialId
         )
 
         if (!playerTravelResult) {
@@ -465,7 +465,7 @@ const main = async () => {
 
         return res.status(200).json(playerTravelResult)
       } catch (error) {
-        const errorMsg = `error initiating travel for player id ${req.params.playerId} to location id ${req.params.locationId}:`
+        const errorMsg = `error initiating travel for player id ${req.params.playerId} to celestial id ${req.params.celestialId}:`
         console.error(errorMsg, error)
         return res.status(500).json({ error: 'internal server error' })
       }

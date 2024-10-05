@@ -2,12 +2,12 @@ import { runQuery } from '../db'
 
 export const setPlayerLocation = async (
   playerId: number,
-  locationId: number
+  celestialId: number
 ) => {
   if (typeof playerId !== 'number') throw Error('invalid player id')
-  if (typeof locationId !== 'number') throw Error('invalid location id')
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
 
-  await runQuery('player-state/set-player-location.sql', [playerId, locationId])
+  await runQuery('player-state/set-player-location.sql', [playerId, celestialId])
   return true
 }
 
@@ -82,14 +82,14 @@ export const getActivePlayerShip = async (playerId: number) => {
 
 export const initiatePlayerTravel = async (
   playerId: number,
-  locationId: number
+  celestialId: number
 ) => {
   if (typeof playerId !== 'number') throw Error('invalid player id')
-  if (typeof locationId !== 'number') throw Error('invalid location id')
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
 
   const playerTravelResult = await runQuery(
     'player-state/initiate-player-travel.sql',
-    [playerId, locationId]
+    [playerId, celestialId]
   )
 
   if (!playerTravelResult) return null

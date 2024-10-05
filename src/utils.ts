@@ -1,14 +1,6 @@
-import {
-  createBelt,
-  createMoon,
-  createPlanet,
-  createShipType,
-  createStation,
-  createSystem,
-} from './lib/universe'
+import { createShipType } from './lib/universe'
 
 // TODO: port this over to use celestials abstraction
-
 export const createSolarSystem = async () => {
   const systemResults = await createSystem('sol')
   if (!systemResults) throw Error('error creating system')
