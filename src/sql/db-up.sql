@@ -1,3 +1,47 @@
+-- ----------------------------------------------------------------------- refactor zone
+CREATE TABLE celestial_types (
+    celestial_type_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL
+);
+
+INSERT INTO celestial_types (name) 
+VALUES 
+    ('star'),    -- ID 1
+    ('planet'),  -- ID 2
+    ('station'), -- ID 3
+    ('moon'),    -- ID 4
+    ('belt');    -- ID 5
+
+CREATE TABLE celestials (
+    celestial_id SERIAL PRIMARY KEY,
+    celestial_type_id INTEGER NOT NULL REFERENCES celestial_types(celestial_type_id),
+    parent_celestial_id INTEGER REFERENCES celestials(celestial_id),
+    distance_from_parent FLOAT NOT NULL, -- in AU (astronomical units); 1 AU = 149,597,870.7 km
+    name VARCHAR(255) NOT NULL,
+    UNIQUE (celestial_id, parent_celestial_id)
+);
+
+CREATE TABLE star_info (
+    star_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+)
+
+CREATE TABLE planet_info (
+    planet_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+)
+
+CREATE TABLE station_info (
+    station_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+)
+
+CREATE TABLE moon_info (
+    moon_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+)
+
+CREATE TABLE belt_info (
+    belt_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+)
+
+-- ----------------------------------------------------------------------- end refactor zone
 CREATE TABLE systems (
     system_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
@@ -8,12 +52,11 @@ CREATE TABLE location_types (
     name VARCHAR(50) UNIQUE NOT NULL
 );
 
-INSERT INTO location_types (name) 
-VALUES 
-    ('planet'),  -- ID 1
-    ('station'), -- ID 2
-    ('moon'),    -- ID 3
-    ('belt');    -- ID 4
+INSERT INTO location_types (name)
+VALUES ('planet'), -- ID 1
+    ('station'),   -- ID 2
+    ('moon'),      -- ID 3
+    ('belt');      -- ID 4
 
 CREATE TABLE locations (
     location_id SERIAL PRIMARY KEY,
@@ -65,9 +108,7 @@ CREATE TABLE items (
     size INTEGER NOT NULL
 );
 
-CREATE TABLE players (
-    player_id SERIAL PRIMARY KEY
-);
+CREATE TABLE players (player_id SERIAL PRIMARY KEY);
 
 CREATE TABLE player_location (
     player_id INTEGER PRIMARY KEY REFERENCES players(player_id),
