@@ -7,9 +7,7 @@ import {
   createSystem,
 } from './lib/universe'
 
-
 // TODO: port this over to use celestials abstraction
-
 
 export const createSolarSystem = async () => {
   const systemResults = await createSystem('sol')

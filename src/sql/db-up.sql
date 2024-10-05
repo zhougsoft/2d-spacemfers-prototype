@@ -98,6 +98,9 @@ CREATE TABLE player_station_inventory (
     )
 );
 
+CREATE INDEX idx_celestials_celestial_type_id ON celestials(celestial_type_id);
+CREATE INDEX idx_celestials_parent_celestial_id ON celestials(parent_celestial_id);
+CREATE INDEX idx_celestials_type_and_parent ON celestials(celestial_type_id, parent_celestial_id);
 CREATE INDEX idx_player_ships_player_id ON player_ships(player_id);
 CREATE INDEX idx_player_ship_inventory_player_ship_id ON player_ship_inventory(player_ship_id);
 CREATE INDEX idx_player_station_inventory_player_id ON player_station_inventory(player_id);
