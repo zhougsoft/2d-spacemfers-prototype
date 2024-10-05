@@ -4,7 +4,7 @@ WITH new_player AS (
 ),
 player_location AS (
     INSERT INTO player_location
-    (player_id, target_location_id, prev_location_id, departure_time, arrival_time)
+    (player_id, target_celestial_id, prev_celestial_id, departure_time, arrival_time)
     SELECT player_id, 
            NULL,
            NULL,

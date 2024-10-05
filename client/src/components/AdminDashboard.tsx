@@ -7,20 +7,11 @@ import {
   getPlayer,
   getPlayerLocation,
   getPlayers,
-  getSystem,
   initiatePlayerTravel,
   setPlayerLocation,
   setActivePlayerShip,
-  getLocation,
-  getAllLocations,
-  getPlanetByLocation,
-  getStationByLocation,
-  getMoonByLocation,
-  getBeltByLocation,
   getAllShipTypes,
   getShipType,
-  getAllSystems,
-  getPlanetsBySystem,
   getActivePlayerShip,
   getPlayerShips,
 } from '../api'
@@ -64,86 +55,6 @@ const AdminDashboard = () => {
   const onDbDown = () => dbDown()
 
   // --- universe admin -------------------------------------------------------
-  const onGetAllLocations = () => getAllLocations()
-
-  const refGetLocation_LocationId = useRef<HTMLInputElement>(null)
-  const onGetLocation = async () => {
-    const id = refGetLocation_LocationId.current?.value
-    if (!id) {
-      alert('location_id is required')
-      return
-    }
-
-    getLocation(parseInt(id))
-  }
-
-  const onGetAllSystems = () => getAllSystems()
-
-  const refGetSystem_SystemId = useRef<HTMLInputElement>(null)
-  const onGetSystem = async () => {
-    const id = refGetSystem_SystemId.current?.value
-    if (!id) {
-      alert('system_id is required')
-      return
-    }
-
-    getSystem(parseInt(id))
-  }
-
-  const refGetPlanetsBySystem_SystemId = useRef<HTMLInputElement>(null)
-  const onGetPlanetsBySystem = async () => {
-    const id = refGetPlanetsBySystem_SystemId.current?.value
-    if (!id) {
-      alert('system_id is required')
-      return
-    }
-
-    getPlanetsBySystem(parseInt(id))
-  }
-
-  const refGetPlanetByLocation_LocationId = useRef<HTMLInputElement>(null)
-  const onGetPlanetByLocation = async () => {
-    const id = refGetPlanetByLocation_LocationId.current?.value
-    if (!id) {
-      alert('location_id is required')
-      return
-    }
-
-    getPlanetByLocation(parseInt(id))
-  }
-
-  const refGetStation_LocationId = useRef<HTMLInputElement>(null)
-  const onGetStation = async () => {
-    const id = refGetStation_LocationId.current?.value
-    if (!id) {
-      alert('location_id is required')
-      return
-    }
-
-    getStationByLocation(parseInt(id))
-  }
-
-  const refGetMoon_LocationId = useRef<HTMLInputElement>(null)
-  const onGetMoon = async () => {
-    const id = refGetMoon_LocationId.current?.value
-    if (!id) {
-      alert('location_id is required')
-      return
-    }
-
-    getMoonByLocation(parseInt(id))
-  }
-
-  const refGetBelt_LocationId = useRef<HTMLInputElement>(null)
-  const onGetBelt = async () => {
-    const id = refGetBelt_LocationId.current?.value
-    if (!id) {
-      alert('location_id is required')
-      return
-    }
-
-    getBeltByLocation(parseInt(id))
-  }
 
   const onGetAllShipTypes = () => getAllShipTypes()
 
@@ -277,56 +188,7 @@ const AdminDashboard = () => {
         </div>
       </Section>
       <h2>universe admin</h2>
-      <Section>
-        <button onClick={onGetAllLocations}>get all locations</button>
-      </Section>
-      <Section>
-        <button onClick={onGetLocation}>get location</button>
-        <LineDivider />
-        <NumberInput
-          ref={refGetLocation_LocationId}
-          placeholder="location_id"
-        />
-      </Section>
-      <Section>
-        <button onClick={onGetAllSystems}>get all systems</button>
-      </Section>
-      <Section>
-        <button onClick={onGetSystem}>get system</button>
-        <LineDivider />
-        <NumberInput ref={refGetSystem_SystemId} placeholder="system_id" />
-      </Section>
-      <Section>
-        <button onClick={onGetPlanetsBySystem}>get planets by system</button>
-        <LineDivider />
-        <NumberInput
-          ref={refGetPlanetsBySystem_SystemId}
-          placeholder="system_id"
-        />
-      </Section>
-      <Section>
-        <button onClick={onGetPlanetByLocation}>get planet by location</button>
-        <LineDivider />
-        <NumberInput
-          ref={refGetPlanetByLocation_LocationId}
-          placeholder="location_id"
-        />
-      </Section>
-      <Section>
-        <button onClick={onGetStation}>get station by location</button>
-        <LineDivider />
-        <NumberInput ref={refGetStation_LocationId} placeholder="location_id" />
-      </Section>
-      <Section>
-        <button onClick={onGetMoon}>get moon by location</button>
-        <LineDivider />
-        <NumberInput ref={refGetMoon_LocationId} placeholder="location_id" />
-      </Section>
-      <Section>
-        <button onClick={onGetBelt}>get belt by location</button>
-        <LineDivider />
-        <NumberInput ref={refGetBelt_LocationId} placeholder="location_id" />
-      </Section>
+
       <Section>
         <button onClick={onGetAllShipTypes}>get all ship types</button>
       </Section>
