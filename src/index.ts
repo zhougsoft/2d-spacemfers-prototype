@@ -99,9 +99,9 @@ const main = async () => {
    * @param {number} id - The ship ID.
    * @returns {Object} Response with the ship data or an error message.
    */
-  app.get('/api/ships/:id', async (req, res) => {
+  app.get('/api/ships/:shipId', async (req, res) => {
     try {
-      const shipId = parseInt(req.params.id, 10)
+      const shipId = parseInt(req.params.shipId, 10)
 
       if (isNaN(shipId) || shipId < 1) {
         return res.status(400).json({ error: 'invalid ship id' })
@@ -115,7 +115,7 @@ const main = async () => {
 
       return res.status(200).json(ship)
     } catch (error) {
-      console.error(`error fetching ship ${req.params.id}:`, error)
+      console.error(`error fetching ship ${req.params.shipId}:`, error)
       return res.status(500).json({ error: 'internal server error' })
     }
   })
@@ -478,10 +478,15 @@ const main = async () => {
   })
 }
 
-main().catch(error => {
-  console.error(error)
-  process.exit(1)
-})
+main()
+  .catch(error => {
+    console.error(error)
+    process.exit(1)
+  })
+  .finally(() => {
+    console.log('closing database connection...')
+    client.end()
+  })
 
 process.on('SIGINT', async () => {
   console.log('\nshutting down spacemfers server...')

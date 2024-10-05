@@ -13,75 +13,39 @@ VALUES
 
 CREATE TABLE celestials (
     celestial_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
     celestial_type_id INTEGER NOT NULL REFERENCES celestial_types(celestial_type_id),
-    parent_celestial_id INTEGER REFERENCES celestials(celestial_id) ON DELETE CASCADE,
+    parent_celestial_id INTEGER REFERENCES celestials(celestial_id) ON DELETE SET NULL,
     distance_from_parent DOUBLE PRECISION NOT NULL, -- in AU (astronomical units)
-    name VARCHAR(255) NOT NULL,
     CHECK (
         (parent_celestial_id IS NOT NULL AND distance_from_parent > 0) OR
         (parent_celestial_id IS NULL AND distance_from_parent = 0)
     )
 );
 
-CREATE FUNCTION enforce_celestial_type() RETURNS TRIGGER AS $$
-BEGIN
-    IF NEW.celestial_type_id != TG_ARGV[0]::INTEGER THEN
-        RAISE EXCEPTION 'celestial % must be of type %', 
-        NEW.celestial_id, TG_ARGV[0];
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE TABLE star_info (
     star_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
-
-CREATE TRIGGER enforce_star_type
-    BEFORE INSERT OR UPDATE ON star_info
-    FOR EACH ROW
-    EXECUTE FUNCTION enforce_celestial_type(1);
 
 CREATE TABLE planet_info (
     planet_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
 
-CREATE TRIGGER enforce_planet_type
-    BEFORE INSERT OR UPDATE ON planet_info
-    FOR EACH ROW
-    EXECUTE FUNCTION enforce_celestial_type(2);
-
 CREATE TABLE moon_info (
     moon_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
-
-CREATE TRIGGER enforce_moon_type
-    BEFORE INSERT OR UPDATE ON moon_info
-    FOR EACH ROW
-    EXECUTE FUNCTION enforce_celestial_type(3);
 
 CREATE TABLE belt_info (
     belt_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
 
-CREATE TRIGGER enforce_belt_type
-    BEFORE INSERT OR UPDATE ON belt_info
-    FOR EACH ROW
-    EXECUTE FUNCTION enforce_celestial_type(4);
-
 CREATE TABLE station_info (
     station_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
 
-CREATE TRIGGER enforce_station_type
-    BEFORE INSERT OR UPDATE ON station_info
-    FOR EACH ROW
-    EXECUTE FUNCTION enforce_celestial_type(5);
-
-
 CREATE TABLE ship_types (
     ship_type_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(50) NOT NULL,
     speed INTEGER NOT NULL,
     size INTEGER NOT NULL,
     max_cargo_size INTEGER NOT NULL
@@ -89,7 +53,7 @@ CREATE TABLE ship_types (
 
 CREATE TABLE items (
     item_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(50) NOT NULL,
     size INTEGER NOT NULL
 );
 
@@ -135,7 +99,7 @@ CREATE TABLE player_station_inventory (
 );
 
 CREATE INDEX idx_celestials_celestial_type_id ON celestials(celestial_type_id);
-CREATE INDEX idx_celestials_celestial_parent_id ON celestials(celestial_parent_id);
+CREATE INDEX idx_celestials_parent_celestial_id ON celestials(parent_celestial_id);
 CREATE INDEX idx_player_location_target_celestial_id ON player_location(target_celestial_id);
 CREATE INDEX idx_player_location_prev_celestial_id ON player_location(prev_celestial_id);
 CREATE INDEX idx_player_location_departure_time ON player_location(departure_time);

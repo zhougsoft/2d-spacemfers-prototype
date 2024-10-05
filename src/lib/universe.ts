@@ -1,13 +1,12 @@
 import { runQuery } from '../db'
 
-// TODO: create wrapper for create-celestial.sql & fix utils.ts
-// celestials (celestial_type_id, parent_celestial_id, distance_from_parent, name)
-
-const createCelestial = async (
+export const createCelestial = async (
+  name: string,
   celestialTypeId: number,
   parentCelestialId: number | null,
   distanceFromParent: number
 ) => {
+  if (!name || typeof name !== 'string') throw Error('invalid name')
   if (typeof celestialTypeId !== 'number')
     throw Error('invalid celestial type id')
   if (typeof parentCelestialId !== 'number' && parentCelestialId !== null)
@@ -15,13 +14,15 @@ const createCelestial = async (
   if (typeof distanceFromParent !== 'number' || distanceFromParent < 0)
     throw Error('invalid distance from parent')
 
-  // TODO: implement
-  console.log(
-    'createCelestial',
+  const celestialResult = await runQuery('celestials/create-celestial.sql', [
+    name,
     celestialTypeId,
     parentCelestialId,
-    distanceFromParent
-  )
+    distanceFromParent,
+  ])
+
+  if (!celestialResult) return null
+  return celestialResult[0]
 }
 
 export const createShipType = async (
