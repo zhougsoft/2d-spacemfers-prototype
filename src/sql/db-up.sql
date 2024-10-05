@@ -7,21 +7,21 @@ INSERT INTO celestial_types (name)
 VALUES 
     ('star'),    -- ID 1
     ('planet'),  -- ID 2
-    ('station'), -- ID 3
-    ('moon'),    -- ID 4
-    ('belt');    -- ID 5
+    ('moon'),    -- ID 3
+    ('belt');    -- ID 4
+    ('station'), -- ID 5
 
 CREATE TABLE celestials (
     celestial_id SERIAL PRIMARY KEY,
     celestial_type_id INTEGER NOT NULL REFERENCES celestial_types(celestial_type_id),
     parent_celestial_id INTEGER REFERENCES celestials(celestial_id),
-    distance_from_parent FLOAT NOT NULL, -- in AU (astronomical units); 1 AU = 149,597,870.7 km
+    distance_from_parent DOUBLE PRECISION NOT NULL, -- in AU (astronomical units); 1 AU = 149,597,870.7 km
     name VARCHAR(255) NOT NULL,
     UNIQUE (celestial_id, parent_celestial_id),
     CHECK (
-        -- celestials WITH a parent must have a distance greater than 0 from parent
+        -- celestials WITH a parent must have a positive distance from parent
         (parent_celestial_id IS NOT NULL AND distance_from_parent > 0) OR
-        -- celestials WITHOUT a parent must have a distance of 0 from parent
+        -- celestials WITHOUT a parent must have a distance of exactly 0 from parent
         (parent_celestial_id IS NULL AND distance_from_parent = 0)
     )
 );
@@ -40,24 +40,24 @@ CREATE TABLE planet_info (
     )
 )
 
-CREATE TABLE station_info (
-    station_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
-    CHECK (
-        station_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 3)
-    )
-)
-
 CREATE TABLE moon_info (
     moon_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
     CHECK (
-        moon_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 4)
+        moon_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 3)
     )
 )
 
 CREATE TABLE belt_info (
     belt_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
     CHECK (
-        belt_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 5)
+        belt_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 4)
+    )
+)
+
+CREATE TABLE station_info (
+    station_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    CHECK (
+        station_id IN (SELECT celestial_id FROM celestials WHERE celestial_type_id = 5)
     )
 )
 

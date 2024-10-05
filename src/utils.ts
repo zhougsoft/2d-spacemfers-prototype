@@ -1,5 +1,87 @@
 import { createShipType } from './lib/universe'
 
+// the moon (moon - earth)
+// 0.002570
+
+// ganyemede (moon - jupiter)
+// 0.007155
+
+// titan (moon - saturn)
+// 0.008168
+
+// io (moon - jupiter)
+// 0.002819
+
+// asteroid belt (belt - sun)
+// 2.697231
+
+// ceres (planet - sun)
+// 2.765414
+
+// pluto (planet - sun)
+// 39.439064
+
+// kuiper belt (belt - sun)
+// 42.0
+
+const CELESTIAL_TYPE = {
+  STAR: 1,
+  PLANET: 2,
+  MOON: 3,
+  BELT: 4,
+  STATION: 5,
+}
+
+const systemData = {
+  star: {
+    celestial_type_id: CELESTIAL_TYPE.STAR,
+    name: 'sun',
+    distance_from_parent: 0,
+    planets: [
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'mercury',
+        distance_from_parent: 0.387104,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'venus',
+        distance_from_parent: 0.723272,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'earth',
+        distance_from_parent: 1.0,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'mars',
+        distance_from_parent: 1.523685,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'jupiter',
+        distance_from_parent: 5.202815,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'saturn',
+        distance_from_parent: 9.554949,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'uranus',
+        distance_from_parent: 19.191383,
+      },
+      {
+        celestial_type_id: CELESTIAL_TYPE.PLANET,
+        name: 'neptune',
+        distance_from_parent: 30.109386,
+      },
+    ],
+  },
+}
+
 // TODO: port this over to use celestials abstraction
 export const createSolarSystem = async () => {
   const systemResults = await createSystem('sol')
@@ -40,14 +122,14 @@ export const createSolarSystem = async () => {
   const earthMoonResult = await createMoon(
     earthResults.planet_id,
     'the moon',
-    384400
+    0.00257
   )
   if (!earthMoonResult) throw Error('error creating moon')
 
   const marsBeltResult = await createBelt(
     marsResults.planet_id,
-    'the main belt',
-    50000000
+    'asteroid belt',
+    2.697231
   )
   if (!marsBeltResult) throw Error('error creating belt')
 
