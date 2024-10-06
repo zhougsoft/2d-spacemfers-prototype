@@ -16,58 +16,9 @@ Players gather resources and sell them in a dynamic market to earn currency, the
 
 each table in the spacemfers game database
 
-#### systems
-represents solar systems in the universe, the parent element of all locations players can travel
 
-- system_id (pk)
-- name
+TODO: add missing stuff & adjust field names from celestials refactor
 
-#### location_types
-types of locations in the game universe that can be found in systems
-
-- location_type_id (pk)
-- name (unique)
-
-#### locations
-represents specific locations within the game universe
-
-- location_id (pk)
-- location_type_id (fk location_types)
-- system_id (fk systems)
-- distance_from_star_au (applicable to planets or other future star orbital bodies)
-- distance_from_planet_km (applicable to stations, moons, belts or other future planet orbital bodies)
-
-#### planets
-the planets that orbit the star of a solar system
-
-- planet_id (pk)
-- system_id (fk systems)
-- location_id (fk locations)
-- name
-
-#### stations
-space stations that orbit planets where players can store items & do business
-
-- station_celestial_id (pk)
-- planet_id (fk planets)
-- location_id (fk locations)
-- name
-
-#### moons
-moons that orbit planets where player actions can be taken
-
-- moon_id (pk)
-- planet_id (fk planets)
-- location_id (fk locations)
-- name
-
-#### belts
-asteroid belts that orbit planets where player actions can be taken
-
-- belt_id (pk)
-- planet_id (fk planets)
-- location_id (fk locations)
-- name
 
 #### ship_types
 represents the different types of space ships in the game

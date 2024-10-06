@@ -31,6 +31,18 @@ export const dbDown = async () => {
 
 // --- universe admin -------------------------------------------------------
 
+export const getAllCelestials = async () => {
+  const data = await request(`${API_URL}/api/celestials`)
+  console.log(data)
+  return data
+}
+
+export const getCelestial = async (celestialId: number) => {
+  const data = await request(`${API_URL}/api/celestials/${celestialId}`)
+  console.log(data)
+  return data
+}
+
 export const getAllShipTypes = async () => {
   const data = await request(`${API_URL}/api/ships`)
   console.log(data)

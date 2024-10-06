@@ -36,6 +36,11 @@ const starData = {
       distance_from_parent: 1.0,
       children: [
         {
+          celestial_type_id: CELESTIAL_TYPE.STATION,
+          name: 'international space station',
+          distance_from_parent: 0.000239,
+        },
+        {
           celestial_type_id: CELESTIAL_TYPE.MOON,
           name: 'the moon',
           distance_from_parent: 0.00257,

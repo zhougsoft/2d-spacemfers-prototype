@@ -16,7 +16,12 @@ import {
   getPlayer,
   getPlayers,
 } from './lib/players'
-import { getAllShipTypes, getShipType } from './lib/universe'
+import {
+  getAllCelestials,
+  getAllShipTypes,
+  getCelestial,
+  getShipType,
+} from './lib/universe'
 import { createGameShips, createSolarSystem } from './utils'
 
 const PORT = 6969
@@ -31,9 +36,9 @@ const main = async () => {
   // --- db admin routes ------------------------------------------------------
 
   /**
-   * Reset the database by dropping and recreating all tables, and creating a new solar system.
+   * Reset the database by dropping and recreating all tables, and creating a new solar system + game objects.
    * @route GET /api/db-up
-   * @returns {Object} Response with the new solar system data.
+   * @returns {Object} Response with a success or error message.
    */
   app.get('/api/db-up', async (_req, res) => {
     try {
@@ -58,7 +63,7 @@ const main = async () => {
   /**
    * Drop all tables in the database.
    * @route GET /api/db-down
-   * @returns {Object} Response with a success message.
+   * @returns {Object} Response with a success or error message.
    */
   app.get('/api/db-down', async (_req, res) => {
     try {
@@ -73,26 +78,63 @@ const main = async () => {
 
   // --- universe admin routes ------------------------------------------------
 
-
-
-
-  // TODO:
-  // - /api/celestials
-  // - /api/celestials/:celestialId
-
+  // TODO: if needed, routes for higher fidelity data on celestials (w/ the *_info tables joined):
   // - /api/celestials/stars
   // - /api/celestials/stars/:starCelestialId
-  
   // - /api/celestials/planets/:planetCelestialId
   // - /api/celestials/moons/:moonCelestialId
   // - /api/celestials/belts/:beltCelestialId
   // - /api/celestials/station/:stationCelestialId
 
+  /**
+   * Get all celestials in the universe.
+   * @route GET /api/celestials
+   * @returns {Object} Response with celestials data or an error message.
+   */
+  app.get('/api/celestials', async (_req, res) => {
+    try {
+      const celestials = await getAllCelestials()
 
+      if (!celestials) {
+        return res.status(404).json({ error: 'celestials not found' })
+      }
 
+      return res.status(200).json(celestials)
+    } catch (error) {
+      console.error(`error fetching celestials:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
 
+  /**
+   * Get data for a celestial by its ID.
+   * @route GET /api/celestials/:celestialId
+   * @param {number} id - The celestial ID.
+   * @returns {Object} Response with the celestial data or an error message.
+   */
+  app.get('/api/celestials/:celestialId', async (req, res) => {
+    try {
+      const celestialId = parseInt(req.params.celestialId, 10)
 
+      if (isNaN(celestialId) || celestialId < 1) {
+        return res.status(400).json({ error: 'invalid celestial id' })
+      }
 
+      const celestial = await getCelestial(celestialId)
+
+      if (!celestial) {
+        return res.status(404).json({ error: 'celestial not found' })
+      }
+
+      return res.status(200).json(celestial)
+    } catch (error) {
+      console.error(
+        `error fetching celestial ${req.params.celestialId}:`,
+        error
+      )
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
 
   /**
    * Get all ships in the game.
@@ -116,7 +158,7 @@ const main = async () => {
 
   /**
    * Get data for a ship by its ID.
-   * @route GET /api/ships/:id
+   * @route GET /api/ships/:shipId
    * @param {number} id - The ship ID.
    * @returns {Object} Response with the ship data or an error message.
    */
@@ -382,7 +424,7 @@ const main = async () => {
   /**
    * Set the active ship for a player by their ID.
    * If ship ID 0 is passed, it will unset the active ship.
-   * @route POST /api/player-state/set-active-ship/:playerId/:shipId
+   * @route POST /api/player-state/set-active-ship/:playerId/:playerShipId
    * @param {number} playerId - The ID of the player whose active ship is being updated.
    * @param {number} playerShipId - The ID of the player ship to set as active. Use 0 to unset the active ship.
    * @returns {Object} Response with the result of setting the active ship or an error message.

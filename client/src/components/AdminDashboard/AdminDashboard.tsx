@@ -4,7 +4,9 @@ import {
   dbDown,
   dbUp,
   getActivePlayerShip,
+  getAllCelestials,
   getAllShipTypes,
+  getCelestial,
   getPlayer,
   getPlayerLocation,
   getPlayerShips,
@@ -32,6 +34,17 @@ const AdminDashboard = () => {
       </div>
 
       <h2>🌌 universe admin</h2>
+
+      <AdminSection
+        buttonLabel="get all celestials"
+        onSubmit={() => getAllCelestials()}
+      />
+
+      <AdminSection
+        buttonLabel="get celestial"
+        inputs={[{ placeholder: 'celestial_id', key: 'celestialId' }]}
+        onSubmit={({ celestialId }) => getCelestial(celestialId)}
+      />
 
       <AdminSection
         buttonLabel="get all ship types"
