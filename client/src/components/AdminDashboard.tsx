@@ -97,16 +97,16 @@ const AdminDashboard = () => {
   }
 
   const refSetPlayerLocation_PlayerId = useRef<HTMLInputElement>(null)
-  const refSetPlayerLocation_LocationId = useRef<HTMLInputElement>(null)
+  const refSetPlayerLocation_CelestialId = useRef<HTMLInputElement>(null)
   const onSetPlayerLocation = async () => {
     const playerId = refSetPlayerLocation_PlayerId.current?.value
-    const locationId = refSetPlayerLocation_LocationId.current?.value
-    if (!playerId || !locationId) {
-      alert('player_id and location_id are required')
+    const celestialId = refSetPlayerLocation_CelestialId.current?.value
+    if (!playerId || !celestialId) {
+      alert('player_id and celestial_id are required')
       return
     }
 
-    setPlayerLocation(parseInt(playerId), parseInt(locationId))
+    setPlayerLocation(parseInt(playerId), parseInt(celestialId))
   }
 
   const refAddPlayerShip_PlayerId = useRef<HTMLInputElement>(null)
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
     const shipTypeId = refAddPlayerShip_ShipTypeId.current?.value
     const stationId = refAddPlayerShip_StationId.current?.value
     if (!playerId || !shipTypeId || !stationId) {
-      alert('player_id, ship_type_id, and station_id are required')
+      alert('player_id, ship_type_id, and station_celestial_id are required')
       return
     }
 
@@ -160,16 +160,16 @@ const AdminDashboard = () => {
   }
 
   const refInitiatePlayerTravel_PlayerId = useRef<HTMLInputElement>(null)
-  const refInitiatePlayerTravel_LocationId = useRef<HTMLInputElement>(null)
+  const refInitiatePlayerTravel_CelestialId = useRef<HTMLInputElement>(null)
   const onInitiatePlayerTravel = async () => {
     const playerId = refInitiatePlayerTravel_PlayerId.current?.value
-    const locationId = refInitiatePlayerTravel_LocationId.current?.value
-    if (!playerId || !locationId) {
-      alert('player_id and location_id are required')
+    const celestialId = refInitiatePlayerTravel_CelestialId.current?.value
+    if (!playerId || !celestialId) {
+      alert('player_id and celestial_id are required')
       return
     }
 
-    initiatePlayerTravel(parseInt(playerId), parseInt(locationId))
+    initiatePlayerTravel(parseInt(playerId), parseInt(celestialId))
   }
 
   return (
@@ -227,8 +227,8 @@ const AdminDashboard = () => {
         />
         <LineDivider />
         <NumberInput
-          ref={refSetPlayerLocation_LocationId}
-          placeholder="location_id"
+          ref={refSetPlayerLocation_CelestialId}
+          placeholder="celestial_id"
         />
       </Section>
       <Section>
@@ -244,7 +244,7 @@ const AdminDashboard = () => {
         <LineDivider />
         <NumberInput
           ref={refAddPlayerShip_StationId}
-          placeholder="station_id"
+          placeholder="station_celestial_id"
         />
       </Section>
       <Section>
@@ -282,8 +282,8 @@ const AdminDashboard = () => {
         />
         <LineDivider />
         <NumberInput
-          ref={refInitiatePlayerTravel_LocationId}
-          placeholder="location_id"
+          ref={refInitiatePlayerTravel_CelestialId}
+          placeholder="celestial_id"
         />
       </Section>
     </>

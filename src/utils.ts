@@ -1,4 +1,11 @@
-import { createShipType } from './lib/universe'
+import {
+  createBelt,
+  createMoon,
+  createPlanet,
+  createShipType,
+  createStar,
+  createStation,
+} from './lib/universe'
 
 const CELESTIAL_TYPE = {
   STAR: 1,
@@ -102,26 +109,73 @@ const starData = {
   ],
 }
 
-// TODO: create the solar system from starData
+const createChildCelestial = async (
+  typeId: number,
+  name: string,
+  parentId: number,
+  distanceFromParent: number
+) => {
+  let celestialResult = null
+
+  switch (typeId) {
+    case CELESTIAL_TYPE.PLANET:
+      celestialResult = await createPlanet(name, parentId, distanceFromParent)
+      break
+    case CELESTIAL_TYPE.MOON:
+      celestialResult = await createMoon(name, parentId, distanceFromParent)
+      break
+    case CELESTIAL_TYPE.BELT:
+      celestialResult = await createBelt(name, parentId, distanceFromParent)
+      break
+    case CELESTIAL_TYPE.STATION:
+      celestialResult = await createStation(name, parentId, distanceFromParent)
+      break
+    default:
+      throw Error('invalid celestial type')
+  }
+
+  if (!celestialResult) throw Error(`failed to create celestial: ${name}`)
+
+  const { celestial_id } = celestialResult
+  return celestial_id as number
+}
+
 export const createSolarSystem = async () => {
+  const sunResult = await createStar(starData.name)
+  const { celestial_id: sunId } = sunResult
+
+  for (const starChild of starData.children) {
+    const { celestial_type_id, name, distance_from_parent } = starChild
+
+    const celestialId = await createChildCelestial(
+      celestial_type_id,
+      name,
+      sunId,
+      distance_from_parent
+    )
+
+    if (!starChild.children?.length) continue
+
+    for (const starChildChild of starChild.children) {
+      const { celestial_type_id, name, distance_from_parent } = starChildChild
+
+      await createChildCelestial(
+        celestial_type_id,
+        name,
+        celestialId,
+        distance_from_parent
+      )
+    }
+  }
+
   return true
 }
 
 export const createGameShips = async () => {
-  const shuttle = await createShipType('shuttle', 500, 5000, 10)
-  if (!shuttle) throw Error('error creating shuttle')
-
-  const corvette = await createShipType('corvette', 300, 15000, 125)
-  if (!corvette) throw Error('error creating corvette')
-
-  const frigate = await createShipType('frigate', 400, 20000, 150)
-  if (!frigate) throw Error('error creating frigate')
-
-  const cruiser = await createShipType('cruiser', 200, 100000, 500)
-  if (!cruiser) throw Error('error creating cruiser')
-
-  const hauler = await createShipType('hauler', 100, 200000, 4000)
-  if (!hauler) throw Error('error creating hauler')
-
+  await createShipType('shuttle', 500, 5000, 10)
+  await createShipType('corvette', 300, 15000, 125)
+  await createShipType('frigate', 400, 20000, 150)
+  await createShipType('cruiser', 200, 100000, 500)
+  await createShipType('hauler', 100, 200000, 4000)
   return true
 }

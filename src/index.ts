@@ -213,7 +213,7 @@ const main = async () => {
   // --- player state routes --------------------------------------------------
 
   /**
-   * Get the location of a player by their ID.
+   * Get the celestial location of a player by their ID.
    * @route GET /api/player-state/get-location/:playerId
    * @param {number} playerId - The ID of the player whose location is being fetched.
    * @returns {Object} Response with the player's location or an error message.
@@ -434,7 +434,7 @@ const main = async () => {
    * Initiate travel for a player to a new celestial location.
    * @route POST /api/player-state/initiate-travel/:playerId/:celestialId
    * @param {number} playerId - The ID of the player initiating travel.
-   * @param {number} celestialId - The ID of the destination celestial.
+   * @param {number} celestialId - The ID of the celestial destination.
    * @returns {Object} Response with the result of the travel initiation or an error message.
    */
   app.post(
@@ -478,15 +478,11 @@ const main = async () => {
   })
 }
 
-main()
-  .catch(error => {
-    console.error(error)
-    process.exit(1)
-  })
-  .finally(() => {
-    console.log('closing database connection...')
-    client.end()
-  })
+main().catch(async error => {
+  console.error(error)
+  await client.end()
+  process.exit(1)
+})
 
 process.on('SIGINT', async () => {
   console.log('\nshutting down spacemfers server...')

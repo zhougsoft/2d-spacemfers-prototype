@@ -74,9 +74,9 @@ export const getPlayerLocation = async (playerId: number) => {
 
 export const setPlayerLocation = async (
   playerId: number,
-  locationId: number
+  celestialId: number
 ) => {
-  const url = `${API_URL}/api/player-state/set-location/${playerId}/${locationId}`
+  const url = `${API_URL}/api/player-state/set-location/${playerId}/${celestialId}`
   const data = await request(url, 'POST')
   console.log(data)
   return data
@@ -119,9 +119,9 @@ export const getActivePlayerShip = async (playerId: number) => {
 
 export const initiatePlayerTravel = async (
   playerId: number,
-  locationId: number
+  celestialId: number
 ) => {
-  const url = `${API_URL}/api/player-state/initiate-travel/${playerId}/${locationId}`
+  const url = `${API_URL}/api/player-state/initiate-travel/${playerId}/${celestialId}`
   const data = await request(url, 'POST')
   console.log(data)
   return data

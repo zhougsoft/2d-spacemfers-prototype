@@ -48,7 +48,7 @@ the planets that orbit the star of a solar system
 #### stations
 space stations that orbit planets where players can store items & do business
 
-- station_id (pk)
+- station_celestial_id (pk)
 - planet_id (fk planets)
 - location_id (fk locations)
 - name
@@ -105,7 +105,7 @@ represents ships owned by a player
 - player_ship_id (pk)
 - player_id (fk players)
 - ship_id (fk ships)
-- station_id (fk stations, nullable)
+- station_celestial_id (fk stations, nullable)
 
 #### player_active_ship
 represents a player's active ship (can only be one at a time)
@@ -124,6 +124,6 @@ represents the items in a player's ship inventory
 represents the player's items in space station stations
 
 - player_id (fk players)
-- station_id (fk stations)
+- station_celestial_id (fk stations)
 - item_id (fk items)
 - amount

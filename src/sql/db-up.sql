@@ -75,7 +75,7 @@ CREATE TABLE player_ships (
     player_ship_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     player_id INTEGER REFERENCES players(player_id) NOT NULL,
     ship_type_id INTEGER REFERENCES ship_types(ship_type_id) NOT NULL,
-    station_id INTEGER REFERENCES celestials(celestial_id)
+    station_celestial_id INTEGER REFERENCES station_info(celestial_id)
 );
 
 CREATE TABLE player_active_ship (
@@ -92,10 +92,10 @@ CREATE TABLE player_ship_inventory (
 
 CREATE TABLE player_station_inventory (
     player_id INTEGER REFERENCES players(player_id),
-    station_id INTEGER REFERENCES celestials(celestial_id), 
+    station_celestial_id INTEGER REFERENCES station_info(celestial_id), 
     item_id INTEGER REFERENCES items(item_id),
     amount INTEGER NOT NULL,
-    PRIMARY KEY (player_id, station_id, item_id)
+    PRIMARY KEY (player_id, station_celestial_id, item_id)
 );
 
 CREATE INDEX idx_celestials_celestial_type_id ON celestials(celestial_type_id);
@@ -105,7 +105,7 @@ CREATE INDEX idx_player_location_prev_celestial_id ON player_location(prev_celes
 CREATE INDEX idx_player_location_departure_time ON player_location(departure_time);
 CREATE INDEX idx_player_location_arrival_time ON player_location(arrival_time);
 CREATE INDEX idx_player_ships_player_id ON player_ships(player_id);
-CREATE INDEX idx_player_ships_station_id ON player_ships(station_id);
+CREATE INDEX idx_player_ships_station_celestial_id ON player_ships(station_celestial_id);
 CREATE INDEX idx_player_ship_inventory_player_ship_id ON player_ship_inventory(player_ship_id);
 CREATE INDEX idx_player_station_inventory_player_id ON player_station_inventory(player_id);
-CREATE INDEX idx_player_station_inventory_station_id ON player_station_inventory(station_id);
+CREATE INDEX idx_player_station_inventory_station_celestial_id ON player_station_inventory(station_celestial_id);

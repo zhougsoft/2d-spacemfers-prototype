@@ -5,5 +5,5 @@ WITH active_ship AS (
   RETURNING player_ship_id
 )
 UPDATE player_ships
-SET station_id = NULL
+SET station_celestial_id = NULL
 WHERE player_ship_id = (SELECT player_ship_id FROM active_ship);

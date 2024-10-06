@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getActivePlayerShip, getLocation, getPlayer } from '../api'
+import { getActivePlayerShip, getPlayer } from '../api'
 
 type DataObject = Record<string, any> // generic type to hold TBD data from api
 
@@ -25,10 +25,8 @@ const PlayerDashboard = () => {
   useEffect(() => {
     if (!player) return
 
-    if (player.target_location_id) {
-      getLocation(player.target_location_id)
-        .then(setPlayerLocation)
-        .catch(console.error)
+    if (player.target_celestial_id) {
+      console.log('todo: implement player target location fetching')
     } else {
       setPlayerLocation(null)
     }
