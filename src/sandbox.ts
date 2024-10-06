@@ -1,5 +1,12 @@
+/*
+
+🚧 SANDBOX TESTING STUFF ZONE SCRIPT 🚧
+
+*/
+
 import { client, runQuery } from './db'
 import { createSolarSystem } from './utils'
+import { getAllCelestials, getCelestial } from './lib/universe'
 
 const main = async () => {
   await client.connect()
@@ -9,9 +16,8 @@ const main = async () => {
   await runQuery('db-up.sql')
   await createSolarSystem()
 
-  const q = `SELECT * FROM celestials`
-  const result = await client.query(q)
-  console.log(result.rows)
+  const celestials = await getAllCelestials()
+  console.log({ celestials })
 }
 
 main()

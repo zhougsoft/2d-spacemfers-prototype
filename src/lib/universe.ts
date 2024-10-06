@@ -1,5 +1,23 @@
 import { runQuery } from '../db'
 
+export const getAllCelestials = async () => {
+  const celestialsResult = await runQuery('celestials/get-all-celestials.sql')
+
+  if (!celestialsResult) return null
+  return celestialsResult
+}
+
+export const getCelestial = async (celestialId: number) => {
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+
+  const celestialResult = await runQuery('celestials/get-celestial.sql', [
+    celestialId,
+  ])
+
+  if (!celestialResult) return null
+  return celestialResult[0]
+}
+
 export const createStar = async (name: string) => {
   if (!name || typeof name !== 'string') throw Error('invalid name')
 
