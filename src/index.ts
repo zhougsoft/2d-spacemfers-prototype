@@ -73,6 +73,27 @@ const main = async () => {
 
   // --- universe admin routes ------------------------------------------------
 
+
+
+
+  // TODO:
+  // - /api/celestials
+  // - /api/celestials/:celestialId
+
+  // - /api/celestials/stars
+  // - /api/celestials/stars/:starCelestialId
+  
+  // - /api/celestials/planets/:planetCelestialId
+  // - /api/celestials/moons/:moonCelestialId
+  // - /api/celestials/belts/:beltCelestialId
+  // - /api/celestials/station/:stationCelestialId
+
+
+
+
+
+
+
   /**
    * Get all ships in the game.
    * @route GET /api/ships

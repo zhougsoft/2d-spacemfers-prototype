@@ -17,7 +17,11 @@ const main = async () => {
   await createSolarSystem()
 
   const celestials = await getAllCelestials()
+  if (!celestials) throw Error('no celestials found')
   console.log({ celestials })
+
+  const firstCelestial = await getCelestial(celestials[0].celestial_id)
+  console.log({ firstCelestial })
 }
 
 main()

@@ -27,6 +27,13 @@ export const createStar = async (name: string) => {
   return starResult[0]
 }
 
+export const getAllStars = async () => {
+  const starsResult = await runQuery('celestials/stars/get-all-stars.sql')
+
+  if (!starsResult) return null
+  return starsResult
+}
+
 export const getStar = async (celestialId: number) => {
   if (typeof celestialId !== 'number') throw Error('invalid celestial id')
 
