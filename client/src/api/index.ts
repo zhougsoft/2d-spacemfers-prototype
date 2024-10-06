@@ -37,8 +37,8 @@ export const getAllShipTypes = async () => {
   return data
 }
 
-export const getShipType = async (shipId: number) => {
-  const data = await request(`${API_URL}/api/ships/${shipId}`)
+export const getShipType = async (shipTypeId: number) => {
+  const data = await request(`${API_URL}/api/ships/${shipTypeId}`)
   console.log(data)
   return data
 }

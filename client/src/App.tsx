@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import AdminDashboard from './components/AdminDashboard'
-import { LineDivider } from './components/Shared'
 import PlayerDashboard from './components/PlayerDashboard'
 
 const App = () => {
@@ -10,7 +9,7 @@ const App = () => {
     <main style={{ padding: '1rem 2rem' }}>
       <header>
         <button onClick={() => setActiveTab('admin')}>admin</button>
-        <LineDivider />
+        <span>&nbsp;|&nbsp;</span>
         <button onClick={() => setActiveTab('travel')}>player</button>
       </header>
       {activeTab === 'admin' ? <AdminDashboard /> : <PlayerDashboard />}
