@@ -1,4 +1,4 @@
-import { createCelestial, createShipType } from './lib/universe'
+import { createShipType } from './lib/universe'
 
 const CELESTIAL_TYPE = {
   STAR: 1,
@@ -104,14 +104,6 @@ const starData = {
 
 // TODO: create the solar system from starData
 export const createSolarSystem = async () => {
-  const star = await createCelestial(
-    starData.name,
-    starData.celestial_type_id,
-    null,
-    starData.distance_from_parent
-  )
-  if (!star) throw Error('error creating star')
-
   return true
 }
 

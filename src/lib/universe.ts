@@ -1,28 +1,146 @@
 import { runQuery } from '../db'
 
-export const createCelestial = async (
-  name: string,
-  celestialTypeId: number,
-  parentCelestialId: number | null,
-  distanceFromParent: number
-) => {
+export const createStar = async (name: string) => {
   if (!name || typeof name !== 'string') throw Error('invalid name')
-  if (typeof celestialTypeId !== 'number')
-    throw Error('invalid celestial type id')
-  if (typeof parentCelestialId !== 'number' && parentCelestialId !== null)
-    throw Error('invalid parent celestial id')
-  if (typeof distanceFromParent !== 'number' || distanceFromParent < 0)
-    throw Error('invalid distance from parent')
 
-  const celestialResult = await runQuery('celestials/create-celestial.sql', [
-    name,
-    celestialTypeId,
-    parentCelestialId,
-    distanceFromParent,
+  const starResult = await runQuery('celestials/stars/create-star.sql', [name])
+
+  if (!starResult) return null
+  return starResult[0]
+}
+
+export const getStar = async (celestialId: number) => {
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+
+  const starResult = await runQuery('celestials/stars/get-star.sql', [
+    celestialId,
   ])
 
-  if (!celestialResult) return null
-  return celestialResult[0]
+  if (!starResult) return null
+  return starResult[0]
+}
+
+export const createPlanet = async (
+  name: string,
+  parentCelestialId: number,
+  distanceToParent: number
+) => {
+  if (!name || typeof name !== 'string') throw Error('invalid name')
+  if (typeof parentCelestialId !== 'number') throw Error('invalid parent id')
+  if (typeof distanceToParent !== 'number')
+    throw Error('invalid distance to parent')
+
+  const planetResult = await runQuery('celestials/planets/create-planet.sql', [
+    name,
+    parentCelestialId,
+    distanceToParent,
+  ])
+
+  if (!planetResult) return null
+  return planetResult[0]
+}
+
+export const getPlanet = async (celestialId: number) => {
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+
+  const planetResult = await runQuery('celestials/planets/get-planet.sql', [
+    celestialId,
+  ])
+
+  if (!planetResult) return null
+  return planetResult[0]
+}
+
+export const createMoon = async (
+  name: string,
+  parentCelestialId: number,
+  distanceToParent: number
+) => {
+  if (!name || typeof name !== 'string') throw Error('invalid name')
+  if (typeof parentCelestialId !== 'number') throw Error('invalid parent id')
+  if (typeof distanceToParent !== 'number')
+    throw Error('invalid distance to parent')
+
+  const moonResult = await runQuery('celestials/moons/create-moon.sql', [
+    name,
+    parentCelestialId,
+    distanceToParent,
+  ])
+
+  if (!moonResult) return null
+  return moonResult[0]
+}
+
+export const getMoon = async (celestialId: number) => {
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+
+  const moonResult = await runQuery('celestials/moons/get-moon.sql', [
+    celestialId,
+  ])
+
+  if (!moonResult) return null
+  return moonResult[0]
+}
+
+export const createBelt = async (
+  name: string,
+  parentCelestialId: number,
+  distanceToParent: number
+) => {
+  if (!name || typeof name !== 'string') throw Error('invalid name')
+  if (typeof parentCelestialId !== 'number') throw Error('invalid parent id')
+  if (typeof distanceToParent !== 'number')
+    throw Error('invalid distance to parent')
+
+  const beltResult = await runQuery('celestials/belts/create-belt.sql', [
+    name,
+    parentCelestialId,
+    distanceToParent,
+  ])
+
+  if (!beltResult) return null
+  return beltResult[0]
+}
+
+export const getBelt = async (celestialId: number) => {
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+
+  const beltResult = await runQuery('celestials/belts/get-belt.sql', [
+    celestialId,
+  ])
+
+  if (!beltResult) return null
+  return beltResult[0]
+}
+
+export const createStation = async (
+  name: string,
+  parentCelestialId: number,
+  distanceToParent: number
+) => {
+  if (!name || typeof name !== 'string') throw Error('invalid name')
+  if (typeof parentCelestialId !== 'number') throw Error('invalid parent id')
+  if (typeof distanceToParent !== 'number')
+    throw Error('invalid distance to parent')
+
+  const stationResult = await runQuery(
+    'celestials/stations/create-station.sql',
+    [name, parentCelestialId, distanceToParent]
+  )
+
+  if (!stationResult) return null
+  return stationResult[0]
+}
+
+export const getStation = async (celestialId: number) => {
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+
+  const stationResult = await runQuery('celestials/stations/get-station.sql', [
+    celestialId,
+  ])
+
+  if (!stationResult) return null
+  return stationResult[0]
 }
 
 export const createShipType = async (
@@ -31,7 +149,7 @@ export const createShipType = async (
   size: number,
   maxCargoSize: number
 ) => {
-  if (!name || typeof name !== 'string') throw Error('invalid ship name')
+  if (!name || typeof name !== 'string') throw Error('invalid name')
   if (typeof speed !== 'number') throw Error('invalid ship speed')
   if (typeof size !== 'number') throw Error('invalid ship size')
   if (typeof maxCargoSize !== 'number') throw Error('invalid max cargo size')

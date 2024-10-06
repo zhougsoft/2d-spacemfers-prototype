@@ -24,23 +24,23 @@ CREATE TABLE celestials (
 );
 
 CREATE TABLE star_info (
-    star_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    celestial_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
 
 CREATE TABLE planet_info (
-    planet_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    celestial_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
 
 CREATE TABLE moon_info (
-    moon_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    celestial_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
 
 CREATE TABLE belt_info (
-    belt_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    celestial_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
 
 CREATE TABLE station_info (
-    station_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
+    celestial_id INTEGER PRIMARY KEY REFERENCES celestials(celestial_id)
 );
 
 CREATE TABLE ship_types (

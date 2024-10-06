@@ -1,6 +1,10 @@
 import { client, runQuery } from './db'
-
-import { createCelestial } from './lib/universe'
+import {
+  createBelt,
+  createMoon,
+  createPlanet,
+  createStar,
+} from './lib/universe'
 
 const main = async () => {
   await client.connect()
@@ -9,11 +13,19 @@ const main = async () => {
   await runQuery('db-down.sql')
   await runQuery('db-up.sql')
 
-  const sunResult = await createCelestial('sun', 1, null, 0)
-  const earthResult = await createCelestial('earth', 2, sunResult.celestial_id, 1)
-  await createCelestial('moon', 3, earthResult.celestial_id, 0.00257)
+  const sunResult = await createStar('sun')
+  const { celestial_id: sunId } = sunResult
 
-  const qGet = `SELECT * FROM celestials`
+  await createPlanet('mercury', sunId, 0.39)
+  await createPlanet('venus', sunId, 0.79)
+
+  const earthResult = await createPlanet('earth', sunId, 1)
+  await createMoon('moon', earthResult.celestial_id, 0.25)
+
+  const marsResult = await createPlanet('mars', sunId, 1.56)
+  await createBelt('asteroid belt', marsResult.celestial_id, 1.6)
+
+  const qGet = `SELECT * FROM celestials WHERE parent_celestial_id = ${sunId}`
   const result = await client.query(qGet)
   console.log(result.rows)
 }
