@@ -7,6 +7,16 @@ export const getAllCelestials = async () => {
   return celestialsResult
 }
 
+export const getCelestialsByRoot = async (rootCelestialId: number) => {
+  const celestialsResult = await runQuery(
+    'celestials/get-celestials-by-root.sql',
+    [rootCelestialId]
+  )
+
+  if (!celestialsResult) return null
+  return celestialsResult
+}
+
 export const getCelestial = async (celestialId: number) => {
   if (typeof celestialId !== 'number') throw Error('invalid celestial id')
 

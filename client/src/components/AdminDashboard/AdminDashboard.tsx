@@ -7,6 +7,7 @@ import {
   getAllCelestials,
   getAllShipTypes,
   getCelestial,
+  getCelestialsByRoot,
   getPlayer,
   getPlayerLocation,
   getPlayerShips,
@@ -38,6 +39,12 @@ const AdminDashboard = () => {
       <AdminSection
         buttonLabel="get all celestials"
         onSubmit={() => getAllCelestials()}
+      />
+
+      <AdminSection
+        buttonLabel="get celestials by root"
+        inputs={[{ placeholder: 'root_celestial_id', key: 'rootCelestialId' }]}
+        onSubmit={({ rootCelestialId }) => getCelestialsByRoot(rootCelestialId)}
       />
 
       <AdminSection

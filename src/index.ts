@@ -20,6 +20,7 @@ import {
   getAllCelestials,
   getAllShipTypes,
   getCelestial,
+  getCelestialsByRoot,
   getShipType,
 } from './lib/universe'
 import { createGameShips, createSolarSystem } from './utils'
@@ -102,6 +103,36 @@ const main = async () => {
       return res.status(200).json(celestials)
     } catch (error) {
       console.error(`error fetching celestials:`, error)
+      return res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get data for all celestials sharing a root ID.
+   * @route GET /api/celestials/:rootCelestialId
+   * @param {number} id - The root celestial ID.
+   * @returns {Object} Response with the celestials data or an error message.
+   */
+  app.get('/api/celestials/:rootCelestialId/root', async (req, res) => {
+    try {
+      const rootCelestialId = parseInt(req.params.rootCelestialId, 10)
+
+      if (isNaN(rootCelestialId) || rootCelestialId < 1) {
+        return res.status(400).json({ error: 'invalid celestial id' })
+      }
+
+      const celestial = await getCelestialsByRoot(rootCelestialId)
+
+      if (!celestial) {
+        return res.status(404).json({ error: 'celestials not found' })
+      }
+
+      return res.status(200).json(celestial)
+    } catch (error) {
+      console.error(
+        `error fetching celestials for root id ${req.params.rootCelestialId}:`,
+        error
+      )
       return res.status(500).json({ error: 'internal server error' })
     }
   })
