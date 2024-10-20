@@ -25,6 +25,8 @@ db_down=$(generateCodeBlock "src/sql/db-down.sql")
 create_star=$(generateCodeBlock "src/sql/celestials/stars/create-star.sql")
 create_planet=$(generateCodeBlock "src/sql/celestials/planets/create-planet.sql")
 create_station=$(generateCodeBlock "src/sql/celestials/stations/create-station.sql")
+get_celestial=$(generateCodeBlock "src/sql/celestials/get-celestial.sql")
+get_celestials_by_root=$(generateCodeBlock "src/sql/celestials/get-celestials-by-root.sql")
 
 # game item admin
 create_ship=$(generateCodeBlock "src/sql/ships/create-ship-type.sql")
@@ -40,6 +42,7 @@ add_owned_ship=$(generateCodeBlock "src/sql/player-state/add-player-ship.sql")
 remove_owned_ship=$(generateCodeBlock "src/sql/player-state/remove-player-ship.sql")
 get_active_ship=$(generateCodeBlock "src/sql/player-state/get-active-player-ship.sql")
 set_active_ship=$(generateCodeBlock "src/sql/player-state/set-active-player-ship.sql")
+unset_active_ship=$(generateCodeBlock "src/sql/player-state/unset-active-player-ship.sql")
 initiate_player_travel=$(generateCodeBlock "src/sql/player-state/initiate-player-travel.sql")
 
 echo -e "You are a world-class Postgres engineer, SQL wizard and senior relational database systems expert. \
@@ -47,9 +50,9 @@ Your task is to be my consultant for my game spacemfers. spacemfers is a 2D, web
 I am creating this project from the ground up at the database level. I want it to be as optimized and normalized as possible, and stay true to the best conventions and practices. \
 The project uses PostgreSQL. Here are the relevant project files.\n\n\
 ## Table setup & teardown:\n\n${db_up}\n\n${db_down}\n\n\
-## Universe admin:\n\n${create_system}\n\n${create_planet}\n\n${create_station}\n\n\
+## Universe admin:\n\n${create_star}\n\n${create_planet}\n\n${create_station}\n\n${get_celestial}\n\n${get_celestials_by_root}\n\n\
 ## Game item admin:\n\n${create_ship}\n\n\
 ## Player admin:\n\n${create_player}\n\n${delete_player}\n\n\
-## Player state:\n\n${get_location}\n\n${set_location}\n\n${add_owned_ship}\n\n${remove_owned_ship}\n\n${get_active_ship}\n\n${set_active_ship}\n\n${initiate_player_travel}\n\n\
+## Player state:\n\n${get_location}\n\n${set_location}\n\n${add_owned_ship}\n\n${remove_owned_ship}\n\n${get_active_ship}\n\n${set_active_ship}\n\n${unset_active_ship}\n\n${initiate_player_travel}\n\n\
 ## Instruction:\nThoroughly study the files until you completely grasp the premise and functionality. \
 Only when you have achieved full understanding, reply with 'I understand' only and wait for further instruction."
