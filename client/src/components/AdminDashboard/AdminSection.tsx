@@ -5,15 +5,8 @@ const LineDivider = () => <span>&nbsp;|&nbsp;</span>
 const NumberInput = forwardRef<
   HTMLInputElement,
   InputHTMLAttributes<HTMLInputElement>
->(({ placeholder, ...props }, ref) => (
-  <input
-    ref={ref}
-    type="number"
-    min="1"
-    style={{ maxWidth: '10rem' }}
-    placeholder={placeholder}
-    {...props}
-  />
+>(({ ...props }, ref) => (
+  <input ref={ref} type="number" style={{ maxWidth: '10rem' }} {...props} />
 ))
 
 const AdminSection = ({
@@ -22,7 +15,7 @@ const AdminSection = ({
   onSubmit,
 }: {
   buttonLabel: string
-  inputs?: { placeholder: string; key: string }[]
+  inputs?: { placeholder: string; key: string; min?: number }[]
   onSubmit: (values: Record<string, number>) => void
 }) => {
   const [inputValues, setInputValues] = useState<Record<string, number>>({})
@@ -50,7 +43,8 @@ const AdminSection = ({
           <LineDivider />
           <NumberInput
             placeholder={input.placeholder}
-            value={inputValues[input.key] || ''}
+            value={inputValues[input.key] ?? ''}
+            min={input.min ?? 1}
             onChange={e =>
               handleInputChange(input.key, parseInt(e.target.value))
             }

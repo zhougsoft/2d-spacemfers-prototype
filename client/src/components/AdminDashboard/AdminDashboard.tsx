@@ -123,7 +123,7 @@ const AdminDashboard = () => {
         buttonLabel="set active player ship"
         inputs={[
           { placeholder: 'player_id', key: 'playerId' },
-          { placeholder: 'player_ship_id', key: 'playerShipId' },
+          { placeholder: 'player_ship_id', key: 'playerShipId', min: 0 },
         ]}
         onSubmit={({ playerId, playerShipId }) =>
           setActivePlayerShip(playerId, playerShipId)
