@@ -22,9 +22,9 @@ db_up=$(generateCodeBlock "src/sql/db-up.sql")
 db_down=$(generateCodeBlock "src/sql/db-down.sql")
 
 # universe admin
-create_system=$(generateCodeBlock "src/sql/systems/create-system.sql")
-create_planet=$(generateCodeBlock "src/sql/planets/create-planet.sql")
-create_station=$(generateCodeBlock "src/sql/stations/create-station.sql")
+create_star=$(generateCodeBlock "src/sql/celestials/stars/create-star.sql")
+create_planet=$(generateCodeBlock "src/sql/celestials/planets/create-planet.sql")
+create_station=$(generateCodeBlock "src/sql/celestials/stations/create-station.sql")
 
 # game item admin
 create_ship=$(generateCodeBlock "src/sql/ships/create-ship-type.sql")
@@ -43,7 +43,7 @@ set_active_ship=$(generateCodeBlock "src/sql/player-state/set-active-player-ship
 initiate_player_travel=$(generateCodeBlock "src/sql/player-state/initiate-player-travel.sql")
 
 echo -e "You are a world-class Postgres engineer, SQL wizard and senior relational database systems expert. \
-Your task is to be my consultant for my game spacemfers. spacemfers is a web-based, open-universe, idle-clicker, lofi space sandbox MMO inspired by EVE Online.\n\n\
+Your task is to be my consultant for my game spacemfers. spacemfers is a 2D, web-based, open-universe, idle-clicker, lofi space sandbox MMO; think the depth of EVE Online with the simple browser-based interface of Neopets.\n\n\
 I am creating this project from the ground up at the database level. I want it to be as optimized and normalized as possible, and stay true to the best conventions and practices. \
 The project uses PostgreSQL. Here are the relevant project files.\n\n\
 ## Table setup & teardown:\n\n${db_up}\n\n${db_down}\n\n\
