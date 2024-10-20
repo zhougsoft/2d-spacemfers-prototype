@@ -38,7 +38,9 @@ export const getAllCelestials = async () => {
 }
 
 export const getCelestialsByRoot = async (rootCelestialId: number) => {
-  const data = await request(`${API_URL}/api/celestials/${rootCelestialId}/root`)
+  const data = await request(
+    `${API_URL}/api/celestials/${rootCelestialId}/root`
+  )
   console.log(data)
   return data
 }

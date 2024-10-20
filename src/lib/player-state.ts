@@ -49,7 +49,7 @@ export const addPlayerShip = async (
 
   if (status === 'invalid_station') {
     throw new Error(
-      'invalid location: ships can only be added to station celestials'
+      'invalid location: ships can only be added to station celestial locations'
     )
   }
 
@@ -76,17 +76,19 @@ export const setActivePlayerShip = async (
   playerId: number,
   playerShipId: number | null = null
 ) => {
-  if (typeof playerId !== 'number') throw Error('Invalid player ID')
-  if (playerShipId && typeof playerShipId !== 'number')
-    throw Error('Invalid player ship ID')
+  // Validate input
+  if (typeof playerId !== 'number') throw new Error('invalid player id')
+  if (playerShipId !== null && typeof playerShipId !== 'number')
+    throw new Error('invalid player ship id')
 
+  // Execute the query
   const result = await runQuery('player-state/set-active-player-ship.sql', [
     playerId,
     playerShipId,
   ])
 
-  if (!result || result.length === 0) {
-    throw Error('error setting active player ship')
+  if (!result || result.length === 0 || !result[0]) {
+    throw new Error('error setting active player ship')
   }
 
   const { status, updated_ship_id } = result[0]
@@ -103,7 +105,41 @@ export const setActivePlayerShip = async (
     )
   }
 
-  return updated_ship_id
+  return { status, updated_ship_id }
+}
+
+export const unsetActivePlayerShip = async (playerId: number) => {
+  if (typeof playerId !== 'number') throw new Error('invalid player id')
+
+  const result = await runQuery('player-state/unset-active-player-ship.sql', [
+    playerId,
+  ])
+
+  if (!result || result.length === 0 || !result[0]) {
+    throw new Error('error unsetting active player ship')
+  }
+
+  const { status } = result[0]
+
+  if (status === 'invalid_location') {
+    throw new Error(
+      'invalid location: player must be at a station to unset active ship'
+    )
+  }
+
+  if (status === 'no_active_ship') {
+    throw new Error(
+      'no active ship: set an active ship before trying to unset it'
+    )
+  }
+
+  if (status !== 'success') {
+    throw new Error(
+      'unknown error occurred while trying to unset the active ship'
+    )
+  }
+
+  return status
 }
 
 export const getActivePlayerShip = async (playerId: number) => {

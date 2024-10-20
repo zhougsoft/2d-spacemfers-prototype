@@ -9,6 +9,7 @@ import {
   initiatePlayerTravel,
   setActivePlayerShip,
   setPlayerLocation,
+  unsetActivePlayerShip,
 } from './lib/player-state'
 import {
   createPlayer,
@@ -454,7 +455,7 @@ const main = async () => {
 
   /**
    * Set the active ship for a player by their ID.
-   * If ship ID 0 is passed, it will unset the active ship.
+   * If playerShipId is 0, the active ship is unset.
    * @route POST /api/player-state/set-active-ship/:playerId/:playerShipId
    * @param {number} playerId - The ID of the player whose active ship is being updated.
    * @param {number} playerShipId - The ID of the player ship to set as active. Use 0 to unset the active ship.
@@ -471,15 +472,14 @@ const main = async () => {
           return res.status(400).json({ error: 'invalid player ID' })
         }
 
-        if (isNaN(playerShipId) || playerShipId < 0) {
-          return res.status(400).json({ error: 'invalid active ship ID' })
-        }
+        let updatedActiveShipId = null
 
-        const activeShipId = playerShipId === 0 ? null : playerShipId
-        const updatedActiveShipId = await setActivePlayerShip(
-          playerId,
-          activeShipId
-        )
+        if (playerShipId === 0) {
+          await unsetActivePlayerShip(playerId)
+        } else {
+          const status = await setActivePlayerShip(playerId, playerShipId)
+          updatedActiveShipId = status.updated_ship_id
+        }
 
         return res.status(200).json({ active_ship_id: updatedActiveShipId })
       } catch (error) {

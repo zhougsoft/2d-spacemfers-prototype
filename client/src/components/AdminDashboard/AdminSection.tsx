@@ -43,7 +43,7 @@ const AdminSection = ({
           <LineDivider />
           <NumberInput
             placeholder={input.placeholder}
-            value={inputValues[input.key] ?? ''}
+            value={inputValues[input.key]}
             min={input.min ?? 1}
             onChange={e =>
               handleInputChange(input.key, parseInt(e.target.value))
