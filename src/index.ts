@@ -403,18 +403,18 @@ const main = async () => {
           return res.status(400).json({ error: 'invalid station id' })
         }
 
-        const playerShipResult = await addPlayerShip(
+        const playerShipId = await addPlayerShip(
           playerId,
           shipTypeId,
           stationId
         )
 
-        if (!playerShipResult) {
-          return res.status(500).json({ error: 'error adding player ship' })
+        return res.status(200).json({ player_ship_id: playerShipId })
+      } catch (error) {
+        if (error.message.includes('invalid location')) {
+          return res.status(400).json({ error: error.message })
         }
 
-        return res.status(200).json(playerShipResult)
-      } catch (error) {
         const errorMsg = `error adding ship type id ${req.params.shipTypeId} to player id ${req.params.playerId}:`
         console.error(errorMsg, error)
         return res.status(500).json({ error: 'internal server error' })
@@ -468,28 +468,29 @@ const main = async () => {
         const playerShipId = parseInt(req.params.playerShipId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
-          return res.status(400).json({ error: 'Invalid player ID' })
+          return res.status(400).json({ error: 'invalid player ID' })
         }
 
         if (isNaN(playerShipId) || playerShipId < 0) {
-          return res.status(400).json({ error: 'Invalid active ship ID' })
+          return res.status(400).json({ error: 'invalid active ship ID' })
         }
 
         const activeShipId = playerShipId === 0 ? null : playerShipId
-        const playerActiveShipResult = await setActivePlayerShip(
+        const updatedActiveShipId = await setActivePlayerShip(
           playerId,
           activeShipId
         )
 
-        if (playerActiveShipResult.status === 'invalid_location') {
-          return res.status(400).json({
-            error:
-              'Invalid player location: player must be in same location as ship',
-          })
+        return res.status(200).json({ active_ship_id: updatedActiveShipId })
+      } catch (error) {
+        if (error.message.includes('invalid location')) {
+          return res.status(400).json({ error: error.message })
         }
 
-        return res.json(playerActiveShipResult)
-      } catch (error) {
+        console.error(
+          `error setting active ship for player ${req.params.playerId}:`,
+          error
+        )
         return res.status(500).json({ error: 'internal server error' })
       }
     }

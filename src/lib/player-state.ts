@@ -41,8 +41,23 @@ export const addPlayerShip = async (
     stationId,
   ])
 
-  if (!playerShipResult) return null
-  return playerShipResult[0]
+  if (!playerShipResult || playerShipResult.length === 0) {
+    throw Error('error adding player ship')
+  }
+
+  const { status, player_ship_id } = playerShipResult[0]
+
+  if (status === 'invalid_station') {
+    throw new Error(
+      'invalid location: ships can only be added to station celestials'
+    )
+  }
+
+  if (status !== 'success') {
+    throw new Error('error occurred while adding the ship')
+  }
+
+  return player_ship_id
 }
 
 export const getPlayerShips = async (playerId: number) => {
@@ -70,8 +85,25 @@ export const setActivePlayerShip = async (
     playerShipId,
   ])
 
-  if (!result) throw Error('Error setting active player ship')
-  return result[0]
+  if (!result || result.length === 0) {
+    throw Error('error setting active player ship')
+  }
+
+  const { status, updated_ship_id } = result[0]
+
+  if (status === 'invalid_location') {
+    throw new Error(
+      'invalid location: player must be in the same location as the ship to set it as active'
+    )
+  }
+
+  if (status !== 'success') {
+    throw new Error(
+      'unknown error occurred while trying to set the active ship'
+    )
+  }
+
+  return updated_ship_id
 }
 
 export const getActivePlayerShip = async (playerId: number) => {
