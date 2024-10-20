@@ -468,30 +468,28 @@ const main = async () => {
         const playerShipId = parseInt(req.params.playerShipId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
-          return res.status(400).json({ error: 'invalid player id' })
+          return res.status(400).json({ error: 'Invalid player ID' })
         }
 
         if (isNaN(playerShipId) || playerShipId < 0) {
-          return res.status(400).json({ error: 'invalid active ship id' })
+          return res.status(400).json({ error: 'Invalid active ship ID' })
         }
 
         const activeShipId = playerShipId === 0 ? null : playerShipId
-
         const playerActiveShipResult = await setActivePlayerShip(
           playerId,
           activeShipId
         )
 
-        if (!playerActiveShipResult) {
-          return res
-            .status(500)
-            .json({ error: 'error setting player active ship' })
+        if (playerActiveShipResult.status === 'invalid_location') {
+          return res.status(400).json({
+            error:
+              'Invalid player location: player must be in same location as ship',
+          })
         }
 
-        return res.status(200).json(playerActiveShipResult)
+        return res.json(playerActiveShipResult)
       } catch (error) {
-        const errorMsg = `error setting player ship id ${req.params.playerShipId} as active ship for player id ${req.params.playerId}:`
-        console.error(errorMsg, error)
         return res.status(500).json({ error: 'internal server error' })
       }
     }

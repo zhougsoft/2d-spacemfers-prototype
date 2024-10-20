@@ -7,7 +7,10 @@ export const setPlayerLocation = async (
   if (typeof playerId !== 'number') throw Error('invalid player id')
   if (typeof celestialId !== 'number') throw Error('invalid celestial id')
 
-  await runQuery('player-state/set-player-location.sql', [playerId, celestialId])
+  await runQuery('player-state/set-player-location.sql', [
+    playerId,
+    celestialId,
+  ])
   return true
 }
 
@@ -32,10 +35,11 @@ export const addPlayerShip = async (
   if (typeof shipTypeId !== 'number') throw Error('invalid ship type id')
   if (typeof stationId !== 'number') throw Error('invalid station id')
 
-  const playerShipResult = await runQuery(
-    'player-state/add-player-ship.sql',
-    [playerId, shipTypeId, stationId]
-  )
+  const playerShipResult = await runQuery('player-state/add-player-ship.sql', [
+    playerId,
+    shipTypeId,
+    stationId,
+  ])
 
   if (!playerShipResult) return null
   return playerShipResult[0]
@@ -57,15 +61,17 @@ export const setActivePlayerShip = async (
   playerId: number,
   playerShipId: number | null = null
 ) => {
-  if (typeof playerId !== 'number') throw Error('invalid player id')
+  if (typeof playerId !== 'number') throw Error('Invalid player ID')
   if (playerShipId && typeof playerShipId !== 'number')
-    throw Error('invalid player ship id')
+    throw Error('Invalid player ship ID')
 
-  await runQuery('player-state/set-active-player-ship.sql', [
+  const result = await runQuery('player-state/set-active-player-ship.sql', [
     playerId,
     playerShipId,
   ])
-  return true
+
+  if (!result) throw Error('Error setting active player ship')
+  return result[0]
 }
 
 export const getActivePlayerShip = async (playerId: number) => {
