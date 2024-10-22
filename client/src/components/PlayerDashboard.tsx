@@ -11,6 +11,23 @@ const TEST_PLAYER_ID = 1
 
 type DataObject = Record<string, any> // generic type to hold TBD data from api
 
+// recursively build a tree of celestial objects based on parent/child relationships
+const buildSolarSystemTree = (
+  rootCelestial: DataObject,
+  celestials: DataObject[]
+): any => {
+  const children = celestials
+    .filter(
+      celestial => celestial.parent_celestial_id === rootCelestial.celestial_id
+    )
+    .map(child => buildSolarSystemTree(child, celestials))
+
+  return {
+    ...rootCelestial,
+    ...(children.length > 0 && { children }),
+  }
+}
+
 const PlayerDashboard = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [player, setPlayer] = useState<DataObject | null>(null)
@@ -80,18 +97,18 @@ const PlayerDashboard = () => {
             .then(rootCelestial =>
               getCelestialsByRoot(rootCelestial.celestial_id).then(
                 childrenCelestials => {
-                  setSolarSystem({
-                    ...rootCelestial,
-                    children: childrenCelestials,
-                  })
+                  const tree = buildSolarSystemTree(
+                    rootCelestial,
+                    childrenCelestials
+                  )
+
+                  setSolarSystem(tree)
                 }
               )
             )
             .catch(console.error)
         })
         .catch(console.error)
-    } else {
-      setPlayerLocation(null)
     }
   }, [player])
 
