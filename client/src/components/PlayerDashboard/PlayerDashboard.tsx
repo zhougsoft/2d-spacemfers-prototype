@@ -5,13 +5,12 @@ import {
   getCelestialsByRoot,
   getPlayer,
   getPlayerShips,
-} from '../api'
+} from '../../api'
+import { DataObject } from '../../types'
+import SolarSystemMap from './SolarSystemMap'
 
 const TEST_PLAYER_ID = 1
 
-type DataObject = Record<string, any> // generic type to hold TBD data from api
-
-// recursively build a tree of celestial objects based on parent/child relationships
 const buildSolarSystemTree = (
   rootCelestial: DataObject,
   celestials: DataObject[]
@@ -124,6 +123,7 @@ const PlayerDashboard = () => {
         <div
           style={{
             display: 'flex',
+            flexDirection: 'column',
             gap: '1rem',
             marginBottom: '1.5rem',
             padding: '1rem',
@@ -131,6 +131,14 @@ const PlayerDashboard = () => {
             backgroundColor: '#f4f4f4',
             maxWidth: '100%',
           }}>
+          <div style={{ border: '2px solid black', width: '100%' }}>
+            <h3>solar system</h3>
+            {solarSystem ? (
+              <SolarSystemMap solarSystem={solarSystem} />
+            ) : (
+              'no available solar system'
+            )}
+          </div>
           <div style={{ border: '2px solid black', width: '100%' }}>
             <h3>player:</h3>
             <pre>{JSON.stringify(player, null, 2)}</pre>
@@ -156,14 +164,6 @@ const PlayerDashboard = () => {
               {activePlayerShip
                 ? JSON.stringify(activePlayerShip, null, 2)
                 : 'no active ship'}
-            </pre>
-          </div>
-          <div style={{ border: '2px solid black', width: '100%' }}>
-            <h3>solar system</h3>
-            <pre>
-              {solarSystem
-                ? JSON.stringify(solarSystem, null, 2)
-                : 'no available solar system'}
             </pre>
           </div>
         </div>
