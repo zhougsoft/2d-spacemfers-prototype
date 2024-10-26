@@ -9,6 +9,28 @@ import {
 import { DataObject } from '../../types'
 import SolarSystemMap from './SolarSystemMap'
 
+/*
+
+TODO: render out formatted player data, something like this:
+
+---
+Player Overview:
+- Location: International Space Station (Station)
+- Active Ship: Corvette (Speed: 300, Cargo: 125)
+---
+
+---
+Ships:
+| Ship Type    | Speed (km/h) | Cargo Size | Location                     | Active?  |
+|--------------|--------------|------------|---------------------------- -|----------|
+| Shuttle      | 500          | 10         | International Space Station  | No       |
+| Hauler       | 100          | 4000       | International Space Station  | No       |
+| Corvette     | 300          | 125        | [player location]            | Yes      |
+---
+
+
+*/
+
 const TEST_PLAYER_ID = 1
 
 const buildSolarSystemTree = (
@@ -37,63 +59,57 @@ const PlayerDashboard = () => {
     null
   )
 
-  // fetch player data from api data on component mount
+  // fetching all req'd API data in this nasty useEffect on component mount
   useEffect(() => {
     setIsLoading(true)
     getPlayer(TEST_PLAYER_ID)
-      .then(setPlayer)
-      .catch(console.error)
-      .finally(() => setIsLoading(false))
-  }, [])
+      .then(player => {
+        if (!player || !player.player_id) {
+          console.warn('no player found')
+          return
+        }
 
-  // do stuff with the player data
-  useEffect(() => {
-    if (!player || !player.player_id) return
+        setPlayer(player)
 
-    // fetch player ship info
-    getPlayerShips(player.player_id)
-      .then(async ships => {
-        if (ships?.length) {
-          const shipTypeData = await getAllShipTypes()
-          const shipTypeMap: Record<number, any> = shipTypeData.reduce(
-            (acc: any, shipType: any) => {
-              acc[shipType.ship_type_id] = shipType
-              return acc
-            },
-            {}
-          )
-
-          setPlayerShips(
-            ships.map((ship: any) => ({
-              ...ship,
-              ship_type: shipTypeMap[ship.ship_type_id],
-            }))
-          )
-
-          if (player.active_ship_id) {
-            const activeShip = ships.find(
-              (ship: any) => ship.player_ship_id === player.active_ship_id
+        getPlayerShips(player.player_id).then(async ships => {
+          if (ships?.length) {
+            const shipTypeData = await getAllShipTypes()
+            const shipTypeMap: Record<number, any> = shipTypeData.reduce(
+              (acc: any, shipType: any) => {
+                acc[shipType.ship_type_id] = shipType
+                return acc
+              },
+              {}
             )
 
-            if (activeShip)
-              setActivePlayerShip({
-                ...activeShip,
-                ship_type: shipTypeMap[activeShip.ship_type_id],
-              })
+            setPlayerShips(
+              ships.map((ship: any) => ({
+                ...ship,
+                ship_type: shipTypeMap[ship.ship_type_id],
+              }))
+            )
+
+            if (player.active_ship_id) {
+              const activeShip = ships.find(
+                (ship: any) => ship.player_ship_id === player.active_ship_id
+              )
+
+              if (activeShip)
+                setActivePlayerShip({
+                  ...activeShip,
+                  ship_type: shipTypeMap[activeShip.ship_type_id],
+                })
+            }
           }
-        }
-      })
-      .catch(console.error)
+        })
 
-    // fetch player location info
-    if (player.target_celestial_id) {
-      getCelestial(player.target_celestial_id)
-        .then(celestial => {
-          setPlayerLocation(celestial)
+        // fetch player location info
+        if (player.target_celestial_id) {
+          getCelestial(player.target_celestial_id).then(celestial => {
+            setPlayerLocation(celestial)
 
-          // get solar system data for player location
-          getCelestial(celestial.root_celestial_id)
-            .then(rootCelestial =>
+            // get solar system data for player location
+            getCelestial(celestial.root_celestial_id).then(rootCelestial =>
               getCelestialsByRoot(rootCelestial.celestial_id).then(
                 childrenCelestials => {
                   const tree = buildSolarSystemTree(
@@ -105,11 +121,12 @@ const PlayerDashboard = () => {
                 }
               )
             )
-            .catch(console.error)
-        })
-        .catch(console.error)
-    }
-  }, [player])
+          })
+        }
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false))
+  }, [])
 
   if (isLoading) return <div>...</div>
 
