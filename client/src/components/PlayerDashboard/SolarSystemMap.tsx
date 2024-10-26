@@ -1,6 +1,8 @@
+import { AU_IN_KM, EMOJI } from '../../constants'
 import { DataObject } from '../../types'
 
-const AU_IN_KM = 149597870.7
+
+// TODO: use EMOJI constant instead of hardcoding emojis
 
 const celestialTypeMap: Record<number, { name: string; emoji: string }> = {
   1: { name: 'star', emoji: '💫' },
