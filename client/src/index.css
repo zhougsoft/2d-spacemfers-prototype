@@ -1,8 +1,14 @@
 :root {
   --root-font-size: 12px;
   --font-primary: monospace;
-  --color-bg: white;
-  --color-text: black;
+  --color-bg: #111;
+  --color-text: #ccc;
+  --color-input-bg: #222;
+  --color-input-border: #444;
+  --color-input-placeholder: #888;
+  --color-button-bg: #222;
+  --color-button-border: #444;
+  --color-button-hover: #333;
 }
 
 *,
@@ -29,11 +35,31 @@ button {
   cursor: pointer;
   font-family: var(--font-primary);
   font-size: 1rem;
+  background-color: var(--color-button-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-button-border);
+}
+
+button:hover {
+  background-color: var(--color-button-hover);
 }
 
 input {
   font-family: var(--font-primary);
   font-size: 1rem;
+  background-color: var(--color-input-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-input-border);
+}
+
+input::placeholder {
+  color: var(--color-input-placeholder);
+  opacity: 1;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--color-button-hover);
 }
 
 pre {

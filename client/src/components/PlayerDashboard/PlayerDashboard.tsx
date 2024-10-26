@@ -116,22 +116,23 @@ const PlayerDashboard = () => {
   return (
     <>
       <h1>🚀 player dashboard</h1>
-      <p>wip...</p>
       <hr />
-
       {player ? (
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',
+            maxWidth: '100%',
             marginBottom: '1.5rem',
             padding: '1rem',
-            border: '2px solid black',
-            backgroundColor: '#f4f4f4',
-            maxWidth: '100%',
           }}>
-          <div style={{ border: '2px solid black', width: '100%' }}>
+          <div
+            style={{
+              width: '100%',
+              border: '2px solid white',
+              padding: '0 0 2rem 1rem',
+            }}>
             <h3>solar system</h3>
             {solarSystem ? (
               <SolarSystemMap solarSystem={solarSystem} />
@@ -139,26 +140,27 @@ const PlayerDashboard = () => {
               'no available solar system'
             )}
           </div>
-          <div style={{ border: '2px solid black', width: '100%' }}>
+
+          <hr style={{ width: '100%' }} />
+
+          <div
+            style={{
+              width: '100%',
+              border: '2px solid white',
+              padding: '0 0 2rem 1rem',
+            }}>
             <h3>player:</h3>
             <pre>{JSON.stringify(player, null, 2)}</pre>
-            <br />
-            <br />
-            <br />
             <h3>player location:</h3>
             <pre>
               {playerLocation
                 ? JSON.stringify(playerLocation, null, 2)
                 : 'no location set'}
             </pre>
-            <br />
-            <br />
             <h3>player ships:</h3>
             <pre>
               {playerShips ? JSON.stringify(playerShips, null, 2) : 'no ships'}
             </pre>
-            <br />
-            <br />
             <h3>player active ship:</h3>
             <pre>
               {activePlayerShip
