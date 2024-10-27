@@ -16,6 +16,8 @@ export const EMOJI = {
   FLYING_SAUCER: '🛸',
   FULL_MOON: '🌕',
   GLOWING_STAR: '🌟',
+  HOURGLASS_DONE: '⌛',
+  HOURGLASS_NOT_DONE: '⏳',
   LAST_QUARTER_MOON: '🌗',
   LAST_QUARTER_MOON_FACE: '🌜',
   MILKY_WAY: '🌌',

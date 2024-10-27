@@ -1,4 +1,4 @@
-import { AU_IN_KM, EMOJI } from '../../constants'
+import { AU_IN_KM, EMOJI } from '../../utils/constants'
 import { DataObject } from '../../types'
 
 const celestialTypeMap: Record<number, { name: string; emoji: string }> = {

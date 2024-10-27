@@ -1,12 +1,5 @@
-import { useEffect, useState } from 'react'
-import {
-  getAllShipTypes,
-  getCelestial,
-  getCelestialsByRoot,
-  getPlayer,
-  getPlayerShips,
-} from '../../api'
-import { DataObject } from '../../types'
+import { useGameData } from '../../hooks/useGameData'
+import { EMOJI } from '../../utils/constants'
 import SolarSystemMap from './SolarSystemMap'
 
 /*
@@ -33,102 +26,17 @@ Ships:
 
 const TEST_PLAYER_ID = 1
 
-const buildSolarSystemTree = (
-  rootCelestial: DataObject,
-  celestials: DataObject[]
-): any => {
-  const children = celestials
-    .filter(
-      celestial => celestial.parent_celestial_id === rootCelestial.celestial_id
-    )
-    .map(child => buildSolarSystemTree(child, celestials))
-
-  return {
-    ...rootCelestial,
-    ...(children.length > 0 && { children }),
-  }
-}
-
 const PlayerDashboard = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [player, setPlayer] = useState<DataObject | null>(null)
-  const [playerLocation, setPlayerLocation] = useState<DataObject | null>(null)
-  const [solarSystem, setSolarSystem] = useState<DataObject | null>(null)
-  const [playerShips, setPlayerShips] = useState<DataObject | null>(null)
-  const [activePlayerShip, setActivePlayerShip] = useState<DataObject | null>(
-    null
-  )
+  const {
+    isLoading,
+    player,
+    solarSystem,
+    playerLocation,
+    playerShips,
+    activePlayerShip,
+  } = useGameData(TEST_PLAYER_ID)
 
-  // fetching all req'd API data in this nasty useEffect on component mount
-  useEffect(() => {
-    setIsLoading(true)
-    getPlayer(TEST_PLAYER_ID)
-      .then(player => {
-        if (!player || !player.player_id) {
-          console.warn('no player found')
-          return
-        }
-
-        setPlayer(player)
-
-        getPlayerShips(player.player_id).then(async ships => {
-          if (ships?.length) {
-            const shipTypeData = await getAllShipTypes()
-            const shipTypeMap: Record<number, any> = shipTypeData.reduce(
-              (acc: any, shipType: any) => {
-                acc[shipType.ship_type_id] = shipType
-                return acc
-              },
-              {}
-            )
-
-            setPlayerShips(
-              ships.map((ship: any) => ({
-                ...ship,
-                ship_type: shipTypeMap[ship.ship_type_id],
-              }))
-            )
-
-            if (player.active_ship_id) {
-              const activeShip = ships.find(
-                (ship: any) => ship.player_ship_id === player.active_ship_id
-              )
-
-              if (activeShip)
-                setActivePlayerShip({
-                  ...activeShip,
-                  ship_type: shipTypeMap[activeShip.ship_type_id],
-                })
-            }
-          }
-        })
-
-        // fetch player location info
-        if (player.target_celestial_id) {
-          getCelestial(player.target_celestial_id).then(celestial => {
-            setPlayerLocation(celestial)
-
-            // get solar system data for player location
-            getCelestial(celestial.root_celestial_id).then(rootCelestial =>
-              getCelestialsByRoot(rootCelestial.celestial_id).then(
-                childrenCelestials => {
-                  const tree = buildSolarSystemTree(
-                    rootCelestial,
-                    childrenCelestials
-                  )
-
-                  setSolarSystem(tree)
-                }
-              )
-            )
-          })
-        }
-      })
-      .catch(console.error)
-      .finally(() => setIsLoading(false))
-  }, [])
-
-  if (isLoading) return <div>...</div>
+  if (isLoading) return <div>{EMOJI.HOURGLASS_NOT_DONE}</div>
 
   return (
     <>
@@ -154,7 +62,7 @@ const PlayerDashboard = () => {
             {solarSystem ? (
               <SolarSystemMap solarSystem={solarSystem} />
             ) : (
-              'no available solar system'
+              <div>{EMOJI.HOURGLASS_NOT_DONE}</div>
             )}
           </div>
 
