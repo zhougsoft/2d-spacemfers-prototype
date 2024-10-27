@@ -28,7 +28,7 @@ const PlayerOverview = ({
 
   return (
     <>
-      <h2>player overview</h2>
+      <h3>player overview</h3>
       <ul>
         <li>
           <b>player id</b>: {player.player_id}

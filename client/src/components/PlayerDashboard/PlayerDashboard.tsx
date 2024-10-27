@@ -39,7 +39,10 @@ const PlayerDashboard = () => {
               padding: '0 0 2rem 1rem',
             }}>
             {solarSystemTree ? (
-              <SolarSystemMap solarSystemTree={solarSystemTree} />
+              <SolarSystemMap
+                solarSystemTree={solarSystemTree}
+                highlightedCelestialId={playerLocation?.celestial_id}
+              />
             ) : (
               <div>
                 {player.target_celestial_id

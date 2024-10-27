@@ -1,8 +1,12 @@
 import { AU_IN_KM, CELESTIAL_TYPES, EMOJI } from '../../utils/constants'
 import { DataObject } from '../../types'
 
-const renderCelestialTree = (celestial: DataObject) => {
+const renderCelestialTree = (
+  celestial: DataObject,
+  highlightedCelestialId: number | null
+) => {
   const hasChildren = celestial.children?.length > 0
+  const isHighlighted = celestial.celestial_id === highlightedCelestialId
   const celestialTypeInfo = CELESTIAL_TYPES[celestial.celestial_type_id] ?? {
     name: 'unknown',
     emoji: EMOJI.QUESTION_MARK,
@@ -18,9 +22,12 @@ const renderCelestialTree = (celestial: DataObject) => {
   return hasChildren ? (
     <details
       key={celestial.celestial_id}
-      style={{ marginLeft: '20px', marginTop: '10px' }}
+      style={{
+        marginLeft: '20px',
+        marginTop: '10px',
+      }}
       open>
-      <summary>
+      <summary style={{ outline: isHighlighted ? '1px solid red' : 'none' }}>
         <b>
           {celestialTypeInfo.emoji} {celestial.name || 'no name'}
         </b>{' '}
@@ -29,14 +36,18 @@ const renderCelestialTree = (celestial: DataObject) => {
       </summary>
       <div>
         {celestial.children.map((child: DataObject) =>
-          renderCelestialTree(child)
+          renderCelestialTree(child, highlightedCelestialId)
         )}
       </div>
     </details>
   ) : (
     <div
       key={celestial.celestial_id}
-      style={{ marginLeft: '20px', marginTop: '10px' }}>
+      style={{
+        marginLeft: '20px',
+        marginTop: '10px',
+        outline: isHighlighted ? '1px solid red' : 'none',
+      }}>
       <b>
         {celestialTypeInfo.emoji} {celestial.name || 'no name'}
       </b>{' '}
@@ -47,14 +58,16 @@ const renderCelestialTree = (celestial: DataObject) => {
 
 const SolarSystemMap = ({
   solarSystemTree,
+  highlightedCelestialId,
 }: {
   solarSystemTree: DataObject
+  highlightedCelestialId: number | null
 }) => {
   if (!solarSystemTree) return null
   return (
     <>
-      <h2>solar system</h2>
-      <div>{renderCelestialTree(solarSystemTree)}</div>
+      <h3>solar system</h3>
+      <div>{renderCelestialTree(solarSystemTree, highlightedCelestialId)}</div>
     </>
   )
 }
