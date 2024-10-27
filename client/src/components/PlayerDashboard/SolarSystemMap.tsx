@@ -1,17 +1,9 @@
-import { AU_IN_KM, EMOJI } from '../../utils/constants'
+import { AU_IN_KM, CELESTIAL_TYPES, EMOJI } from '../../utils/constants'
 import { DataObject } from '../../types'
 
-const celestialTypeMap: Record<number, { name: string; emoji: string }> = {
-  1: { name: 'star', emoji: EMOJI.STAR },
-  2: { name: 'planet', emoji: EMOJI.RINGED_PLANET },
-  3: { name: 'moon', emoji: EMOJI.CRESCENT_MOON },
-  4: { name: 'belt', emoji: EMOJI.ROCK },
-  5: { name: 'station', emoji: EMOJI.SATELLITE },
-}
-
-const renderCelestialBody = (celestial: DataObject) => {
+const renderCelestialTree = (celestial: DataObject) => {
   const hasChildren = celestial.children?.length > 0
-  const celestialTypeInfo = celestialTypeMap[celestial.celestial_type_id] ?? {
+  const celestialTypeInfo = CELESTIAL_TYPES[celestial.celestial_type_id] ?? {
     name: 'unknown',
     emoji: EMOJI.QUESTION_MARK,
   }
@@ -29,15 +21,15 @@ const renderCelestialBody = (celestial: DataObject) => {
       style={{ marginLeft: '20px', marginTop: '10px' }}
       open>
       <summary>
-        <strong>
+        <b>
           {celestialTypeInfo.emoji} {celestial.name || 'no name'}
-        </strong>{' '}
+        </b>{' '}
         ({celestialTypeInfo.name}
         {celestial.parent_celestial_id && `, distance: ${formattedDistance}`})
       </summary>
       <div>
         {celestial.children.map((child: DataObject) =>
-          renderCelestialBody(child)
+          renderCelestialTree(child)
         )}
       </div>
     </details>
@@ -45,17 +37,26 @@ const renderCelestialBody = (celestial: DataObject) => {
     <div
       key={celestial.celestial_id}
       style={{ marginLeft: '20px', marginTop: '10px' }}>
-      <strong>
+      <b>
         {celestialTypeInfo.emoji} {celestial.name || 'no name'}
-      </strong>{' '}
+      </b>{' '}
       ({celestialTypeInfo.name}, distance: {formattedDistance})
     </div>
   )
 }
 
-const SolarSystemMap = ({ solarSystem }: { solarSystem: DataObject }) => {
-  if (!solarSystem) return null
-  return <div>{renderCelestialBody(solarSystem)}</div>
+const SolarSystemMap = ({
+  solarSystemTree,
+}: {
+  solarSystemTree: DataObject
+}) => {
+  if (!solarSystemTree) return null
+  return (
+    <>
+      <h2>solar system</h2>
+      <div>{renderCelestialTree(solarSystemTree)}</div>
+    </>
+  )
 }
 
 export default SolarSystemMap

@@ -1,1 +1,3 @@
-export type DataObject = Record<string, any> // generic type to hold TBD data from api
+// generic types to hold TBD data from api
+export type DataIndex = Record<number, any>
+export type DataObject = Record<string, any>

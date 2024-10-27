@@ -1,36 +1,16 @@
 import { useGameData } from '../../hooks/useGameData'
 import { EMOJI } from '../../utils/constants'
+import PlayerOverview from './PlayerOverview'
 import SolarSystemMap from './SolarSystemMap'
-
-/*
-
-TODO: render out formatted player data, something like this:
-
----
-Player Overview:
-- Location: International Space Station (Station)
-- Active Ship: Corvette (Speed: 300, Cargo: 125)
----
-
----
-Ships:
-| Ship Type    | Speed (km/h) | Cargo Size | Location                     | Active?  |
-|--------------|--------------|------------|---------------------------- -|----------|
-| Shuttle      | 500          | 10         | International Space Station  | No       |
-| Hauler       | 100          | 4000       | International Space Station  | No       |
-| Corvette     | 300          | 125        | [player location]            | Yes      |
----
-
-
-*/
 
 const TEST_PLAYER_ID = 1
 
 const PlayerDashboard = () => {
   const {
     isLoading,
+    solarSystemIndexed,
+    solarSystemTree,
     player,
-    solarSystem,
     playerLocation,
     playerShips,
     activePlayerShip,
@@ -58,11 +38,14 @@ const PlayerDashboard = () => {
               border: '2px solid white',
               padding: '0 0 2rem 1rem',
             }}>
-            <h3>solar system</h3>
-            {solarSystem ? (
-              <SolarSystemMap solarSystem={solarSystem} />
+            {solarSystemTree ? (
+              <SolarSystemMap solarSystemTree={solarSystemTree} />
             ) : (
-              <div>{EMOJI.HOURGLASS_NOT_DONE}</div>
+              <div>
+                {player.target_celestial_id
+                  ? EMOJI.HOURGLASS_NOT_DONE
+                  : 'no player location'}
+              </div>
             )}
           </div>
 
@@ -74,24 +57,13 @@ const PlayerDashboard = () => {
               border: '2px solid white',
               padding: '0 0 2rem 1rem',
             }}>
-            <h3>player:</h3>
-            <pre>{JSON.stringify(player, null, 2)}</pre>
-            <h3>player location:</h3>
-            <pre>
-              {playerLocation
-                ? JSON.stringify(playerLocation, null, 2)
-                : 'no location set'}
-            </pre>
-            <h3>player ships:</h3>
-            <pre>
-              {playerShips ? JSON.stringify(playerShips, null, 2) : 'no ships'}
-            </pre>
-            <h3>player active ship:</h3>
-            <pre>
-              {activePlayerShip
-                ? JSON.stringify(activePlayerShip, null, 2)
-                : 'no active ship'}
-            </pre>
+            <PlayerOverview
+              player={player}
+              playerLocation={playerLocation}
+              playerShips={playerShips}
+              activePlayerShip={activePlayerShip}
+              solarSystemIndexed={solarSystemIndexed}
+            />
           </div>
         </div>
       ) : (

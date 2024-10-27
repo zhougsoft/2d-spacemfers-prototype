@@ -38,48 +38,52 @@ const AdminDashboard = () => {
 
       <AdminSection
         buttonLabel="get all celestials"
-        onSubmit={() => getAllCelestials()}
+        onSubmit={() => getAllCelestials().then(console.log)}
       />
 
       <AdminSection
         buttonLabel="get celestials by root"
         inputs={[{ placeholder: 'root_celestial_id', key: 'rootCelestialId' }]}
-        onSubmit={({ rootCelestialId }) => getCelestialsByRoot(rootCelestialId)}
+        onSubmit={({ rootCelestialId }) =>
+          getCelestialsByRoot(rootCelestialId).then(console.log)
+        }
       />
 
       <AdminSection
         buttonLabel="get celestial"
         inputs={[{ placeholder: 'celestial_id', key: 'celestialId' }]}
-        onSubmit={({ celestialId }) => getCelestial(celestialId)}
+        onSubmit={({ celestialId }) =>
+          getCelestial(celestialId).then(console.log)
+        }
       />
 
       <AdminSection
         buttonLabel="get all ship types"
-        onSubmit={() => getAllShipTypes()}
+        onSubmit={() => getAllShipTypes().then(console.log)}
       />
 
       <AdminSection
         buttonLabel="get ship type"
         inputs={[{ placeholder: 'ship_type_id', key: 'shipTypeId' }]}
-        onSubmit={({ shipTypeId }) => getShipType(shipTypeId)}
+        onSubmit={({ shipTypeId }) => getShipType(shipTypeId).then(console.log)}
       />
 
       <h2>🧑‍🚀 player admin</h2>
 
       <AdminSection
         buttonLabel="create player"
-        onSubmit={() => createPlayer()}
+        onSubmit={() => createPlayer().then(console.log)}
       />
 
       <AdminSection
         buttonLabel="get all players"
-        onSubmit={() => getPlayers()}
+        onSubmit={() => getPlayers().then(console.log)}
       />
 
       <AdminSection
         buttonLabel="get player"
         inputs={[{ placeholder: 'player_id', key: 'playerId' }]}
-        onSubmit={({ playerId }) => getPlayer(playerId)}
+        onSubmit={({ playerId }) => getPlayer(playerId).then(console.log)}
       />
 
       <h2>🎮 player state</h2>
@@ -87,7 +91,9 @@ const AdminDashboard = () => {
       <AdminSection
         buttonLabel="get player location"
         inputs={[{ placeholder: 'player_id', key: 'playerId' }]}
-        onSubmit={({ playerId }) => getPlayerLocation(playerId)}
+        onSubmit={({ playerId }) =>
+          getPlayerLocation(playerId).then(console.log)
+        }
       />
 
       <AdminSection
@@ -97,7 +103,7 @@ const AdminDashboard = () => {
           { placeholder: 'celestial_id', key: 'celestialId' },
         ]}
         onSubmit={({ playerId, celestialId }) =>
-          setPlayerLocation(playerId, celestialId)
+          setPlayerLocation(playerId, celestialId).then(console.log)
         }
       />
 
@@ -109,14 +115,16 @@ const AdminDashboard = () => {
           { placeholder: 'station_celestial_id', key: 'stationCelestialId' },
         ]}
         onSubmit={({ playerId, shipTypeId, stationCelestialId }) =>
-          addPlayerShip(playerId, shipTypeId, stationCelestialId)
+          addPlayerShip(playerId, shipTypeId, stationCelestialId).then(
+            console.log
+          )
         }
       />
 
       <AdminSection
         buttonLabel="get player ships"
         inputs={[{ placeholder: 'player_id', key: 'playerId' }]}
-        onSubmit={({ playerId }) => getPlayerShips(playerId)}
+        onSubmit={({ playerId }) => getPlayerShips(playerId).then(console.log)}
       />
 
       <AdminSection
@@ -126,14 +134,16 @@ const AdminDashboard = () => {
           { placeholder: 'player_ship_id', key: 'playerShipId', min: 0 },
         ]}
         onSubmit={({ playerId, playerShipId }) =>
-          setActivePlayerShip(playerId, playerShipId)
+          setActivePlayerShip(playerId, playerShipId).then(console.log)
         }
       />
 
       <AdminSection
         buttonLabel="get active player ship"
         inputs={[{ placeholder: 'player_id', key: 'playerId' }]}
-        onSubmit={({ playerId }) => getActivePlayerShip(playerId)}
+        onSubmit={({ playerId }) =>
+          getActivePlayerShip(playerId).then(console.log)
+        }
       />
 
       <AdminSection
@@ -143,7 +153,7 @@ const AdminDashboard = () => {
           { placeholder: 'celestial_id', key: 'celestialId' },
         ]}
         onSubmit={({ playerId, celestialId }) =>
-          initiatePlayerTravel(playerId, celestialId)
+          initiatePlayerTravel(playerId, celestialId).then(console.log)
         }
       />
     </>

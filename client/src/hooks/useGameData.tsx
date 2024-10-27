@@ -6,7 +6,7 @@ import {
   getPlayer,
   getPlayerShips,
 } from '../api'
-import { DataObject } from '../types'
+import { DataIndex, DataObject } from '../types'
 
 const buildSolarSystemTree = (
   rootCelestial: DataObject,
@@ -26,7 +26,13 @@ const buildSolarSystemTree = (
 
 export const useGameData = (playerId: number) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [solarSystem, setSolarSystem] = useState<DataObject | null>(null)
+
+  const [solarSystemTree, setSolarSystemTree] = useState<DataObject | null>(
+    null
+  )
+  const [solarSystemIndexed, setSolarSystemIndexed] =
+    useState<DataIndex | null>(null)
+
   const [player, setPlayer] = useState<DataObject | null>(null)
   const [playerLocation, setPlayerLocation] = useState<DataObject | null>(null)
   const [playerShips, setPlayerShips] = useState<DataObject | null>(null)
@@ -92,7 +98,16 @@ export const useGameData = (playerId: number) => {
                     childrenCelestials
                   )
 
-                  setSolarSystem(tree)
+                  const celestialsIndexedById = [
+                    rootCelestial,
+                    ...childrenCelestials,
+                  ].reduce((acc: any, celestial: any) => {
+                    acc[celestial.celestial_id] = celestial
+                    return acc
+                  }, {})
+
+                  setSolarSystemTree(tree)
+                  setSolarSystemIndexed(celestialsIndexedById)
                 }
               )
             )
@@ -105,7 +120,8 @@ export const useGameData = (playerId: number) => {
 
   return {
     isLoading,
-    solarSystem,
+    solarSystemIndexed,
+    solarSystemTree,
     player,
     playerLocation,
     playerShips,
