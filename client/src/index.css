@@ -1,14 +1,27 @@
 :root {
   --root-font-size: 12px;
   --font-primary: monospace;
+
   --color-bg: #111;
-  --color-text: #ccc;
-  --color-input-bg: #222;
-  --color-input-border: #444;
-  --color-input-placeholder: #888;
-  --color-button-bg: #222;
-  --color-button-border: #444;
-  --color-button-hover: #333;
+  --color-bg-light: #222;
+  --color-bg-lighter: #333;
+  --color-bg-lightest: #444;
+
+  --color-text: #ddd;
+  --color-text-dark: #888;
+
+  --color-mfer-blue: #5dd3ff;
+  --color-mfer-green: #cafe80;
+  --color-mfer-orange: #ffb470;
+  --color-mfer-red: #ff7077;
+  --color-mfer-yellow: #ffe260;
+
+  --color-input-bg: var(--color-bg-light);
+  --color-input-border: var(--color-bg-lightest);
+  --color-input-placeholder: var(--color-text-dark);
+  --color-button-bg: var(--color-bg-light);
+  --color-button-border: var(--color-bg-lightest);
+  --color-button-hover: var(--color-bg-lighter);
 }
 
 *,
@@ -19,10 +32,10 @@
 
 html,
 body {
+  font-size: var(--root-font-size) !important;
+  overflow-x: hidden;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  font-size: var(--root-font-size);
 }
 
 body {
@@ -64,4 +77,40 @@ input:focus {
 
 pre {
   font-size: 1rem;
+}
+
+.outline-dark {
+  outline: 1px solid var(--color-bg);
+}
+
+.outline-light {
+  outline: 1px solid var(--color-bg-light);
+}
+
+.outline-lighter {
+  outline: 1px solid var(--color-bg-lighter);
+}
+
+.outline-lightest {
+  outline: 1px solid var(--color-bg-lightest);
+}
+
+.outline-blue {
+  outline: 1px solid var(--color-mfer-blue);
+}
+
+.outline-green {
+  outline: 1px solid var(--color-mfer-green);
+}
+
+.outline-orange {
+  outline: 1px solid var(--color-mfer-orange);
+}
+
+.outline-red {
+  outline: 1px solid var(--color-mfer-red);
+}
+
+.outline-yellow {
+  outline: 1px solid var(--color-mfer-yellow);
 }

@@ -29,9 +29,17 @@ const AdminDashboard = () => {
       <h2>🗄️ db admin</h2>
 
       <div style={{ display: 'flex' }}>
-        <AdminSection buttonLabel="🚀 db up" onSubmit={() => dbUp()} />
+        <AdminSection
+          buttonLabel="🚀 db up"
+          onSubmit={() => dbUp()}
+          className="outline-green"
+        />
         &nbsp;
-        <AdminSection buttonLabel="💥 db down" onSubmit={() => dbDown()} />
+        <AdminSection
+          buttonLabel="💥 db down"
+          onSubmit={() => dbDown()}
+          className="outline-red"
+        />
       </div>
 
       <h2>🌌 universe admin</h2>

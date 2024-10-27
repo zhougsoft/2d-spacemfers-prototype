@@ -13,10 +13,12 @@ const AdminSection = ({
   buttonLabel,
   inputs = [],
   onSubmit,
+  className = 'outline-light',
 }: {
   buttonLabel: string
   inputs?: { placeholder: string; key: string; min?: number }[]
   onSubmit: (values: Record<string, number>) => void
+  className?: string
 }) => {
   const [inputValues, setInputValues] = useState<Record<string, number>>({})
 
@@ -33,10 +35,10 @@ const AdminSection = ({
     <div
       style={{
         display: 'flex',
-        border: '2px dotted black',
         marginBottom: '1rem',
         padding: '1rem',
-      }}>
+      }}
+      className={className}>
       <button onClick={handleSubmit}>{buttonLabel}</button>
       {inputs.map(input => (
         <div key={input.key}>
