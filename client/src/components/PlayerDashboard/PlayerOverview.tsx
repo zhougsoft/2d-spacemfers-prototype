@@ -1,51 +1,44 @@
 import { DataIndex, DataObject } from '../../types'
 import { CELESTIAL_TYPES } from '../../utils/constants'
 
+/*
+
+TODO:
+
+start parsing the travel stuff, logic, etc
+
+*/
+
 const PlayerOverview = ({
-  player,
-  playerLocation,
-  playerShips,
-  activePlayerShip,
+  playerData,
   solarSystemIndexed,
 }: {
-  player: DataObject | null
-  playerLocation: DataObject | null
-  playerShips: DataObject | null
-  activePlayerShip: DataObject | null
+  playerData: Record<string, DataObject | null>
   solarSystemIndexed: DataIndex | null
 }) => {
-  if (!player) return <div>no player</div>
-
-  console.log('<PlayerOverview />', {
-    data: {
-      player,
-      playerLocation,
-      playerShips,
-      activePlayerShip,
-      solarSystemIndexed,
-    },
-  })
+  if (!playerData) return <div>no player data</div>
+  const { player, playerLocation, playerShips, activePlayerShip } = playerData
 
   return (
     <>
       <h3>player overview</h3>
       <ul>
         <li>
-          <b>player id</b>: {player.player_id}
+          <b>player id</b>: {player?.player_id}
         </li>
         <li>
           <b>location:</b>{' '}
-          {!!playerLocation
+          {playerLocation
             ? `${playerLocation.name} (${
                 CELESTIAL_TYPES[playerLocation.celestial_type_id].name
               })`
-            : 'none'}
+            : 'no current location'}
         </li>
         <li>
           <b>active ship:</b>{' '}
           {activePlayerShip
             ? `${activePlayerShip.ship_type.name} (speed: ${activePlayerShip.ship_type.speed}, cargo: ${activePlayerShip.ship_type.max_cargo_size})`
-            : 'none'}
+            : 'no active ship'}
         </li>
       </ul>
 
@@ -85,7 +78,7 @@ const PlayerOverview = ({
           </tbody>
         </table>
       ) : (
-        <div>no ships</div>
+        <div>no owned ships</div>
       )}
     </>
   )

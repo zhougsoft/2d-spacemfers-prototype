@@ -1,7 +1,8 @@
 import { AU_IN_KM, CELESTIAL_TYPES, EMOJI } from '../../utils/constants'
 import { DataObject } from '../../types'
 
-const treeMargin = {
+const treeItemStyles = {
+  width: 'fit-content',
   marginLeft: '2rem',
   marginTop: '1rem',
 }
@@ -25,7 +26,7 @@ const renderCelestialTree = (
     : 'n/a'
 
   return hasChildren ? (
-    <details key={celestial.celestial_id} style={treeMargin} open>
+    <details key={celestial.celestial_id} style={treeItemStyles} open>
       <summary className={isHighlighted ? 'outline-orange' : ''}>
         <b>
           {celestialTypeInfo.emoji} {celestial.name || 'no name'}
@@ -42,7 +43,7 @@ const renderCelestialTree = (
   ) : (
     <div
       key={celestial.celestial_id}
-      style={treeMargin}
+      style={treeItemStyles}
       className={isHighlighted ? 'outline-orange' : ''}>
       <b>
         {celestialTypeInfo.emoji} {celestial.name || 'no name'}

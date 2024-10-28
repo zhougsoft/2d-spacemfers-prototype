@@ -61,10 +61,12 @@ const PlayerDashboard = () => {
               padding: '0 0 2rem 1rem',
             }}>
             <PlayerOverview
-              player={player}
-              playerLocation={playerLocation}
-              playerShips={playerShips}
-              activePlayerShip={activePlayerShip}
+              playerData={{
+                player,
+                playerLocation,
+                playerShips,
+                activePlayerShip,
+              }}
               solarSystemIndexed={solarSystemIndexed}
             />
           </div>

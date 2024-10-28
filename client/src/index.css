@@ -75,6 +75,21 @@ input:focus {
   border-color: var(--color-button-hover);
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  outline: 1px solid var(--color-bg-light);
+}
+
+th {
+  font-weight: bold;
+}
+
 pre {
   font-size: 1rem;
 }
