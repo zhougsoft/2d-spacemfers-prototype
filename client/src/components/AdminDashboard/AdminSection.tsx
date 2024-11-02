@@ -20,16 +20,30 @@ const AdminSection = ({
   onSubmit: (values: Record<string, number>) => void
   className?: string
 }) => {
-  const [inputValues, setInputValues] = useState<Record<string, number>>({})
+  const [inputValues, setInputValues] = useState<
+    Record<string, number | undefined>
+  >(() => {
+    const initialValues: Record<string, number | undefined> = {}
+    inputs.forEach(input => {
+      initialValues[input.key] = undefined
+    })
+    return initialValues
+  })
 
-  const handleInputChange = (key: string, value: number) => {
+  const handleInputChange = (key: string, value: number | undefined) => {
     setInputValues(prevValues => ({
       ...prevValues,
       [key]: value,
     }))
   }
 
-  const handleSubmit = () => onSubmit(inputValues)
+  const handleSubmit = () => {
+    const definedValues: Record<string, number> = {}
+    Object.entries(inputValues).forEach(([key, value]) => {
+      definedValues[key] = value ?? 0
+    })
+    onSubmit(definedValues)
+  }
 
   return (
     <div
@@ -45,11 +59,15 @@ const AdminSection = ({
           <LineDivider />
           <NumberInput
             placeholder={input.placeholder}
-            value={inputValues[input.key]}
-            min={input.min ?? 1}
-            onChange={e =>
-              handleInputChange(input.key, parseInt(e.target.value))
+            value={
+              inputValues[input.key] === undefined ? '' : inputValues[input.key]
             }
+            min={input.min ?? 1}
+            onChange={e => {
+              const val =
+                e.target.value === '' ? undefined : parseInt(e.target.value)
+              handleInputChange(input.key, val)
+            }}
           />
         </div>
       ))}

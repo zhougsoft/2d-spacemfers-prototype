@@ -31,13 +31,13 @@ const AdminDashboard = () => {
       <div style={{ display: 'flex' }}>
         <AdminSection
           buttonLabel="🚀 db up"
-          onSubmit={() => dbUp()}
+          onSubmit={() => dbUp().then(console.log)}
           className="outline-green"
         />
         &nbsp;
         <AdminSection
           buttonLabel="💥 db down"
-          onSubmit={() => dbDown()}
+          onSubmit={() => dbDown().then(console.log)}
           className="outline-red"
         />
       </div>
