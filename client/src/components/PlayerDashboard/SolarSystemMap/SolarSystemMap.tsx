@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { DataObject } from '../../../types'
 import { AU_IN_KM, CELESTIAL_TYPES, EMOJI } from '../../../utils/constants'
+import { isTraveling } from '../../../utils/playerHelpers'
 import CelestialModal from './CelestialModal'
 import styles from './SolarSystemMap.module.css'
 
@@ -14,10 +15,13 @@ const treeItemStyles = {
 const renderCelestialTree = (
   celestial: DataObject,
   highlightedCelestialId: number | null,
+  player: DataObject | null,
   onCelestialClick: (celestial: DataObject) => void
 ) => {
   const hasChildren = celestial.children?.length > 0
   const isHighlighted = celestial.celestial_id === highlightedCelestialId
+  const isCurrentlyTraveling = player && isHighlighted && isTraveling(player)
+
   const celestialTypeInfo = CELESTIAL_TYPES[celestial.celestial_type_id] ?? {
     name: 'unknown',
     emoji: EMOJI.QUESTION_MARK,
@@ -32,7 +36,13 @@ const renderCelestialTree = (
 
   const celestialInfo = (
     <div
-      className={`${styles.item} ${isHighlighted ? 'outline-orange' : ''}`}
+      className={`${styles.item} ${
+        isHighlighted
+          ? isCurrentlyTraveling
+            ? styles.highlightedTraveling
+            : styles.highlighted
+          : ''
+      }`}
       onClick={() => onCelestialClick(celestial)}
       role="button">
       <b>
@@ -49,7 +59,12 @@ const renderCelestialTree = (
       {hasChildren && (
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {celestial.children.map((child: DataObject) =>
-            renderCelestialTree(child, highlightedCelestialId, onCelestialClick)
+            renderCelestialTree(
+              child,
+              highlightedCelestialId,
+              player,
+              onCelestialClick
+            )
           )}
         </ul>
       )}
@@ -62,11 +77,13 @@ const SolarSystemMap = ({
   highlightedCelestialId,
   playerId,
   onDataChange,
+  player,
 }: {
   solarSystemTree: DataObject
   highlightedCelestialId: number | null
   playerId: number
   onDataChange: () => void
+  player: DataObject | null
 }) => {
   const [selectedCelestial, setSelectedCelestial] = useState<DataObject | null>(
     null
@@ -81,6 +98,7 @@ const SolarSystemMap = ({
         {renderCelestialTree(
           solarSystemTree,
           highlightedCelestialId,
+          player,
           celestial => setSelectedCelestial(celestial)
         )}
       </ul>

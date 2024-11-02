@@ -14,7 +14,7 @@ const PlayerDashboard = () => {
     playerLocation,
     playerShips,
     activePlayerShip,
-    refresh
+    refresh,
   } = useGameData(TEST_PLAYER_ID)
 
   if (isLoading) return <div>{EMOJI.HOURGLASS_NOT_DONE}</div>
@@ -45,6 +45,7 @@ const PlayerDashboard = () => {
                 highlightedCelestialId={playerLocation?.celestial_id}
                 playerId={TEST_PLAYER_ID}
                 onDataChange={refresh}
+                player={player}
               />
             ) : (
               <div>
