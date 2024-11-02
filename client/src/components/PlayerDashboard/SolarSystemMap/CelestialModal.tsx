@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { DataObject } from '../../../types'
 import { CELESTIAL_TYPES, EMOJI } from '../../../utils/constants'
+import { initiatePlayerTravel } from '../../../api'
 
 const modalOverlayStyle = {
   position: 'fixed' as const,
@@ -26,9 +28,26 @@ const modalContentStyle = {
 interface CelestialModalProps {
   celestial: DataObject
   onClose: () => void
+  playerId: number
+  onDataChange: () => void
 }
 
-const CelestialModal = ({ celestial, onClose }: CelestialModalProps) => {
+const CelestialModal = ({ celestial, onClose, playerId, onDataChange }: CelestialModalProps) => {
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleTravel = async () => {
+    setIsLoading(true)
+    try {
+      await initiatePlayerTravel(playerId, celestial.celestial_id)
+      onDataChange()
+      onClose()
+    } catch (error) {
+      console.error('Travel failed:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const celestialTypeInfo = CELESTIAL_TYPES[celestial.celestial_type_id]
 
   return (
@@ -48,25 +67,30 @@ const CelestialModal = ({ celestial, onClose }: CelestialModalProps) => {
 
         <div style={{ marginBottom: '1rem' }}>
           <p>
-            <b>Type:</b> {celestialTypeInfo.name}
+            <b>type:</b> {celestialTypeInfo.name}
           </p>
           <p>
-            <b>ID:</b> {celestial.celestial_id}
+            <b>celestial id:</b> {celestial.celestial_id}
           </p>
         </div>
 
         <div style={{ marginBottom: '1rem' }}>
-          <h4>actions</h4>
-          <button style={{ marginRight: '0.5rem' }}>travel here</button>
-          <button style={{ marginRight: '0.5rem' }}>view this</button>
-          <button>view that</button>
+          <h4>actions:</h4>
+          <button 
+            style={{ marginRight: '0.5rem' }}
+            onClick={handleTravel}
+            disabled={isLoading}
+          >
+            {isLoading ? EMOJI.HOURGLASS_NOT_DONE : 'travel here'}
+          </button>
+          <button>view stuff</button>
         </div>
 
         <div>
-          <h4>placeholder stats</h4>
+          <h4>placeholder stats:</h4>
           <p>something: 1,000,000</p>
           <p>something else: high</p>
-          <p>another thing: Medium</p>
+          <p>another thing: medium</p>
         </div>
       </div>
     </div>

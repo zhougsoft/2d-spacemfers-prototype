@@ -40,8 +40,7 @@ export const useGameData = (playerId: number) => {
     null
   )
 
-  // fetching all req'd API data in this nasty useEffect on component mount
-  useEffect(() => {
+  const refresh = () => {
     setIsLoading(true)
     getPlayer(playerId)
       .then(player => {
@@ -116,6 +115,10 @@ export const useGameData = (playerId: number) => {
       })
       .catch(console.error)
       .finally(() => setIsLoading(false))
+  }
+
+  useEffect(() => {
+    refresh()
   }, [])
 
   return {
@@ -126,5 +129,6 @@ export const useGameData = (playerId: number) => {
     playerLocation,
     playerShips,
     activePlayerShip,
+    refresh,
   }
 }

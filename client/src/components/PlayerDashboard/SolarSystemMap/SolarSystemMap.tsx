@@ -60,9 +60,13 @@ const renderCelestialTree = (
 const SolarSystemMap = ({
   solarSystemTree,
   highlightedCelestialId,
+  playerId,
+  onDataChange,
 }: {
   solarSystemTree: DataObject
   highlightedCelestialId: number | null
+  playerId: number
+  onDataChange: () => void
 }) => {
   const [selectedCelestial, setSelectedCelestial] = useState<DataObject | null>(
     null
@@ -85,6 +89,8 @@ const SolarSystemMap = ({
         <CelestialModal
           celestial={selectedCelestial}
           onClose={() => setSelectedCelestial(null)}
+          playerId={playerId}
+          onDataChange={onDataChange}
         />
       )}
     </>
