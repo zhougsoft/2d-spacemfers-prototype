@@ -5,7 +5,7 @@ import { CELESTIAL_TYPES } from '../../utils/constants'
 
 TODO:
 
-start parsing the travel stuff, logic, etc
+start parsing the travel stuff, logic, etc.
 
 */
 
@@ -18,6 +18,8 @@ const PlayerOverview = ({
 }) => {
   if (!playerData) return <div>no player data</div>
   const { player, playerLocation, playerShips, activePlayerShip } = playerData
+
+  console.log({ player, playerLocation })
 
   return (
     <>

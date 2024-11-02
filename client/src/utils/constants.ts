@@ -7,6 +7,7 @@ export const EMOJI = {
   ASTRONAUT_WOMAN: '👩‍🚀',
   COMET: '☄️',
   CRESCENT_MOON: '🌙',
+  CROSS_MARK: '❌',
   DIZZY_SYMBOL: '💫',
   EARTH_GLOBE_AMERICAS: '🌎',
   EARTH_GLOBE_ASIA_AUSTRALIA: '🌏',
