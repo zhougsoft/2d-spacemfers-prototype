@@ -63,8 +63,8 @@ CREATE TABLE player_location (
     player_id INTEGER PRIMARY KEY REFERENCES players(player_id),
     target_celestial_id INTEGER REFERENCES celestials(celestial_id),
     prev_celestial_id INTEGER REFERENCES celestials(celestial_id),
-    departure_time TIMESTAMP,
-    arrival_time TIMESTAMP,
+    departure_time BIGINT,
+    arrival_time BIGINT,
     CHECK (
         -- the arrival time is after the departure time or NULL
         arrival_time IS NULL OR departure_time IS NULL OR arrival_time > departure_time
