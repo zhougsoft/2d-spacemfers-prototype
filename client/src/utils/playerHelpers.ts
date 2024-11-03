@@ -13,7 +13,7 @@ export const getTravelProgress = (player: DataObject): number => {
   const arrivalTime = Number(player.arrival_time) * 1000
   const departureTime = Number(player.departure_time) * 1000
   const currentTime = new Date().getTime()
-  1
+
   const totalTime = arrivalTime - departureTime
   const elapsedTime = currentTime - departureTime
 
