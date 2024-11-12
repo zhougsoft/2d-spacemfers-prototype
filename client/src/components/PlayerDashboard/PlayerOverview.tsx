@@ -25,15 +25,15 @@ const PlayerOverview = ({
         <li>
           <b>location:</b>{' '}
           {playerLocation
-            ? `${playerLocation.name} (${
-                CELESTIAL_TYPES[playerLocation.celestial_type_id].name
-              })${
-                isTraveling
-                  ? ` - traveling... time to destination: ${formattedRemainingTime} - ${Math.round(
-                      progress
-                    )}%`
-                  : ''
-              }`
+            ? isTraveling
+              ? `traveling to ${
+                  playerLocation.name
+                } - time to destination: ${formattedRemainingTime} / ${Math.round(
+                  progress
+                )}%`
+              : `${playerLocation.name} (${
+                  CELESTIAL_TYPES[playerLocation.celestial_type_id].name
+                })`
             : 'no current location'}
         </li>
         <li>
