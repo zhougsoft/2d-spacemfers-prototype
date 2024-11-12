@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { DataObject } from '../../../types'
 import { AU_IN_KM, CELESTIAL_TYPES, EMOJI } from '../../../utils/constants'
-import { isTraveling } from '../../../utils/playerHelpers'
+import { usePlayerTravel } from '../../../hooks/usePlayerTravel'
 import CelestialModal from './CelestialModal'
 import styles from './SolarSystemMap.module.css'
 
@@ -18,9 +18,10 @@ const renderCelestialTree = (
   player: DataObject | null,
   onCelestialClick: (celestial: DataObject) => void
 ) => {
+  const { isTraveling } = usePlayerTravel(player)
   const hasChildren = celestial.children?.length > 0
   const isHighlighted = celestial.celestial_id === highlightedCelestialId
-  const isCurrentlyTraveling = player && isHighlighted && isTraveling(player)
+  const isCurrentlyTraveling = player && isHighlighted && isTraveling
 
   const celestialTypeInfo = CELESTIAL_TYPES[celestial.celestial_type_id] ?? {
     name: 'unknown',

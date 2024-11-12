@@ -1,14 +1,6 @@
 import { DataIndex, DataObject } from '../../types'
 import { CELESTIAL_TYPES } from '../../utils/constants'
-import { isTraveling, getTravelProgress } from '../../utils/playerHelpers'
-
-/*
-
-TODO:
-
-start parsing the travel stuff, logic, etc.
-
-*/
+import { usePlayerTravel } from '../../hooks/usePlayerTravel'
 
 const PlayerOverview = ({
   playerData,
@@ -20,8 +12,8 @@ const PlayerOverview = ({
   if (!playerData) return <div>no player data</div>
   const { player, playerLocation, playerShips, activePlayerShip } = playerData
 
-  const traveling = player && isTraveling(player)
-  const travelProgress = player ? getTravelProgress(player) : 0
+  const { isTraveling, progress, formattedRemainingTime } =
+    usePlayerTravel(player)
 
   return (
     <>
@@ -36,8 +28,10 @@ const PlayerOverview = ({
             ? `${playerLocation.name} (${
                 CELESTIAL_TYPES[playerLocation.celestial_type_id].name
               })${
-                traveling
-                  ? ` - Traveling... ${Math.round(travelProgress)}%`
+                isTraveling
+                  ? ` - traveling... time to destination: ${formattedRemainingTime} - ${Math.round(
+                      progress
+                    )}%`
                   : ''
               }`
             : 'no current location'}
