@@ -26,6 +26,7 @@ create_planet=$(generateCodeBlock "src/sql/celestials/planets/create-planet.sql"
 create_station=$(generateCodeBlock "src/sql/celestials/stations/create-station.sql")
 get_celestial=$(generateCodeBlock "src/sql/celestials/get-celestial.sql")
 get_celestials_by_root=$(generateCodeBlock "src/sql/celestials/get-celestials-by-root.sql")
+get_distance_between_celestials=$(generateCodeBlock "src/sql/celestials/get-distance-between-celestials.sql")
 
 # game admin
 create_ship=$(generateCodeBlock "src/sql/ships/create-ship-type.sql")
@@ -49,7 +50,7 @@ Your task is to be my consultant for my game spacemfers. spacemfers is a 2D, web
 I am creating this project from the ground up at the database level. I want it to be as optimized and normalized as possible, and stay true to the best conventions and practices. \
 The project uses PostgreSQL. Here are the relevant project files.\n\n\
 ## Table setup:\n\n${db_up}\n\n\
-## Universe admin:\n\n${create_star}\n\n${create_planet}\n\n${create_station}\n\n${get_celestial}\n\n${get_celestials_by_root}\n\n\
+## Universe admin:\n\n${create_star}\n\n${create_planet}\n\n${create_station}\n\n${get_celestial}\n\n${get_celestials_by_root}\n\n${get_distance_between_celestials}\n\n\
 ## Game admin:\n\n${create_ship}\n\n\
 ## Player admin:\n\n${create_player}\n\n${delete_player}\n\n\
 ## Player state:\n\n${get_location}\n\n${set_location}\n\n${add_owned_ship}\n\n${remove_owned_ship}\n\n${get_active_ship}\n\n${set_active_ship}\n\n${unset_active_ship}\n\n${initiate_player_travel}\n\n\
