@@ -619,10 +619,13 @@ const main = async () => {
           return
         }
 
-        // TODO: find out distance between player location and destination celestial
-        // (will req recursive util query to calculate distance between celestials)
+        // TODO:
 
-        // TODO: get player active ship stats (for speed, etc.)
+        // 1. get player's current location (remember to check if they're currently travelling)
+        // 2. get distance between current location and destination w/ getDistanceBetweenCelestials()
+        // 3. get player active ship stats (for speed, etc.)
+        // 4. calculate travel duration based on distance and speed
+        // 5. initiate travel w/ the calculated duration w/ initiatePlayerTravel()
 
         const playerTravelResult = await initiatePlayerTravel(
           playerId,
