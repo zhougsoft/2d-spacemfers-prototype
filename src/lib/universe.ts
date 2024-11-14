@@ -7,6 +7,17 @@ export const getAllCelestials = async () => {
   return celestialsResult
 }
 
+export const getCelestial = async (celestialId: number) => {
+  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+
+  const celestialResult = await runQuery('celestials/get-celestial.sql', [
+    celestialId,
+  ])
+
+  if (!celestialResult) return null
+  return celestialResult[0]
+}
+
 export const getCelestialsByRoot = async (rootCelestialId: number) => {
   const celestialsResult = await runQuery(
     'celestials/get-celestials-by-root.sql',
@@ -17,15 +28,20 @@ export const getCelestialsByRoot = async (rootCelestialId: number) => {
   return celestialsResult
 }
 
-export const getCelestial = async (celestialId: number) => {
-  if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+export const getDistanceBetweenCelestials = async (
+  celestialId1: number,
+  celestialId2: number
+) => {
+  if (typeof celestialId1 !== 'number') throw Error('invalid celestial id')
+  if (typeof celestialId2 !== 'number') throw Error('invalid celestial id')
 
-  const celestialResult = await runQuery('celestials/get-celestial.sql', [
-    celestialId,
-  ])
+  const distanceResult = await runQuery(
+    'celestials/get-distance-between-celestials.sql',
+    [celestialId1, celestialId2]
+  )
 
-  if (!celestialResult) return null
-  return celestialResult[0]
+  if (!distanceResult) return null
+  return distanceResult[0]
 }
 
 export const createStar = async (name: string) => {

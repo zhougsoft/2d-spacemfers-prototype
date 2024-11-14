@@ -22,6 +22,7 @@ import {
   getAllShipTypes,
   getCelestial,
   getCelestialsByRoot,
+  getDistanceBetweenCelestials,
   getShipType,
 } from './lib/universe'
 import { createGameShips, createSolarSystem } from './utils'
@@ -98,43 +99,14 @@ const main = async () => {
       const celestials = await getAllCelestials()
 
       if (!celestials) {
-        return res.status(404).json({ error: 'celestials not found' })
+        res.status(404).json({ error: 'celestials not found' })
+        return
       }
 
-      return res.status(200).json(celestials)
+      res.status(200).json(celestials)
     } catch (error) {
       console.error(`error fetching celestials:`, error)
-      return res.status(500).json({ error: 'internal server error' })
-    }
-  })
-
-  /**
-   * Get data for all celestials sharing a root ID.
-   * @route GET /api/celestials/:rootCelestialId
-   * @param {number} id - The root celestial ID.
-   * @returns {Object} Response with the celestials data or an error message.
-   */
-  app.get('/api/celestials/:rootCelestialId/root', async (req, res) => {
-    try {
-      const rootCelestialId = parseInt(req.params.rootCelestialId, 10)
-
-      if (isNaN(rootCelestialId) || rootCelestialId < 1) {
-        return res.status(400).json({ error: 'invalid celestial id' })
-      }
-
-      const celestial = await getCelestialsByRoot(rootCelestialId)
-
-      if (!celestial) {
-        return res.status(404).json({ error: 'celestials not found' })
-      }
-
-      return res.status(200).json(celestial)
-    } catch (error) {
-      console.error(
-        `error fetching celestials for root id ${req.params.rootCelestialId}:`,
-        error
-      )
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
 
@@ -149,24 +121,103 @@ const main = async () => {
       const celestialId = parseInt(req.params.celestialId, 10)
 
       if (isNaN(celestialId) || celestialId < 1) {
-        return res.status(400).json({ error: 'invalid celestial id' })
+        res.status(400).json({ error: 'invalid celestial id' })
+        return
       }
 
       const celestial = await getCelestial(celestialId)
 
       if (!celestial) {
-        return res.status(404).json({ error: 'celestial not found' })
+        res.status(404).json({ error: 'celestial not found' })
+        return
       }
 
-      return res.status(200).json(celestial)
+      res.status(200).json(celestial)
     } catch (error) {
       console.error(
         `error fetching celestial ${req.params.celestialId}:`,
         error
       )
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
+
+  /**
+   * Get data for all celestials sharing a root ID.
+   * @route GET /api/celestials/:rootCelestialId
+   * @param {number} id - The root celestial ID.
+   * @returns {Object} Response with the celestials data or an error message.
+   */
+  app.get('/api/celestials/root/:rootCelestialId', async (req, res) => {
+    try {
+      const rootCelestialId = parseInt(req.params.rootCelestialId, 10)
+
+      if (isNaN(rootCelestialId) || rootCelestialId < 1) {
+        res.status(400).json({ error: 'invalid celestial id' })
+        return
+      }
+
+      const celestial = await getCelestialsByRoot(rootCelestialId)
+
+      if (!celestial) {
+        res.status(404).json({ error: 'celestials not found' })
+        return
+      }
+
+      res.status(200).json(celestial)
+    } catch (error) {
+      console.error(
+        `error fetching celestials for root id ${req.params.rootCelestialId}:`,
+        error
+      )
+      res.status(500).json({ error: 'internal server error' })
+    }
+  })
+
+  /**
+   * Get distance between two celestials.
+   * @route GET /api/celestials/distance/:celestialId1/:celestialId2
+   * @param {number} celestialId1 - The ID of the first celestial.
+   * @param {number} celestialId2 - The ID of the second celestial.
+   * @returns {Object} Response with the distance between the celestials or an error message.
+   */
+  app.get(
+    '/api/celestials/distance/:celestialId1/:celestialId2',
+    async (req, res) => {
+      try {
+        const celestialId1 = parseInt(req.params.celestialId1, 10)
+        const celestialId2 = parseInt(req.params.celestialId2, 10)
+
+        if (isNaN(celestialId1) || celestialId1 < 1) {
+          res.status(400).json({ error: 'invalid celestial id #1' })
+          return
+        }
+
+        if (isNaN(celestialId2) || celestialId2 < 1) {
+          res.status(400).json({ error: 'invalid celestial id #2' })
+          return
+        }
+
+        const result = await getDistanceBetweenCelestials(
+          celestialId1,
+          celestialId2
+        )
+
+        if (!result) {
+          res.status(404).json({ error: 'distance not found' })
+          return
+        }
+
+        res.status(200).json(result)
+      } catch (error) {
+        console.error(
+          `error fetching distance between celestials ${req.params.celestialId1} and ${req.params.celestialId2}:`,
+          error
+        )
+        res.status(500).json({ error: 'internal server error' })
+      }
+    }
+  )
 
   /**
    * Get all ships in the game.
@@ -178,13 +229,14 @@ const main = async () => {
       const ships = await getAllShipTypes()
 
       if (!ships) {
-        return res.status(404).json({ error: 'ships not found' })
+        res.status(404).json({ error: 'ships not found' })
+        return
       }
 
-      return res.status(200).json(ships)
+      res.status(200).json(ships)
     } catch (error) {
       console.error(`error fetching ships:`, error)
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
 
@@ -199,19 +251,21 @@ const main = async () => {
       const shipId = parseInt(req.params.shipId, 10)
 
       if (isNaN(shipId) || shipId < 1) {
-        return res.status(400).json({ error: 'invalid ship id' })
+        res.status(400).json({ error: 'invalid ship id' })
+        return
       }
 
       const ship = await getShipType(shipId)
 
       if (!ship) {
-        return res.status(404).json({ error: 'ship not found' })
+        res.status(404).json({ error: 'ship not found' })
+        return
       }
 
-      return res.status(200).json(ship)
+      res.status(200).json(ship)
     } catch (error) {
       console.error(`error fetching ship ${req.params.shipId}:`, error)
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
 
@@ -253,28 +307,31 @@ const main = async () => {
           : []
 
         if (playerIds.some(isNaN)) {
-          return res.status(400).json({ error: 'invalid player ids' })
+          res.status(400).json({ error: 'invalid player ids' })
+          return
         }
 
         const players = await getPlayers(playerIds)
 
         if (!players || players.length === 0) {
-          return res.status(404).json({ error: 'no players found' })
+          res.status(404).json({ error: 'no players found' })
+          return
         }
 
-        return res.status(200).json(players)
+        res.status(200).json(players)
       } else {
         const players = await getAllPlayers()
 
         if (!players) {
-          return res.status(404).json({ error: 'no players found' })
+          res.status(404).json({ error: 'no players found' })
+          return
         }
 
-        return res.status(200).json(players)
+        res.status(200).json(players)
       }
     } catch (error) {
       console.error('error fetching players:', error)
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
 
@@ -289,19 +346,21 @@ const main = async () => {
       const playerId = parseInt(req.params.playerId, 10)
 
       if (isNaN(playerId) || playerId < 1) {
-        return res.status(400).json({ error: 'invalid player id' })
+        res.status(400).json({ error: 'invalid player id' })
+        return
       }
 
       const player = await getPlayer(playerId)
 
       if (!player) {
-        return res.status(404).json({ error: 'player not found' })
+        res.status(404).json({ error: 'player not found' })
+        return
       }
 
-      return res.status(200).json(player)
+      res.status(200).json(player)
     } catch (error) {
       console.error(`error fetching player ${req.params.playerId}:`, error)
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
 
@@ -318,19 +377,21 @@ const main = async () => {
       const playerId = parseInt(req.params.playerId, 10)
 
       if (isNaN(playerId) || playerId < 1) {
-        return res.status(400).json({ error: 'invalid player id' })
+        res.status(400).json({ error: 'invalid player id' })
+        return
       }
 
       const playerLocation = await getPlayerLocation(playerId)
 
       if (!playerLocation) {
-        return res.status(404).json({ error: 'no player location found' })
+        res.status(404).json({ error: 'no player location found' })
+        return
       }
 
-      return res.status(200).json(playerLocation)
+      res.status(200).json(playerLocation)
     } catch (error) {
       console.error(`error fetching player ${req.params.playerId}:`, error)
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
 
@@ -349,11 +410,13 @@ const main = async () => {
         const celestialId = parseInt(req.params.celestialId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
-          return res.status(400).json({ error: 'invalid player id' })
+          res.status(400).json({ error: 'invalid player id' })
+          return
         }
 
         if (isNaN(celestialId) || celestialId < 1) {
-          return res.status(400).json({ error: 'invalid celestial id' })
+          res.status(400).json({ error: 'invalid celestial id' })
+          return
         }
 
         const playerLocationResult = await setPlayerLocation(
@@ -362,16 +425,15 @@ const main = async () => {
         )
 
         if (!playerLocationResult) {
-          return res
-            .status(500)
-            .json({ error: 'error setting player location' })
+          res.status(500).json({ error: 'error setting player location' })
+          return
         }
 
-        return res.status(200).json(playerLocationResult)
+        res.status(200).json(playerLocationResult)
       } catch (error) {
         const errorMsg = `error setting player id ${req.params.playerId} to celestial id ${req.params.celestialId}:`
         console.error(errorMsg, error)
-        return res.status(500).json({ error: 'internal server error' })
+        res.status(500).json({ error: 'internal server error' })
       }
     }
   )
@@ -393,15 +455,18 @@ const main = async () => {
         const stationId = parseInt(req.params.stationId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
-          return res.status(400).json({ error: 'invalid player id' })
+          res.status(400).json({ error: 'invalid player id' })
+          return
         }
 
         if (isNaN(shipTypeId) || shipTypeId < 1) {
-          return res.status(400).json({ error: 'invalid ship id' })
+          res.status(400).json({ error: 'invalid ship id' })
+          return
         }
 
         if (isNaN(stationId) || stationId < 1) {
-          return res.status(400).json({ error: 'invalid station id' })
+          res.status(400).json({ error: 'invalid station id' })
+          return
         }
 
         const playerShipId = await addPlayerShip(
@@ -410,15 +475,16 @@ const main = async () => {
           stationId
         )
 
-        return res.status(200).json({ player_ship_id: playerShipId })
+        res.status(200).json({ player_ship_id: playerShipId })
       } catch (error) {
         if (error.message.includes('invalid location')) {
-          return res.status(400).json({ error: error.message })
+          res.status(400).json({ error: error.message })
+          return
         }
 
         const errorMsg = `error adding ship type id ${req.params.shipTypeId} to player id ${req.params.playerId}:`
         console.error(errorMsg, error)
-        return res.status(500).json({ error: 'internal server error' })
+        res.status(500).json({ error: 'internal server error' })
       }
     }
   )
@@ -434,22 +500,24 @@ const main = async () => {
       const playerId = parseInt(req.params.playerId, 10)
 
       if (isNaN(playerId) || playerId < 1) {
-        return res.status(400).json({ error: 'invalid player id' })
+        res.status(400).json({ error: 'invalid player id' })
+        return
       }
 
       const playerShips = await getPlayerShips(playerId)
 
       if (!playerShips) {
-        return res.status(404).json({ error: 'no player ships found' })
+        res.status(404).json({ error: 'no player ships found' })
+        return
       }
 
-      return res.status(200).json(playerShips)
+      res.status(200).json(playerShips)
     } catch (error) {
       console.error(
         `error fetching ships for player ${req.params.playerId}:`,
         error
       )
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
 
@@ -469,7 +537,8 @@ const main = async () => {
         const playerShipId = parseInt(req.params.playerShipId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
-          return res.status(400).json({ error: 'invalid player ID' })
+          res.status(400).json({ error: 'invalid player ID' })
+          return
         }
 
         let updatedActiveShipId = null
@@ -481,17 +550,18 @@ const main = async () => {
           updatedActiveShipId = status.updated_ship_id
         }
 
-        return res.status(200).json({ active_ship_id: updatedActiveShipId })
+        res.status(200).json({ active_ship_id: updatedActiveShipId })
       } catch (error) {
         if (error.message.includes('invalid location')) {
-          return res.status(400).json({ error: error.message })
+          res.status(400).json({ error: error.message })
+          return
         }
 
         console.error(
           `error setting active ship for player ${req.params.playerId}:`,
           error
         )
-        return res.status(500).json({ error: 'internal server error' })
+        res.status(500).json({ error: 'internal server error' })
       }
     }
   )
@@ -507,19 +577,21 @@ const main = async () => {
       const playerId = parseInt(req.params.playerId, 10)
 
       if (isNaN(playerId) || playerId < 1) {
-        return res.status(400).json({ error: 'invalid player id' })
+        res.status(400).json({ error: 'invalid player id' })
+        return
       }
 
       const activePlayerShip = await getActivePlayerShip(playerId)
 
       if (!activePlayerShip) {
-        return res.status(404).json({ error: 'no player active ship found' })
+        res.status(404).json({ error: 'no player active ship found' })
+        return
       }
 
-      return res.status(200).json(activePlayerShip)
+      res.status(200).json(activePlayerShip)
     } catch (error) {
       console.error(`error fetching player ${req.params.playerId}:`, error)
-      return res.status(500).json({ error: 'internal server error' })
+      res.status(500).json({ error: 'internal server error' })
     }
   })
 
@@ -538,11 +610,13 @@ const main = async () => {
         const celestialId = parseInt(req.params.celestialId, 10)
 
         if (isNaN(playerId) || playerId < 1) {
-          return res.status(400).json({ error: 'invalid player id' })
+          res.status(400).json({ error: 'invalid player id' })
+          return
         }
 
         if (isNaN(celestialId) || celestialId < 1) {
-          return res.status(400).json({ error: 'invalid celestial id' })
+          res.status(400).json({ error: 'invalid celestial id' })
+          return
         }
 
         // TODO: find out distance between player location and destination celestial
@@ -557,16 +631,15 @@ const main = async () => {
         )
 
         if (!playerTravelResult) {
-          return res
-            .status(500)
-            .json({ error: 'error initiating player travel' })
+          res.status(500).json({ error: 'error initiating player travel' })
+          return
         }
 
-        return res.status(200).json(playerTravelResult)
+        res.status(200).json(playerTravelResult)
       } catch (error) {
         const errorMsg = `error initiating travel for player id ${req.params.playerId} to celestial id ${req.params.celestialId}:`
         console.error(errorMsg, error)
-        return res.status(500).json({ error: 'internal server error' })
+        res.status(500).json({ error: 'internal server error' })
       }
     }
   )

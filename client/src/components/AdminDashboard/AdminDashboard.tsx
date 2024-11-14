@@ -8,6 +8,7 @@ import {
   getAllShipTypes,
   getCelestial,
   getCelestialsByRoot,
+  getDistanceBetweenCelestials,
   getPlayer,
   getPlayerLocation,
   getPlayerShips,
@@ -50,6 +51,14 @@ const AdminDashboard = () => {
       />
 
       <AdminSection
+        buttonLabel="get celestial"
+        inputs={[{ placeholder: 'celestial_id', key: 'celestialId' }]}
+        onSubmit={({ celestialId }) =>
+          getCelestial(celestialId).then(console.log)
+        }
+      />
+
+      <AdminSection
         buttonLabel="get celestials by root"
         inputs={[{ placeholder: 'root_celestial_id', key: 'rootCelestialId' }]}
         onSubmit={({ rootCelestialId }) =>
@@ -58,10 +67,15 @@ const AdminDashboard = () => {
       />
 
       <AdminSection
-        buttonLabel="get celestial"
-        inputs={[{ placeholder: 'celestial_id', key: 'celestialId' }]}
-        onSubmit={({ celestialId }) =>
-          getCelestial(celestialId).then(console.log)
+        buttonLabel="get distance between celestials"
+        inputs={[
+          { placeholder: 'celestial_id_1', key: 'celestialId1' },
+          { placeholder: 'celestial_id_2', key: 'celestialId2' },
+        ]}
+        onSubmit={({ celestialId1, celestialId2 }) =>
+          getDistanceBetweenCelestials(celestialId1, celestialId2).then(
+            console.log
+          )
         }
       />
 

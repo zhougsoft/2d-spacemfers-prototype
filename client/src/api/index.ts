@@ -34,15 +34,25 @@ export const getAllCelestials = async () => {
   return data
 }
 
+export const getCelestial = async (celestialId: number) => {
+  const data = await request(`${API_URL}/api/celestials/${celestialId}`)
+  return data
+}
+
 export const getCelestialsByRoot = async (rootCelestialId: number) => {
   const data = await request(
-    `${API_URL}/api/celestials/${rootCelestialId}/root`
+    `${API_URL}/api/celestials/root/${rootCelestialId}`
   )
   return data
 }
 
-export const getCelestial = async (celestialId: number) => {
-  const data = await request(`${API_URL}/api/celestials/${celestialId}`)
+export const getDistanceBetweenCelestials = async (
+  celestialId1: number,
+  celestialId2: number
+) => {
+  const data = await request(
+    `${API_URL}/api/celestials/distance/${celestialId1}/${celestialId2}`
+  )
   return data
 }
 
