@@ -6,8 +6,12 @@ SET prev_celestial_id = CASE
   END,
   target_celestial_id = $2,
   departure_time = EXTRACT(EPOCH FROM NOW()),
-  arrival_time = EXTRACT(EPOCH FROM NOW()) + 60 -- 60 seconds travel time (TODO: make this an argument)
+  arrival_time = CASE 
+    WHEN $3 <= 0 THEN NULL
+    ELSE EXTRACT(EPOCH FROM NOW()) + $3
+  END
 WHERE player_id = $1
+  AND $3 > 0
   AND EXISTS (
     SELECT 1
     FROM player_active_ship

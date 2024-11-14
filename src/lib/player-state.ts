@@ -156,14 +156,17 @@ export const getActivePlayerShip = async (playerId: number) => {
 
 export const initiatePlayerTravel = async (
   playerId: number,
-  celestialId: number
+  celestialId: number,
+  travelDuration: number
 ) => {
   if (typeof playerId !== 'number') throw Error('invalid player id')
   if (typeof celestialId !== 'number') throw Error('invalid celestial id')
+  if (typeof celestialId !== 'number' || travelDuration <= 0)
+    throw Error('invalid travel duration')
 
   const playerTravelResult = await runQuery(
     'player-state/initiate-player-travel.sql',
-    [playerId, celestialId]
+    [playerId, celestialId, travelDuration]
   )
 
   if (!playerTravelResult) return null

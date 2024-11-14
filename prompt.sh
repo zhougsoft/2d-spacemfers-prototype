@@ -17,9 +17,8 @@ generateCodeBlock() {
     echo "### FILE: $filePath\n\`\`\`$fileType\n$(cat $filePath)\n\`\`\`"
 }
 
-# db setup & teardown
+# db setup
 db_up=$(generateCodeBlock "src/sql/db-up.sql")
-db_down=$(generateCodeBlock "src/sql/db-down.sql")
 
 # universe admin
 create_star=$(generateCodeBlock "src/sql/celestials/stars/create-star.sql")
@@ -28,7 +27,7 @@ create_station=$(generateCodeBlock "src/sql/celestials/stations/create-station.s
 get_celestial=$(generateCodeBlock "src/sql/celestials/get-celestial.sql")
 get_celestials_by_root=$(generateCodeBlock "src/sql/celestials/get-celestials-by-root.sql")
 
-# game item admin
+# game admin
 create_ship=$(generateCodeBlock "src/sql/ships/create-ship-type.sql")
 
 # player admin
@@ -49,10 +48,10 @@ echo -e "You are a world-class Postgres engineer, SQL wizard and senior relation
 Your task is to be my consultant for my game spacemfers. spacemfers is a 2D, web-based, open-universe, idle-clicker, lofi space sandbox MMO; think the depth of EVE Online with the simple browser-based interface of Neopets.\n\n\
 I am creating this project from the ground up at the database level. I want it to be as optimized and normalized as possible, and stay true to the best conventions and practices. \
 The project uses PostgreSQL. Here are the relevant project files.\n\n\
-## Table setup & teardown:\n\n${db_up}\n\n${db_down}\n\n\
+## Table setup:\n\n${db_up}\n\n\
 ## Universe admin:\n\n${create_star}\n\n${create_planet}\n\n${create_station}\n\n${get_celestial}\n\n${get_celestials_by_root}\n\n\
-## Game item admin:\n\n${create_ship}\n\n\
+## Game admin:\n\n${create_ship}\n\n\
 ## Player admin:\n\n${create_player}\n\n${delete_player}\n\n\
 ## Player state:\n\n${get_location}\n\n${set_location}\n\n${add_owned_ship}\n\n${remove_owned_ship}\n\n${get_active_ship}\n\n${set_active_ship}\n\n${unset_active_ship}\n\n${initiate_player_travel}\n\n\
 ## Instruction:\nThoroughly study the files until you completely grasp the premise and functionality. \
-Only when you have achieved full understanding, reply with 'I understand' only and wait for further instruction."
+Only when you have achieved full understanding, reply with 'Ready' only and wait for further instruction."

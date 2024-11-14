@@ -545,9 +545,15 @@ const main = async () => {
           return res.status(400).json({ error: 'invalid celestial id' })
         }
 
+        // TODO: find out distance between player location and destination celestial
+        // (will req recursive util query to calculate distance between celestials)
+
+        // TODO: get player active ship stats (for speed, etc.)
+
         const playerTravelResult = await initiatePlayerTravel(
           playerId,
-          celestialId
+          celestialId,
+          10 // TODO: make travel duration dynamic based on distance and speed
         )
 
         if (!playerTravelResult) {
