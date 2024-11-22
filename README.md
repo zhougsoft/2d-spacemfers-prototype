@@ -2,7 +2,7 @@
 
 > mfers, in space
 
-![spacemfers](assets/spacemfers.png)
+![spacemfers](website/spacemfers.png)
 
 ### what is spacemfers
 
