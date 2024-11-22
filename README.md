@@ -9,10 +9,17 @@
 spacemfers is a web-based, open-universe, idle-clicker, lofi space sandbox MMO inspired by EVE Online.
 
 #### MVP game loop:
-Players gather resources and sell them in a dynamic market to earn currency, then use those earnings to purchase fuel, which is required to travel to new locations and gather more resources. The market prices fluctuate based on supply and demand, creating strategic decisions about when to buy fuel or sell resources. Players must balance resource collection, fuel management, and market opportunities to optimize their progress and accumulate wealth.
+Players gather resources and sell them in a dynamic market to earn currency, then use those earnings to purchase stuff, which is used to travel to new locations and gather more resources. The market prices fluctuate based on supply and demand, creating strategic decisions about when to buy fuel or sell resources. Players must balance resource collection, time management, and market opportunities to optimize their progress and accumulate wealth.
+
+### run locally:
+1. install deps: `npm install`
+1. make a copy of `server/.env.example` named `server/.env`
+1. run postgres: `npm run db:up`
+    - to bring the container down, run `npm run db:down`
+1. run the server: `npm run server`
+1. run the client: `npm run client`
 
 ### database tables
-
 each table in the spacemfers game database
 
 #### celestial_types

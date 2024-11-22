@@ -18,32 +18,32 @@ generateCodeBlock() {
 }
 
 # db setup
-db_up=$(generateCodeBlock "src/sql/db-up.sql")
+db_up=$(generateCodeBlock "server/src/sql/db-up.sql")
 
 # universe admin
-create_star=$(generateCodeBlock "src/sql/celestials/stars/create-star.sql")
-create_planet=$(generateCodeBlock "src/sql/celestials/planets/create-planet.sql")
-create_station=$(generateCodeBlock "src/sql/celestials/stations/create-station.sql")
-get_celestial=$(generateCodeBlock "src/sql/celestials/get-celestial.sql")
-get_celestials_by_root=$(generateCodeBlock "src/sql/celestials/get-celestials-by-root.sql")
-get_distance_between_celestials=$(generateCodeBlock "src/sql/celestials/get-distance-between-celestials.sql")
+create_star=$(generateCodeBlock "server/src/sql/celestials/stars/create-star.sql")
+create_planet=$(generateCodeBlock "server/src/sql/celestials/planets/create-planet.sql")
+create_station=$(generateCodeBlock "server/src/sql/celestials/stations/create-station.sql")
+get_celestial=$(generateCodeBlock "server/src/sql/celestials/get-celestial.sql")
+get_celestials_by_root=$(generateCodeBlock "server/src/sql/celestials/get-celestials-by-root.sql")
+get_distance_between_celestials=$(generateCodeBlock "server/src/sql/celestials/get-distance-between-celestials.sql")
 
 # game admin
-create_ship=$(generateCodeBlock "src/sql/ships/create-ship-type.sql")
+create_ship=$(generateCodeBlock "server/src/sql/ships/create-ship-type.sql")
 
 # player admin
-create_player=$(generateCodeBlock "src/sql/players/create-player.sql")
-delete_player=$(generateCodeBlock "src/sql/players/delete-player.sql")
+create_player=$(generateCodeBlock "server/src/sql/players/create-player.sql")
+delete_player=$(generateCodeBlock "server/src/sql/players/delete-player.sql")
 
 # player state
-get_location=$(generateCodeBlock "src/sql/player-state/get-player-location.sql")
-set_location=$(generateCodeBlock "src/sql/player-state/set-player-location.sql")
-add_owned_ship=$(generateCodeBlock "src/sql/player-state/add-player-ship.sql")
-remove_owned_ship=$(generateCodeBlock "src/sql/player-state/remove-player-ship.sql")
-get_active_ship=$(generateCodeBlock "src/sql/player-state/get-active-player-ship.sql")
-set_active_ship=$(generateCodeBlock "src/sql/player-state/set-active-player-ship.sql")
-unset_active_ship=$(generateCodeBlock "src/sql/player-state/unset-active-player-ship.sql")
-initiate_player_travel=$(generateCodeBlock "src/sql/player-state/initiate-player-travel.sql")
+get_location=$(generateCodeBlock "server/src/sql/player-state/get-player-location.sql")
+set_location=$(generateCodeBlock "server/src/sql/player-state/set-player-location.sql")
+add_owned_ship=$(generateCodeBlock "server/src/sql/player-state/add-player-ship.sql")
+remove_owned_ship=$(generateCodeBlock "server/src/sql/player-state/remove-player-ship.sql")
+get_active_ship=$(generateCodeBlock "server/src/sql/player-state/get-active-player-ship.sql")
+set_active_ship=$(generateCodeBlock "server/src/sql/player-state/set-active-player-ship.sql")
+unset_active_ship=$(generateCodeBlock "server/src/sql/player-state/unset-active-player-ship.sql")
+initiate_player_travel=$(generateCodeBlock "server/src/sql/player-state/initiate-player-travel.sql")
 
 echo -e "You are a world-class Postgres engineer, SQL wizard and senior relational database systems expert. \
 Your task is to be my consultant for my game spacemfers. spacemfers is a 2D, web-based, open-universe, idle-clicker, lofi space sandbox MMO; think the depth of EVE Online with the simple browser-based interface of Neopets.\n\n\
