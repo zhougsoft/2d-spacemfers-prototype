@@ -621,16 +621,31 @@ const main = async () => {
 
         // TODO:
 
-        // 1. get player's current location (remember to check if they're currently travelling)
-        // 2. get distance between current location and destination w/ getDistanceBetweenCelestials()
-        // 3. get player active ship stats (for speed, etc.)
-        // 4. calculate travel duration based on distance and speed
-        // 5. initiate travel w/ the calculated duration w/ initiatePlayerTravel()
+        // ## 1. get player's current location
+        // const playerLocation = await getPlayerLocation(playerId)
+
+        // check if player actually has a current location to travel from (they may not be in the universe yet):
+        // if target_celestial_id is null, throw a 400 bad request
+
+        // check if player is currently travelling using the timestamps:
+        // playerLocation.departure_time: BIGINT | NULL
+        // playerLocation.arrival_time: BIGINT | NULL
+
+        // is travelling? use prev_celestial_id as the starting location
+        // is not travelling? use target_celestial_id as the starting location
+
+        // ## 2. get distance between starting location and destination w/ getDistanceBetweenCelestials()
+
+        // ## 3. get player active ship stats (for speed, etc.)
+
+        // ## 4. calculate travel duration based on distance and speed
+
+        // ## 5. initiate travel w/ the calculated duration below:
 
         const playerTravelResult = await initiatePlayerTravel(
           playerId,
           celestialId,
-          10 // TODO: make travel duration dynamic based on distance and speed
+          10 // TODO: use the calculated duration here
         )
 
         if (!playerTravelResult) {
