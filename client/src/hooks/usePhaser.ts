@@ -11,7 +11,7 @@ export const usePhaser = (config: Phaser.Types.Core.GameConfig) => {
     return () => {
       phaserRef.current?.destroy(true)
     }
-  })
+  }, [])
 
   return { phaser: phaserRef.current }
 }
