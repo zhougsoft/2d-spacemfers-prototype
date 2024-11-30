@@ -1,5 +1,7 @@
 import { Phaser, usePhaser } from '../../hooks/usePhaser'
 
+const PHASER_CONTAINER_ID = 'phaser'
+
 const getConfig = (
   parent: string,
   onCreate: (scene: Phaser.Scene) => void,
@@ -23,9 +25,9 @@ const getConfig = (
     type: Phaser.AUTO,
     scale: {
       mode: Phaser.Scale.RESIZE,
-      parent,
       width: '100%',
       height: '100%',
+      parent,
     },
     physics: {
       default: 'arcade',
@@ -45,8 +47,12 @@ interface PhaserContainerProps {
 }
 
 const PhaserContainer = ({ onCreate, onUpdate }: PhaserContainerProps) => {
-  usePhaser(getConfig('game', onCreate, onUpdate))
-  return <div id="game" style={{ width: '100vw', height: '100vh' }}></div>
+  usePhaser(getConfig(PHASER_CONTAINER_ID, onCreate, onUpdate))
+  return (
+    <div
+      id={PHASER_CONTAINER_ID}
+      style={{ width: '100vw', height: '100vh' }}></div>
+  )
 }
 
 export default PhaserContainer
