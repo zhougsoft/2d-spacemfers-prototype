@@ -1,18 +1,27 @@
 import { useState } from 'react'
 import AdminDashboard from './components/AdminDashboard'
 import PlayerDashboard from './components/PlayerDashboard'
+import Game from './components/Game'
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState('admin')
+  const [activeTab, setActiveTab] = useState('game')
+
+  const tabs = {
+    admin: <AdminDashboard />,
+    player: <PlayerDashboard />,
+    game: <Game />,
+  }
 
   return (
-    <main style={{ padding: '1rem 2rem' }}>
+    <main>
       <header>
         <button onClick={() => setActiveTab('admin')}>admin</button>
         <span>&nbsp;|&nbsp;</span>
-        <button onClick={() => setActiveTab('travel')}>player</button>
+        <button onClick={() => setActiveTab('player')}>player</button>
+        <span>&nbsp;|&nbsp;</span>
+        <button onClick={() => setActiveTab('game')}>game</button>
       </header>
-      {activeTab === 'admin' ? <AdminDashboard /> : <PlayerDashboard />}
+      {tabs[activeTab as keyof typeof tabs]}
     </main>
   )
 }
