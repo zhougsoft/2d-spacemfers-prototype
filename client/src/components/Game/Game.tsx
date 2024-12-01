@@ -1,38 +1,67 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import shipImage from '../../assets/ship.png'
 import PhaserContainer from './PhaserContainer'
 
-const defaultGameState = {
-  frameCount: 0,
+const MAP_SIZE = 1000
+const LINE_SPACING = 10
+
+const drawGrid = (graphics: Phaser.GameObjects.Graphics) => {
+  graphics.lineStyle(1, 0x222222)
+
+  // draw vertical lines
+  for (let x = 0; x <= MAP_SIZE; x += LINE_SPACING) {
+    graphics.moveTo(x, 0)
+    graphics.lineTo(x, MAP_SIZE)
+  }
+
+  // draw horizontal lines
+  for (let y = 0; y <= MAP_SIZE; y += LINE_SPACING) {
+    graphics.moveTo(0, y)
+    graphics.lineTo(MAP_SIZE, y)
+  }
+
+  graphics.strokePath()
 }
 
 const Game = () => {
-  // refs can be used for state that needs to be shared between Phaser and React
-  const gameState = useRef(defaultGameState)
-  const textDisplay = useRef<Phaser.GameObjects.Text | null>(null)
+  const [reloadKey, setReloadKey] = useState(0)
+  const shipRef = useRef<Phaser.GameObjects.Image>()
+
+  const onPreload = useCallback((scene: Phaser.Scene) => {
+    scene.load.image('ship', shipImage)
+  }, [])
 
   const onCreate = useCallback((scene: Phaser.Scene) => {
-    textDisplay.current = scene.add.text(0, 0, '')
+    // add stuff to the scene
+    drawGrid(scene.add.graphics())
+    shipRef.current = scene.add.image(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
+
+    // camera setup
+    scene.cameras.main.setBackgroundColor('#000000')
+    scene.cameras.main.setZoom(1)
+    scene.cameras.main.startFollow(shipRef.current, true)
   }, [])
 
   const onUpdate = useCallback((scene: Phaser.Scene) => {
-    const { frameCount } = gameState.current
-
-    if (textDisplay.current) {
-      textDisplay.current.setPosition(frameCount, frameCount)
-      textDisplay.current.setText(`frame #: ${frameCount}`)
+    // move the ship upwards
+    if (shipRef.current) {
+      shipRef.current.y -= 1
     }
-
-    gameState.current.frameCount++
   }, [])
 
   return (
     <div style={{ position: 'relative' }}>
       <button
-        onClick={() => (gameState.current.frameCount = 0)}
-        style={{ position: 'absolute', top: 0, left: 0 }}>
-        reset
+        style={{ position: 'absolute', top: 0, left: 0 }}
+        onClick={() => setReloadKey(prev => prev + 1)}>
+        RELOAD
       </button>
-      <PhaserContainer onCreate={onCreate} onUpdate={onUpdate} />
+      <PhaserContainer
+        key={reloadKey}
+        onPreload={onPreload}
+        onCreate={onCreate}
+        onUpdate={onUpdate}
+      />
     </div>
   )
 }

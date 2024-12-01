@@ -4,12 +4,17 @@ const PHASER_CONTAINER_ID = 'phaser'
 
 const getConfig = (
   parent: string,
+  onPreload: (scene: Phaser.Scene) => void,
   onCreate: (scene: Phaser.Scene) => void,
   onUpdate: (scene: Phaser.Scene) => void
 ) => {
   class MainScene extends Phaser.Scene {
     constructor() {
       super('MainScene')
+    }
+
+    preload() {
+      onPreload(this)
     }
 
     create() {
@@ -42,12 +47,13 @@ const getConfig = (
 }
 
 interface PhaserContainerProps {
+  onPreload: (scene: Phaser.Scene) => void
   onCreate: (scene: Phaser.Scene) => void
   onUpdate: (scene: Phaser.Scene) => void
 }
 
-const PhaserContainer = ({ onCreate, onUpdate }: PhaserContainerProps) => {
-  usePhaser(getConfig(PHASER_CONTAINER_ID, onCreate, onUpdate))
+const PhaserContainer = ({ onPreload, onCreate, onUpdate }: PhaserContainerProps) => {
+  usePhaser(getConfig(PHASER_CONTAINER_ID, onPreload, onCreate, onUpdate))
   return (
     <div
       id={PHASER_CONTAINER_ID}
