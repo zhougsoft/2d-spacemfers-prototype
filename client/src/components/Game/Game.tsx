@@ -2,8 +2,10 @@ import { useCallback, useRef, useState } from 'react'
 import shipImage from '../../assets/ship.png'
 import PhaserContainer from './PhaserContainer'
 
-const MAP_SIZE = 1000
+const MAP_SIZE = 10000
 const LINE_SPACING = 10
+
+const SHIP_ROTATION_SPEED = 1
 
 const drawGrid = (graphics: Phaser.GameObjects.Graphics) => {
   graphics.lineStyle(1, 0x222222)
@@ -25,7 +27,13 @@ const drawGrid = (graphics: Phaser.GameObjects.Graphics) => {
 
 const Game = () => {
   const [reloadKey, setReloadKey] = useState(0)
+
   const shipRef = useRef<Phaser.GameObjects.Image>()
+  const targetAngleRef = useRef(0)
+
+  const alignShip = (angle: number) => {
+    targetAngleRef.current = angle
+  }
 
   const onPreload = useCallback((scene: Phaser.Scene) => {
     scene.load.image('ship', shipImage)
@@ -34,18 +42,28 @@ const Game = () => {
   const onCreate = useCallback((scene: Phaser.Scene) => {
     // add stuff to the scene
     drawGrid(scene.add.graphics())
-    shipRef.current = scene.add.image(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
+    const shipImage = scene.add.image(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
+    shipImage.setScale(0.5)
+    shipRef.current = shipImage
 
     // camera setup
     scene.cameras.main.setBackgroundColor('#000000')
     scene.cameras.main.setZoom(1)
-    scene.cameras.main.startFollow(shipRef.current, true)
+    scene.cameras.main.startFollow(shipRef.current, false)
   }, [])
 
   const onUpdate = useCallback((scene: Phaser.Scene) => {
-    // move the ship upwards
     if (shipRef.current) {
-      shipRef.current.y -= 1
+      const currentAngle = shipRef.current.angle
+      const angleDiff = targetAngleRef.current - currentAngle
+      const normalizedDiff = ((angleDiff + 180) % 360) - 180
+
+      // rotate the ship to the target angle
+      if (Math.abs(normalizedDiff) > SHIP_ROTATION_SPEED) {
+        shipRef.current.angle += Math.sign(normalizedDiff) * SHIP_ROTATION_SPEED
+      } else {
+        shipRef.current.angle = targetAngleRef.current
+      }
     }
   }, [])
 
@@ -56,6 +74,12 @@ const Game = () => {
         onClick={() => setReloadKey(prev => prev + 1)}>
         RELOAD
       </button>
+      <div style={{ position: 'absolute', bottom: 100, right: 100 }}>
+        <button onClick={() => alignShip(0)}>⬆️</button>
+        <button onClick={() => alignShip(180)}>⬇️</button>
+        <button onClick={() => alignShip(270)}>⬅️</button>
+        <button onClick={() => alignShip(90)}>➡️</button>
+      </div>
       <PhaserContainer
         key={reloadKey}
         onPreload={onPreload}
