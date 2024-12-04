@@ -22,6 +22,9 @@
   --color-button-bg: var(--color-bg-light);
   --color-button-border: var(--color-bg-lightest);
   --color-button-hover: var(--color-bg-lighter);
+
+  --padding-ui: 0.1rem 0.5rem;
+  --padding-table: 0.25rem 0.5rem;
 }
 
 *,
@@ -51,6 +54,8 @@ button {
   background-color: var(--color-button-bg);
   color: var(--color-text);
   border: 1px solid var(--color-button-border);
+  margin: 0;
+  padding: var(--padding-ui);
 }
 
 button:hover {
@@ -63,6 +68,8 @@ input {
   background-color: var(--color-input-bg);
   color: var(--color-text);
   border: 1px solid var(--color-input-border);
+  margin: 0;
+  padding: var(--padding-ui);
 }
 
 input::placeholder {
@@ -84,6 +91,7 @@ th,
 td {
   text-align: left;
   outline: 1px solid var(--color-bg-light);
+  padding: var(--padding-table);
 }
 
 th {

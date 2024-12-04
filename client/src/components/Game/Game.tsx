@@ -125,6 +125,9 @@ const Game = () => {
   const onCreate = useCallback((scene: Phaser.Scene) => {
     // add stuff to the scene
     drawGrid(scene.add.graphics())
+
+    // add player ship to the scene
+    // TODO: instead of piecing together the ship & it's state in here, make a nice abstracted Ship class
     const shipImage = scene.add.image(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
     shipImage.setScale(0.5)
     shipRef.current = shipImage
@@ -226,31 +229,47 @@ const Game = () => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <div
-        style={{
-          position: 'absolute',
-          top: 40,
-          left: 20,
-          color: 'white',
-          backgroundColor: 'black',
-          padding: '5px 10px',
-          borderRadius: '5px',
-        }}>
-        SPEED: {speedDisplay.toFixed(2)}
-      </div>
       <button
         style={{ position: 'absolute', top: 0, left: 0 }}
         onClick={reload}>
         RELOAD
       </button>
-      <div style={{ position: 'absolute', bottom: 100, right: 100 }}>
-        <button onClick={() => setShipAlignment(270)}>⬅️</button>
-        <button onClick={() => setShipAlignment(0)}>⬆️</button>
-        <button onClick={() => setShipAlignment(180)}>⬇️</button>
-        <button onClick={() => setShipAlignment(90)}>➡️</button>
-        <button onClick={() => setShipThrust(1)}>FULL THRUST</button>
-        <button onClick={() => setShipThrust(0.5)}>HALF THRUST</button>
-        <button onClick={() => setShipThrust(0)}>STOP</button>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 100,
+          right: 100,
+          display: 'flex',
+        }}>
+        <div>
+          <div>
+            <button onClick={() => setShipAlignment(315)}>↖️</button>
+            <button onClick={() => setShipAlignment(0)}>⬆️</button>
+            <button onClick={() => setShipAlignment(45)}>↗️</button>
+          </div>
+          <div>
+            <button onClick={() => setShipAlignment(270)}>⬅️</button>
+            <button onClick={() => setShipThrust(0)}>🛑</button>
+            <button onClick={() => setShipAlignment(90)}>➡️</button>
+          </div>
+          <div>
+            <button onClick={() => setShipAlignment(225)}>↙️</button>
+            <button onClick={() => setShipAlignment(180)}>⬇️</button>
+            <button onClick={() => setShipAlignment(135)}>↘️</button>
+          </div>
+        </div>
+        <div>
+          <button onClick={() => setShipThrust(1)}>FULL THRUST</button>
+          <button onClick={() => setShipThrust(0.5)}>HALF THRUST</button>
+          <button onClick={() => setShipThrust(0)}>STOP</button>
+          <div
+            style={{
+              backgroundColor: '#111',
+              padding: '0.075em 0.35em',
+            }}>
+            SPEED: {speedDisplay.toFixed(2)}
+          </div>
+        </div>
       </div>
       <PhaserContainer
         key={reloadKey}
