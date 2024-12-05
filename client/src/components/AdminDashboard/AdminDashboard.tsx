@@ -47,38 +47,41 @@ const AdminDashboard = () => {
         <i>🔥 hot shortcuts 🔥</i>
       </h2>
 
-      <AdminSection
-        buttonLabel="🧑‍🚀✅ create ready-to-play player"
-        onSubmit={() =>
-          createPlayer().then(playerResult => {
-            const playerId = playerResult.player_id
-            const startingStationId = 5
-            const startingShipTypeId = 1
+      <div style={{ display: 'flex' }}>
+        <AdminSection
+          buttonLabel="🧑‍🚀✅ create ready-to-play player"
+          onSubmit={() =>
+            createPlayer().then(playerResult => {
+              const playerId = playerResult.player_id
+              const startingStationId = 5
+              const startingShipTypeId = 1
 
-            setPlayerLocation(playerId, startingStationId).then(
-              locationResult => {
-                addPlayerShip(
-                  playerId,
-                  startingShipTypeId,
-                  startingStationId
-                ).then(shipResult => {
-                  setActivePlayerShip(playerId, shipResult.player_ship_id).then(
-                    activeShipResult => {
+              setPlayerLocation(playerId, startingStationId).then(
+                locationResult => {
+                  addPlayerShip(
+                    playerId,
+                    startingShipTypeId,
+                    startingStationId
+                  ).then(shipResult => {
+                    setActivePlayerShip(
+                      playerId,
+                      shipResult.player_ship_id
+                    ).then(activeShipResult => {
                       console.log('player created:', {
                         playerResult,
                         locationResult,
                         shipResult,
                         activeShipResult,
                       })
-                    }
-                  )
-                })
-              }
-            )
-          })
-        }
-        className="outline-blue"
-      />
+                    })
+                  })
+                }
+              )
+            })
+          }
+          className="outline-blue"
+        />
+      </div>
 
       <h2>🌌 universe admin</h2>
 
