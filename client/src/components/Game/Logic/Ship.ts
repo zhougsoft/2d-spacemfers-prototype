@@ -38,7 +38,7 @@ export class Ship {
    * @param angle Target angle in degrees (0-359)
    */
   public setTargetAngle(angle: number) {
-    this.targetAngle = angle
+    this.targetAngle = Math.max(0, Math.min(359, angle))
   }
 
   /**
@@ -46,7 +46,7 @@ export class Ship {
    * @param thrust Thrust value (0.0-1.0) where 1.0 = 100% thrust
    */
   public setTargetThrust(thrust: number) {
-    this.targetThrust = thrust
+    this.targetThrust = Math.max(0, Math.min(1, thrust))
   }
 
   /**

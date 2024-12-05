@@ -26,8 +26,9 @@
 
 import { useCallback, useRef, useState } from 'react'
 import shipImage from '../../assets/ship.png'
-import { Ship } from './logic/Ship'
+import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
+import ShipControls from './UI/ShipControls'
 
 const MAP_SIZE = 10000 // Total size of the game world in pixels
 const LINE_SPACING = 100 // Spacing between grid lines
@@ -117,6 +118,12 @@ const Game = () => {
 
   return (
     <div style={{ position: 'relative' }}>
+      <PhaserScene
+        key={reloadKey}
+        onPreload={onPreload}
+        onCreate={onCreate}
+        onUpdate={onUpdate}
+      />
       <button
         style={{ position: 'absolute', top: 0, left: 0 }}
         onClick={reload}>
@@ -127,44 +134,13 @@ const Game = () => {
           position: 'absolute',
           bottom: 100,
           right: 100,
-          display: 'flex',
         }}>
-        <div>
-          <div>
-            <button onClick={() => setShipAngle(315)}>↖️</button>
-            <button onClick={() => setShipAngle(0)}>⬆️</button>
-            <button onClick={() => setShipAngle(45)}>↗️</button>
-          </div>
-          <div>
-            <button onClick={() => setShipAngle(270)}>⬅️</button>
-            <button onClick={() => setShipThrust(0)}>🛑</button>
-            <button onClick={() => setShipAngle(90)}>➡️</button>
-          </div>
-          <div>
-            <button onClick={() => setShipAngle(225)}>↙️</button>
-            <button onClick={() => setShipAngle(180)}>⬇️</button>
-            <button onClick={() => setShipAngle(135)}>↘️</button>
-          </div>
-        </div>
-        <div>
-          <button onClick={() => setShipThrust(1)}>FULL THRUST</button>
-          <button onClick={() => setShipThrust(0.5)}>HALF THRUST</button>
-          <button onClick={() => setShipThrust(0)}>STOP</button>
-          <div
-            style={{
-              backgroundColor: '#111',
-              padding: '0.075em 0.35em',
-            }}>
-            SPEED: {speedDisplay.toFixed(2)}
-          </div>
-        </div>
+        <ShipControls
+          speedDisplay={speedDisplay}
+          setShipAngle={setShipAngle}
+          setShipThrust={setShipThrust}
+        />
       </div>
-      <PhaserScene
-        key={reloadKey}
-        onPreload={onPreload}
-        onCreate={onCreate}
-        onUpdate={onUpdate}
-      />
     </div>
   )
 }
