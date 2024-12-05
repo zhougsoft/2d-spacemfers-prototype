@@ -43,6 +43,43 @@ const AdminDashboard = () => {
         />
       </div>
 
+      <h2>
+        <i>🔥 hot shortcuts 🔥</i>
+      </h2>
+
+      <AdminSection
+        buttonLabel="🧑‍🚀✅ create ready-to-play player"
+        onSubmit={() =>
+          createPlayer().then(playerResult => {
+            const playerId = playerResult.player_id
+            const startingStationId = 5
+            const startingShipTypeId = 1
+
+            setPlayerLocation(playerId, startingStationId).then(
+              locationResult => {
+                addPlayerShip(
+                  playerId,
+                  startingShipTypeId,
+                  startingStationId
+                ).then(shipResult => {
+                  setActivePlayerShip(playerId, shipResult.player_ship_id).then(
+                    activeShipResult => {
+                      console.log('player created:', {
+                        playerResult,
+                        locationResult,
+                        shipResult,
+                        activeShipResult,
+                      })
+                    }
+                  )
+                })
+              }
+            )
+          })
+        }
+        className="outline-blue"
+      />
+
       <h2>🌌 universe admin</h2>
 
       <AdminSection
