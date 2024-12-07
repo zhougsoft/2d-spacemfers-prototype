@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { DataObject } from '../../../types'
-import { CELESTIAL_TYPES, EMOJI } from '../../../utils/constants'
-import { initiatePlayerTravel } from '../../../api'
+import { DataObject } from '../../../../types'
+import { CELESTIAL_TYPES, EMOJI } from '../../../../utils/constants'
+import { initiatePlayerTravel } from '../../../../api'
 
 const modalOverlayStyle = {
   position: 'fixed' as const,
@@ -32,7 +32,12 @@ interface CelestialModalProps {
   onDataChange: () => void
 }
 
-const CelestialModal = ({ celestial, onClose, playerId, onDataChange }: CelestialModalProps) => {
+const CelestialModal = ({
+  celestial,
+  onClose,
+  playerId,
+  onDataChange,
+}: CelestialModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleTravel = async () => {
@@ -76,11 +81,10 @@ const CelestialModal = ({ celestial, onClose, playerId, onDataChange }: Celestia
 
         <div style={{ marginBottom: '1rem' }}>
           <h4>actions:</h4>
-          <button 
+          <button
             style={{ marginRight: '0.5rem' }}
             onClick={handleTravel}
-            disabled={isLoading}
-          >
+            disabled={isLoading}>
             {isLoading ? EMOJI.HOURGLASS_NOT_DONE : 'travel here'}
           </button>
           <button>view stuff</button>

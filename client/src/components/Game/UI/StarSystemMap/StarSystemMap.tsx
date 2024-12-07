@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { DataObject } from '../../../types'
-import { AU_IN_KM, CELESTIAL_TYPES, EMOJI } from '../../../utils/constants'
-import { usePlayerTravel } from '../../../hooks/usePlayerTravel'
+import { DataObject } from '../../../../types'
+import { AU_IN_KM, CELESTIAL_TYPES, EMOJI } from '../../../../utils/constants'
+import { usePlayerCelestialTravel } from '../../../../hooks/usePlayerCelestialTravel'
 import CelestialModal from './CelestialModal'
-import styles from './SolarSystemMap.module.css'
+import styles from './StarSystemMap.module.css'
 
 const treeItemStyles = {
   width: 'fit-content',
@@ -18,7 +18,7 @@ const renderCelestialTree = (
   player: DataObject | null,
   onCelestialClick: (celestial: DataObject) => void
 ) => {
-  const { isTraveling } = usePlayerTravel(player)
+  const { isTraveling } = usePlayerCelestialTravel(player)
   const hasChildren = celestial.children?.length > 0
   const isHighlighted = celestial.celestial_id === highlightedCelestialId
   const isCurrentlyTraveling = player && isHighlighted && isTraveling
@@ -73,31 +73,34 @@ const renderCelestialTree = (
   )
 }
 
-const SolarSystemMap = ({
-  solarSystemTree,
+const StarSystemMap = ({
+  starSystemTree,
   highlightedCelestialId,
   playerId,
   onDataChange,
   player,
+  onClose,
 }: {
-  solarSystemTree: DataObject
+  starSystemTree: DataObject
   highlightedCelestialId: number | null
   playerId: number
   onDataChange: () => void
   player: DataObject | null
+  onClose: () => void
 }) => {
   const [selectedCelestial, setSelectedCelestial] = useState<DataObject | null>(
     null
   )
 
-  if (!solarSystemTree) return null
+  if (!starSystemTree) return null
 
   return (
     <>
-      <h3>solar system</h3>
+      <button onClick={onClose}>{EMOJI.CROSS_MARK}</button>
+      <h3>star system</h3>
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {renderCelestialTree(
-          solarSystemTree,
+          starSystemTree,
           highlightedCelestialId,
           player,
           celestial => setSelectedCelestial(celestial)
@@ -116,4 +119,4 @@ const SolarSystemMap = ({
   )
 }
 
-export default SolarSystemMap
+export default StarSystemMap

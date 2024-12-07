@@ -8,7 +8,7 @@ import {
 } from '../api'
 import { DataIndex, DataObject } from '../types'
 
-const buildSolarSystemTree = (
+const buildStarSystemTree = (
   rootCelestial: DataObject,
   celestials: DataObject[]
 ): any => {
@@ -16,7 +16,7 @@ const buildSolarSystemTree = (
     .filter(
       celestial => celestial.parent_celestial_id === rootCelestial.celestial_id
     )
-    .map(child => buildSolarSystemTree(child, celestials))
+    .map(child => buildStarSystemTree(child, celestials))
 
   return {
     ...rootCelestial,
@@ -27,11 +27,8 @@ const buildSolarSystemTree = (
 export const useGameData = (playerId: number) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const [solarSystemTree, setSolarSystemTree] = useState<DataObject | null>(
-    null
-  )
-  const [solarSystemIndexed, setSolarSystemIndexed] =
-    useState<DataIndex | null>(null)
+  const [starSystemIndex, setStarSystemIndex] = useState<DataIndex | null>(null)
+  const [starSystemTree, setStarSystemTree] = useState<DataObject | null>(null)
 
   const [player, setPlayer] = useState<DataObject | null>(null)
   const [playerLocation, setPlayerLocation] = useState<DataObject | null>(null)
@@ -40,7 +37,7 @@ export const useGameData = (playerId: number) => {
     null
   )
 
-  const refresh = () => {
+  const refreshData = () => {
     setIsLoading(true)
     getPlayer(playerId)
       .then(player => {
@@ -92,7 +89,7 @@ export const useGameData = (playerId: number) => {
             getCelestial(celestial.root_celestial_id).then(rootCelestial =>
               getCelestialsByRoot(rootCelestial.celestial_id).then(
                 childrenCelestials => {
-                  const tree = buildSolarSystemTree(
+                  const tree = buildStarSystemTree(
                     rootCelestial,
                     childrenCelestials
                   )
@@ -105,8 +102,8 @@ export const useGameData = (playerId: number) => {
                     return acc
                   }, {})
 
-                  setSolarSystemTree(tree)
-                  setSolarSystemIndexed(celestialsIndexedById)
+                  setStarSystemIndex(celestialsIndexedById)
+                  setStarSystemTree(tree)
                 }
               )
             )
@@ -118,17 +115,17 @@ export const useGameData = (playerId: number) => {
   }
 
   useEffect(() => {
-    refresh()
+    refreshData()
   }, [])
 
   return {
     isLoading,
-    solarSystemIndexed,
-    solarSystemTree,
+    starSystemIndex,
+    starSystemTree,
     player,
     playerLocation,
     playerShips,
     activePlayerShip,
-    refresh,
+    refreshData,
   }
 }

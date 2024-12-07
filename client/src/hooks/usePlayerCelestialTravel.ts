@@ -1,3 +1,7 @@
+/**
+ * Utility hook to calculate the inter-celestial travel status of a player based on their "slow state" timestamp data
+ */
+
 import { useState, useEffect, useMemo } from 'react'
 import { DataObject } from '../types'
 
@@ -29,7 +33,9 @@ const formatRemainingTime = (seconds: number): string => {
   return `${remainingSeconds}s`
 }
 
-export const usePlayerTravel = (player: DataObject | null): TravelStatus => {
+export const usePlayerCelestialTravel = (
+  player: DataObject | null
+): TravelStatus => {
   const [now, setNow] = useState(() => Date.now())
 
   const { departureTime, arrivalTime } = useMemo(

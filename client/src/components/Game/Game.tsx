@@ -26,9 +26,14 @@
 
 import { useCallback, useRef, useState } from 'react'
 import shipImage from '../../assets/ship.png'
+import { usePlayerContext } from '../../contexts/PlayerContext'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
+import PlayerOverview from './UI/PlayerOverview'
 import ShipControls from './UI/ShipControls'
+import { useGameData } from '../../hooks/useGameData'
+import StarSystemMap from './UI/StarSystemMap'
+import { EMOJI } from '../../utils/constants'
 
 const MAP_SIZE = 10000 // Total size of the game world in pixels
 const LINE_SPACING = 100 // Spacing between grid lines
@@ -56,15 +61,30 @@ const drawGrid = (graphics: Phaser.GameObjects.Graphics) => {
 }
 
 const Game = () => {
-  // Game state refs
+  const { playerId } = usePlayerContext()
+
+  // Backend player data & "slow" game state (system data, universe state, etc.)
+  const {
+    starSystemIndex,
+    starSystemTree,
+    player,
+    playerLocation,
+    playerShips,
+    activePlayerShip,
+    refreshData: refreshBackendGameData,
+  } = useGameData(playerId)
+
+  // Phaser game state refs for "fast" game state (ship position, velocity, etc.)
   const ship = useRef<Ship>()
 
   // UI management state
   const [reloadKey, setReloadKey] = useState(0)
   const [speedDisplay, setSpeedDisplay] = useState(0)
+  const [starSystemMapIsExpanded, setStarSystemMapIsExpanded] = useState(false)
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
+    refreshBackendGameData()
     ship.current = undefined
     setReloadKey(prev => prev + 1)
   }
@@ -117,7 +137,7 @@ const Game = () => {
   }, [])
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', userSelect: 'none' }}>
       <PhaserScene
         key={reloadKey}
         onPreload={onPreload}
@@ -125,10 +145,45 @@ const Game = () => {
         onUpdate={onUpdate}
       />
       <button
-        style={{ position: 'absolute', top: 0, left: 0 }}
+        style={{ position: 'absolute', top: 0, left: 0, fontWeight: 'bold' }}
         onClick={reload}>
         RELOAD
       </button>
+      <div
+        style={{
+          position: 'absolute',
+          top: 100,
+          left: 100,
+        }}>
+        {starSystemTree ? (
+          <div>
+            {starSystemMapIsExpanded ? (
+              <StarSystemMap
+                starSystemTree={starSystemTree}
+                highlightedCelestialId={playerLocation?.celestial_id}
+                playerId={playerId}
+                onDataChange={refreshBackendGameData}
+                player={player}
+                onClose={() => setStarSystemMapIsExpanded(false)}
+              />
+            ) : (
+              <button onClick={() => setStarSystemMapIsExpanded(true)}>
+                {`${EMOJI.MILKY_WAY} system map`}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div>...</div>
+        )}
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          top: 100,
+          right: 100,
+        }}>
+        <span>[celestial overview here]</span>
+      </div>
       <div
         style={{
           position: 'absolute',
@@ -140,6 +195,26 @@ const Game = () => {
           setShipAngle={setShipAngle}
           setShipThrust={setShipThrust}
         />
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 100,
+          left: 100,
+        }}>
+        {player ? (
+          <PlayerOverview
+            playerData={{
+              player,
+              playerLocation,
+              playerShips,
+              activePlayerShip,
+            }}
+            starSystemIndex={starSystemIndex}
+          />
+        ) : (
+          <div>...</div>
+        )}
       </div>
     </div>
   )

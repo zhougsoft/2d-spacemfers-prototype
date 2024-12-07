@@ -1,19 +1,19 @@
-import { DataIndex, DataObject } from '../../types'
-import { CELESTIAL_TYPES } from '../../utils/constants'
-import { usePlayerTravel } from '../../hooks/usePlayerTravel'
+import { usePlayerCelestialTravel } from '../../../hooks/usePlayerCelestialTravel'
+import { DataIndex, DataObject } from '../../../types'
+import { CELESTIAL_TYPES } from '../../../utils/constants'
 
 const PlayerOverview = ({
   playerData,
-  solarSystemIndexed,
+  starSystemIndex,
 }: {
   playerData: Record<string, DataObject | null>
-  solarSystemIndexed: DataIndex | null
+  starSystemIndex: DataIndex | null
 }) => {
   if (!playerData) return <div>no player data</div>
   const { player, playerLocation, playerShips, activePlayerShip } = playerData
 
   const { isTraveling, progress, formattedRemainingTime } =
-    usePlayerTravel(player)
+    usePlayerCelestialTravel(player)
 
   return (
     <>
@@ -65,9 +65,9 @@ const PlayerOverview = ({
                 <td>
                   {ship.player_ship_id === null
                     ? 'n/a'
-                    : !!solarSystemIndexed &&
-                      solarSystemIndexed[ship.station_celestial_id]
-                    ? solarSystemIndexed[ship.station_celestial_id].name
+                    : !!starSystemIndex &&
+                      starSystemIndex[ship.station_celestial_id]
+                    ? starSystemIndex[ship.station_celestial_id].name
                     : ship.station_celestial_id}
                 </td>
                 <td>
