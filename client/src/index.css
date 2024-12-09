@@ -36,7 +36,6 @@
 html,
 body {
   font-size: var(--root-font-size) !important;
-  overflow-x: hidden;
   margin: 0;
   padding: 0;
 }

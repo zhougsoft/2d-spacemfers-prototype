@@ -1,9 +1,10 @@
 import Phaser from 'phaser'
-import { usePhaser } from '../../hooks/usePhaser'
+import { useEffect, useRef } from 'react'
 
 const PHASER_CONTAINER_ID = 'phaser'
+const PHASER_CONTAINER_STYLES = { width: '100vw', height: '100vh' }
 
-const getPhaserConfig = (
+const createPhaserConfig = (
   parent: string,
   onPreload: (scene: Phaser.Scene) => void,
   onCreate: (scene: Phaser.Scene) => void,
@@ -47,6 +48,19 @@ const getPhaserConfig = (
   return phaserConfig
 }
 
+const usePhaser = (config: Phaser.Types.Core.GameConfig) => {
+  const phaserRef = useRef<Phaser.Game | null>(null)
+
+  useEffect(() => {
+    phaserRef.current = new Phaser.Game(config)
+    return () => {
+      phaserRef.current?.destroy(true)
+    }
+  }, [])
+
+  return { phaser: phaserRef.current }
+}
+
 interface PhaserSceneProps {
   onPreload: (scene: Phaser.Scene) => void
   onCreate: (scene: Phaser.Scene) => void
@@ -54,12 +68,10 @@ interface PhaserSceneProps {
 }
 
 const PhaserScene = ({ onPreload, onCreate, onUpdate }: PhaserSceneProps) => {
-  usePhaser(getPhaserConfig(PHASER_CONTAINER_ID, onPreload, onCreate, onUpdate))
-  return (
-    <div
-      id={PHASER_CONTAINER_ID}
-      style={{ width: '100vw', height: '100vh' }}></div>
+  usePhaser(
+    createPhaserConfig(PHASER_CONTAINER_ID, onPreload, onCreate, onUpdate)
   )
+  return <div id={PHASER_CONTAINER_ID} style={PHASER_CONTAINER_STYLES}></div>
 }
 
 export default PhaserScene

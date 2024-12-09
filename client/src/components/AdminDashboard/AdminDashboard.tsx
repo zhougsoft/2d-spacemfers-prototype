@@ -22,7 +22,7 @@ import AdminSection from './AdminSection'
 
 const AdminDashboard = () => {
   return (
-    <>
+    <div style={{ padding: '0 2rem' }}>
       <h1>📡 spacemfers admin</h1>
       <p>output in console</p>
       <hr />
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
           initiatePlayerTravel(playerId, celestialId).then(console.log)
         }
       />
-    </>
+    </div>
   )
 }
 

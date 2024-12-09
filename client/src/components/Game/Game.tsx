@@ -6,8 +6,7 @@
  * Architecture Overview:
  * 1. Component Structure
  *    - <Game/> (this component): Main game logic, UI elements, and state management
- *    - <PhaserScene/>: Handles Phaser scene instance lifecycle and canvas
- *    - usePhaser hook: Manages Phaser game instance creation/destruction
+ *    - <PhaserScene/>: Handles Phaser scene instance lifecycle and canvas rendering
  *
  * 2. State Management Pattern:
  *    - Game state class objects stored in React refs for cross-render Phaser access
@@ -137,7 +136,8 @@ const Game = () => {
   }, [])
 
   return (
-    <div style={{ position: 'relative', userSelect: 'none' }}>
+    <div
+      style={{ position: 'relative', userSelect: 'none', overflow: 'hidden' }}>
       <PhaserScene
         key={reloadKey}
         onPreload={onPreload}
