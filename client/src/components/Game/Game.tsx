@@ -88,9 +88,10 @@ const Game = () => {
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
-    refreshBackendGameData()
-    ship.current = undefined
-    setReloadKey(prev => prev + 1)
+    refreshBackendGameData(() => {
+      ship.current = undefined
+      setReloadKey(prev => prev + 1)
+    })
   }
 
   /**

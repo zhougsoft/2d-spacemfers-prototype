@@ -37,7 +37,7 @@ export const useGameData = (playerId: number) => {
     null
   )
 
-  const refreshData = () => {
+  const refreshData = (callback?: () => void) => {
     setIsLoading(true)
     getPlayer(playerId)
       .then(player => {
@@ -111,7 +111,10 @@ export const useGameData = (playerId: number) => {
         }
       })
       .catch(console.error)
-      .finally(() => setIsLoading(false))
+      .finally(() => {
+        setIsLoading(false)
+        if (callback) callback()
+      })
   }
 
   useEffect(() => {
