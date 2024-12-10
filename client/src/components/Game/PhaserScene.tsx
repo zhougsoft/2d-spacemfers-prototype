@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 
 const PHASER_CONTAINER_ID = 'phaser'
 const PHASER_CONTAINER_STYLES = { width: '100vw', height: '100vh' }
+const PHASER_BACKGROUND_COLOR = '#000000'
 
 const createPhaserConfig = (
   parent: string,
@@ -12,7 +13,7 @@ const createPhaserConfig = (
 ) => {
   class Scene extends Phaser.Scene {
     constructor() {
-      super('MainScene')
+      super('Main')
     }
 
     preload() {
@@ -30,19 +31,20 @@ const createPhaserConfig = (
 
   const phaserConfig: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
+    scene: Scene,
     scale: {
       mode: Phaser.Scale.RESIZE,
       width: '100%',
       height: '100%',
       parent,
     },
-    physics: {
-      default: 'arcade',
-      arcade: { debug: false },
+    render: {
+      antialias: false,
+      pixelArt: true,
+      roundPixels: true,
     },
     input: { mouse: true },
-    backgroundColor: '#000000',
-    scene: Scene,
+    backgroundColor: PHASER_BACKGROUND_COLOR,
   }
 
   return phaserConfig

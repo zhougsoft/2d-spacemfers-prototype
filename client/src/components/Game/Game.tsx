@@ -24,7 +24,7 @@
  */
 
 import { useCallback, useRef, useState } from 'react'
-import shipImage from '../../assets/ship.png'
+import shuttleImage from '../../assets/shuttle.png'
 import { usePlayerContext } from '../../contexts/PlayerContext'
 import { useGameData } from '../../hooks/useGameData'
 import { EMOJI } from '../../utils/constants'
@@ -35,8 +35,12 @@ import PlayerOverview from './UI/PlayerOverview'
 import ShipControls from './UI/ShipControls'
 import StarSystemMap from './UI/StarSystemMap'
 
-const MAP_SIZE = 10000 // Total size of the game world in pixels
-const LINE_SPACING = 100 // Spacing between grid lines
+// Scale factors for converting game world measurements to pixels
+const PIXELS_PER_METER = 10
+const PIXELS_PER_KILOMETER = PIXELS_PER_METER * 1000
+
+const MAP_SIZE = PIXELS_PER_KILOMETER * 10 // Total size of the game map in pixels squared
+const LINE_SPACING = PIXELS_PER_METER * 10 // Spacing between grid lines
 
 /**
  * Draws the game world grid
@@ -109,7 +113,7 @@ const Game = () => {
 
   // Runs once before the scene is created
   const onPreload = useCallback((scene: Phaser.Scene) => {
-    scene.load.image('ship', shipImage)
+    scene.load.image('ship', shuttleImage)
   }, [])
 
   // Runs once when the scene is created
@@ -119,7 +123,7 @@ const Game = () => {
 
     // create the player ship
     const shipSprite = scene.add.sprite(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
-    shipSprite.setScale(0.5)
+    shipSprite.setScale(1)
     ship.current = new Ship(shipSprite)
 
     // camera setup
