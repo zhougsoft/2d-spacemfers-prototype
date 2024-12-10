@@ -26,13 +26,14 @@
 import { useCallback, useRef, useState } from 'react'
 import shipImage from '../../assets/ship.png'
 import { usePlayerContext } from '../../contexts/PlayerContext'
+import { useGameData } from '../../hooks/useGameData'
+import { EMOJI } from '../../utils/constants'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
+import OverviewPanel from './UI/OverviewPanel'
 import PlayerOverview from './UI/PlayerOverview'
 import ShipControls from './UI/ShipControls'
-import { useGameData } from '../../hooks/useGameData'
 import StarSystemMap from './UI/StarSystemMap'
-import { EMOJI } from '../../utils/constants'
 
 const MAP_SIZE = 10000 // Total size of the game world in pixels
 const LINE_SPACING = 100 // Spacing between grid lines
@@ -152,8 +153,8 @@ const Game = () => {
       <div
         style={{
           position: 'absolute',
-          top: 100,
-          left: 100,
+          top: 50,
+          left: 10,
         }}>
         {starSystemTree ? (
           <div>
@@ -179,16 +180,24 @@ const Game = () => {
       <div
         style={{
           position: 'absolute',
-          top: 100,
-          right: 100,
+          top: 10,
+          right: 10,
         }}>
-        <span>[celestial overview here]</span>
+        {playerLocation && starSystemIndex ? (
+          <OverviewPanel
+            playerLocation={playerLocation}
+            starSystemIndex={starSystemIndex}
+          />
+        ) : (
+          <div>...</div>
+        )}
       </div>
       <div
         style={{
           position: 'absolute',
-          bottom: 100,
-          right: 100,
+          bottom: 25,
+          left: '50%',
+          transform: 'translateX(-50%)',
         }}>
         <ShipControls
           speedDisplay={speedDisplay}
@@ -199,8 +208,8 @@ const Game = () => {
       <div
         style={{
           position: 'absolute',
-          bottom: 100,
-          left: 100,
+          bottom: 25,
+          left: 10,
         }}>
         {player ? (
           <PlayerOverview
