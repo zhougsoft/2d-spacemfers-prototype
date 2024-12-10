@@ -42,6 +42,12 @@ const PIXELS_PER_KILOMETER = PIXELS_PER_METER * 1000
 const MAP_SIZE = PIXELS_PER_KILOMETER * 10 // Total size of the game map in pixels squared
 const LINE_SPACING = PIXELS_PER_METER * 10 // Spacing between grid lines
 
+// Camera controls
+const MIN_ZOOM = 1
+const MAX_ZOOM = 3
+const STARTING_ZOOM = 2
+const ZOOM_SPEED = 0.5
+
 /**
  * Draws the game world grid
  * @param graphics Phaser graphics object to draw with
@@ -119,18 +125,24 @@ const Game = () => {
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
-    // add stuff to the scene
+    // Prep the game map
     drawGrid(scene.add.graphics())
 
-    // create the player ship
+    // Create the player ship
     const shipSprite = scene.add.sprite(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
     shipSprite.setScale(1)
     ship.current = new Ship(shipSprite)
 
-    // camera setup
+    // Set up camera
     scene.cameras.main.setBackgroundColor('#000000')
-    scene.cameras.main.setZoom(1)
+    scene.cameras.main.setZoom(STARTING_ZOOM)
     scene.cameras.main.startFollow(ship.current.getSprite(), false)
+
+    // Add camera zoom in/out controls on scroll
+    scene.input.on('wheel', (_: any, __: any, ___: number, deltaY: number) => {
+      const zoom = scene.cameras.main.zoom - (deltaY * ZOOM_SPEED) / 1000
+      scene.cameras.main.setZoom(Math.min(Math.max(zoom, MIN_ZOOM), MAX_ZOOM))
+    })
   }, [])
 
   // Runs every frame
