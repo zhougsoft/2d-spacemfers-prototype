@@ -189,7 +189,7 @@ const Game = () => {
     // Set up camera
     scene.cameras.main.setBackgroundColor('#000000')
     scene.cameras.main.setZoom(STARTING_ZOOM)
-    scene.cameras.main.startFollow(ship.current.getSprite(), false)
+    scene.cameras.main.startFollow(ship.current.getSprite(), false, 0.8, 0.8)
 
     // Add camera zoom in/out controls on scroll
     scene.input.on('wheel', (_: any, __: any, ___: number, deltaY: number) => {
