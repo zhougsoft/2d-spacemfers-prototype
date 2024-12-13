@@ -28,6 +28,7 @@ import shuttleImage from '../../assets/shuttle.png'
 import { usePlayerContext } from '../../contexts/PlayerContext'
 import { useGameData } from '../../hooks/useGameData'
 import { EMOJI } from '../../utils/constants'
+import { drawMapGrid, drawStarfieldBackground } from '../../utils/graphics'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
@@ -47,80 +48,6 @@ const MIN_ZOOM = 0.25
 const MAX_ZOOM = 3
 const STARTING_ZOOM = 2
 const ZOOM_SPEED = 0.5
-
-/**
- * Creates a starfield background using sprites
- * @param scene Phaser scene to add stars to
- */
-const drawStarfieldBackground = (scene: Phaser.Scene) => {
-  const SMALL_STAR_COUNT = 5000
-  const MEDIUM_STAR_COUNT = 250
-  const LARGE_STAR_COUNT = 100
-
-  // Create multiple star textures
-  const createStarTexture = (name: string, size: number, color: number) => {
-    const graphics = scene.add.graphics()
-    graphics.clear()
-    graphics.fillStyle(color)
-    graphics.fillCircle(size / 2, size / 2, size / 2)
-    graphics.generateTexture(name, size, size)
-    graphics.destroy()
-  }
-
-  // Generate different star types
-  createStarTexture('smallStar', 4, 0xcccccc)
-  createStarTexture('mediumStar', 8, 0xffffff)
-  createStarTexture('largeStar', 12, 0xfff4e8)
-
-  // Add small stars
-  for (let i = 0; i < SMALL_STAR_COUNT; i++) {
-    const x = Math.random() * MAP_SIZE
-    const y = Math.random() * MAP_SIZE
-    const star = scene.add.sprite(x, y, 'smallStar')
-    star.setAlpha(Math.random() * 0.7 + 0.6)
-    star.setScale(Math.random() * 0.7 + 0.3)
-  }
-
-  // Add medium stars
-  for (let i = 0; i < MEDIUM_STAR_COUNT; i++) {
-    const x = Math.random() * MAP_SIZE
-    const y = Math.random() * MAP_SIZE
-    const star = scene.add.sprite(x, y, 'mediumStar')
-    star.setAlpha(Math.random() * 0.7 + 0.6)
-    star.setScale(Math.random() * 0.5 + 0.6)
-  }
-
-  // Add large stars
-  for (let i = 0; i < LARGE_STAR_COUNT; i++) {
-    const x = Math.random() * MAP_SIZE
-    const y = Math.random() * MAP_SIZE
-    const star = scene.add.sprite(x, y, 'largeStar')
-    star.setAlpha(0.5)
-    star.setScale(Math.random() * 0.5 + 0.8)
-  }
-}
-
-/**
- * Draws the game world grid
- * @param graphics Phaser graphics object to draw with
- */
-const drawMapGrid = (graphics: Phaser.GameObjects.Graphics) => {
-  graphics.lineStyle(2, 0x333333, 0.25)
-
-  // Draw vertical lines
-  for (let x = 0; x <= MAP_SIZE; x += LINE_SPACING) {
-    graphics.moveTo(x, 0)
-    graphics.lineTo(x, MAP_SIZE)
-  }
-
-  // Draw horizontal lines
-  for (let y = 0; y <= MAP_SIZE; y += LINE_SPACING) {
-    graphics.moveTo(0, y)
-    graphics.lineTo(MAP_SIZE, y)
-  }
-
-  graphics.strokePath()
-}
 
 const Game = () => {
   const { playerId } = usePlayerContext()
@@ -152,18 +79,10 @@ const Game = () => {
     })
   }
 
-  /**
-   * Updates ship's target rotation angle
-   * @param angle Target angle in degrees (0-359)
-   */
   const setShipAngle = (angle: number) => {
     ship.current?.setTargetAngle(angle)
   }
 
-  /**
-   * Sets ship's target thrust level
-   * @param thrust Thrust value (0.0-1.0) where 1.0 = 100% thrust
-   */
   const setShipThrust = (thrust: number) => {
     ship.current?.setTargetThrust(thrust)
   }
@@ -178,8 +97,8 @@ const Game = () => {
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
     // Draw the background graphics
-    drawStarfieldBackground(scene)
-    drawMapGrid(scene.add.graphics())
+    drawStarfieldBackground(scene, MAP_SIZE)
+    drawMapGrid(scene, MAP_SIZE, LINE_SPACING)
 
     // Create the player ship
     const shipSprite = scene.add.sprite(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')

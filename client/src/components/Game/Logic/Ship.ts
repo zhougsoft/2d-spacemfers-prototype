@@ -1,11 +1,11 @@
 import Phaser from 'phaser'
 
-const BASE_ROTATION_SPEED = 1 // Degrees per frame ship can rotate
+const BASE_ROTATION_SPEED = 2 // Maximum rotation speed in degrees per frame
 const BASE_ACCELERATION_SPEED = 0.1 // Base acceleration per frame
 const MAX_SPEED = 10 // Maximum possible speed at 100% thrust
 
 const THRUST_LERP_FACTOR = 0.1 // How quickly thrust changes (0-1)
-const VELOCITY_LERP_FACTOR = 0.05 // How quickly velocity changes (0-1)
+const BRAKE_LERP_FACTOR = 0.1 // How quickly the ship stops (0-1)
 
 export class Ship {
   private sprite: Phaser.GameObjects.Sprite
@@ -95,8 +95,8 @@ export class Ship {
       this.velocityY += thrustY * this.currentThrust
     } else {
       // If not thrusting, gradually slow down velocity
-      this.velocityX = this.lerp(this.velocityX, 0, VELOCITY_LERP_FACTOR)
-      this.velocityY = this.lerp(this.velocityY, 0, VELOCITY_LERP_FACTOR)
+      this.velocityX = this.lerp(this.velocityX, 0, BRAKE_LERP_FACTOR)
+      this.velocityY = this.lerp(this.velocityY, 0, BRAKE_LERP_FACTOR)
     }
 
     // Calculate current speed (velocity magnitude)
@@ -123,9 +123,9 @@ export class Ship {
    * Linear interpolation helper
    * @param start Starting value
    * @param end Target value
-   * @param t Interpolation factor (0-1)
+   * @param factor Interpolation factor (0-1)
    */
-  private lerp(start: number, end: number, t: number) {
-    return start + (end - start) * t
+  private lerp(start: number, end: number, factor: number) {
+    return start + (end - start) * factor
   }
 }
