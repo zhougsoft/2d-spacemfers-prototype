@@ -118,12 +118,15 @@ const Game = () => {
   }, [])
 
   // Runs every frame
-  const onUpdate = useCallback((_scene: Phaser.Scene) => {
-    if (ship.current) {
-      ship.current.update()
-      setSpeedDisplay(ship.current.getSpeed())
-    }
-  }, [])
+  const onUpdate = useCallback(
+    (_scene: Phaser.Scene, _time: number, delta: number) => {
+      if (ship.current) {
+        ship.current.update(delta)
+        setSpeedDisplay(ship.current.getSpeed())
+      }
+    },
+    []
+  )
 
   return (
     <div

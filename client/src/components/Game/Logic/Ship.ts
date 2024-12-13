@@ -2,11 +2,10 @@ import Phaser from 'phaser'
 
 const ACCELERATION_SPEED = 0.1 // Base acceleration speed per frame
 const MAX_SPEED = 10 // Maximum possible speed at 100% thrust
-const THRUST_LERP_FACTOR = 0.1 // How quickly thrust changes (0-1)
-const BRAKE_LERP_FACTOR = 0.001 // How quickly the ship stops (0-1)
+const THRUST_LERP_FACTOR = 0.05 // How quickly thrust changes (0-1)
 
-const ROTATION_SPEED = 2 // Base rotation speed per frame
-const ROTATION_DAMPING_FACTOR = 0.08 // How quickly the ship starts & stops rotating (0-1)
+const ROTATION_SPEED = 3 // Base rotation speed per frame
+const ROTATION_DAMPING_FACTOR = 0.01 // How quickly the ship starts & stops rotating (0-1)
 const ROTATION_STOP_THRESHOLD = 0.15 // How close to target angle before stopping rotation acceleration
 
 export class Ship {
@@ -55,13 +54,13 @@ export class Ship {
   /**
    * Update the ship's physics state; call on every iteration of the game loop
    */
-  public update() {
-    this.updateAngle()
-    this.updateThrust()
+  public update(delta: number) {
+    this.updateAngle(delta)
+    this.updateThrust(delta)
     this.updatePosition()
   }
 
-  private updateAngle() {
+  private updateAngle(delta: number) {
     const angleDifference = this.targetAngle - this.sprite.angle
     const normalizedDifference = ((angleDifference + 180) % 360) - 180
 
@@ -74,10 +73,10 @@ export class Ship {
       if (Math.abs(normalizedDifference) > stoppingDistance) {
         // Far from target angle and enough distance to accelerate
         this.rotationVelocity +=
-          Math.sign(normalizedDifference) * ROTATION_DAMPING_FACTOR
+          Math.sign(normalizedDifference) * ROTATION_DAMPING_FACTOR * delta
       } else {
         // Close to target, start decelerating
-        this.rotationVelocity *= 1 - ROTATION_DAMPING_FACTOR
+        this.rotationVelocity *= 1 - ROTATION_DAMPING_FACTOR * delta
       }
     } else {
       // Very close to target, stop completely
@@ -94,7 +93,7 @@ export class Ship {
     this.sprite.angle += this.rotationVelocity
   }
 
-  private updateThrust() {
+  private updateThrust(delta: number) {
     // Smoothly interpolate thrust towards target thrust
     this.currentThrust = this.lerp(
       this.currentThrust,
@@ -112,12 +111,12 @@ export class Ship {
 
     if (this.targetThrust > 0) {
       // If thrusting, apply thrust to velocity
-      this.velocityX += thrustX * this.currentThrust
-      this.velocityY += thrustY * this.currentThrust
+      this.velocityX += thrustX * this.currentThrust * delta
+      this.velocityY += thrustY * this.currentThrust * delta
     } else {
       // If not thrusting, gradually slow down velocity
-      this.velocityX = this.lerp(this.velocityX, 0, BRAKE_LERP_FACTOR)
-      this.velocityY = this.lerp(this.velocityY, 0, BRAKE_LERP_FACTOR)
+      this.velocityX = this.lerp(this.velocityX, 0, THRUST_LERP_FACTOR) * delta
+      this.velocityY = this.lerp(this.velocityY, 0, THRUST_LERP_FACTOR) * delta
     }
 
     // Calculate current speed (velocity magnitude)

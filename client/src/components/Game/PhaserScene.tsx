@@ -5,11 +5,24 @@ const PHASER_CONTAINER_ID = 'phaser'
 const PHASER_CONTAINER_STYLES = { width: '100vw', height: '100vh' }
 const PHASER_BACKGROUND_COLOR = '#000000'
 
+const usePhaser = (config: Phaser.Types.Core.GameConfig) => {
+  const phaserRef = useRef<Phaser.Game | null>(null)
+
+  useEffect(() => {
+    phaserRef.current = new Phaser.Game(config)
+    return () => {
+      phaserRef.current?.destroy(true)
+    }
+  }, [])
+
+  return { phaser: phaserRef.current }
+}
+
 const createPhaserConfig = (
   parent: string,
   onPreload: (scene: Phaser.Scene) => void,
   onCreate: (scene: Phaser.Scene) => void,
-  onUpdate: (scene: Phaser.Scene) => void
+  onUpdate: (scene: Phaser.Scene, time: number, delta: number) => void
 ) => {
   class Scene extends Phaser.Scene {
     constructor() {
@@ -24,8 +37,8 @@ const createPhaserConfig = (
       onCreate(this)
     }
 
-    update() {
-      onUpdate(this)
+    update(time: number, delta: number) {
+      onUpdate(this, time, delta)
     }
   }
 
@@ -50,23 +63,10 @@ const createPhaserConfig = (
   return phaserConfig
 }
 
-const usePhaser = (config: Phaser.Types.Core.GameConfig) => {
-  const phaserRef = useRef<Phaser.Game | null>(null)
-
-  useEffect(() => {
-    phaserRef.current = new Phaser.Game(config)
-    return () => {
-      phaserRef.current?.destroy(true)
-    }
-  }, [])
-
-  return { phaser: phaserRef.current }
-}
-
 interface PhaserSceneProps {
   onPreload: (scene: Phaser.Scene) => void
   onCreate: (scene: Phaser.Scene) => void
-  onUpdate: (scene: Phaser.Scene) => void
+  onUpdate: (scene: Phaser.Scene, time: number, delta: number) => void
 }
 
 const PhaserScene = ({ onPreload, onCreate, onUpdate }: PhaserSceneProps) => {
