@@ -1,10 +1,12 @@
 import Phaser from 'phaser'
 
-const ACCELERATION_SPEED = 0.1 // Base acceleration speed per frame
-const MAX_SPEED = 10 // Maximum possible speed at 100% thrust
-const THRUST_LERP_FACTOR = 0.05 // How quickly thrust changes (0-1)
+const ACCELERATION_SPEED = 5 // m/s^2
+const MAX_SPEED = 10 // m/s
+const THRUST_LERP_FACTOR = 0.15 // How quickly thrust changes (0-1)
+const SPEED_DRAG = 0.005 // Speed of slowdown with thrust applied
+const SPEED_DECAY = 0.02 // Speed of slowdown with no thrust applied
 
-const ROTATION_SPEED = 3 // Base rotation speed per frame
+const ROTATION_SPEED = 10 // Base rotation speed per frame
 const ROTATION_DAMPING_FACTOR = 0.01 // How quickly the ship starts & stops rotating (0-1)
 const ROTATION_STOP_THRESHOLD = 0.15 // How close to target angle before stopping rotation acceleration
 
@@ -94,6 +96,8 @@ export class Ship {
   }
 
   private updateThrust(delta: number) {
+    const deltaSeconds = delta / 1000
+
     // Smoothly interpolate thrust towards target thrust
     this.currentThrust = this.lerp(
       this.currentThrust,
@@ -101,8 +105,6 @@ export class Ship {
       THRUST_LERP_FACTOR
     )
 
-    // Convert ship angle to radians & adjust for Phaser's coordinate system
-    // (subtract 90° because Phaser's 0° points right, we want it to point up)
     const currentAngleRadians = (this.sprite.angle - 90) * (Math.PI / 180)
 
     // Calculate thrust vectors based on ship orientation
@@ -110,24 +112,25 @@ export class Ship {
     const thrustY = Math.sin(currentAngleRadians) * ACCELERATION_SPEED
 
     if (this.targetThrust > 0) {
-      // If thrusting, apply thrust to velocity
-      this.velocityX += thrustX * this.currentThrust * delta
-      this.velocityY += thrustY * this.currentThrust * delta
-    } else {
-      // If not thrusting, gradually slow down velocity
-      this.velocityX = this.lerp(this.velocityX, 0, THRUST_LERP_FACTOR) * delta
-      this.velocityY = this.lerp(this.velocityY, 0, THRUST_LERP_FACTOR) * delta
+      this.velocityX += thrustX * this.currentThrust * deltaSeconds
+      this.velocityY += thrustY * this.currentThrust * deltaSeconds
     }
 
-    // Calculate current speed (velocity magnitude)
-    const currentSpeed = Math.sqrt(this.velocityX ** 2 + this.velocityY ** 2)
+    // Apply different slowdown rates based on thrust state
+    if (this.targetThrust > 0) {
+      // Minimal slowdown during active thrust
+      this.velocityX *= 1 - SPEED_DRAG
+      this.velocityY *= 1 - SPEED_DRAG
+    } else {
+      // Stronger slowdown when not thrusting
+      this.velocityX *= 1 - SPEED_DECAY
+      this.velocityY *= 1 - SPEED_DECAY
+    }
 
-    // Limit speed based on current thrust setting
-    const maxSpeed = MAX_SPEED * this.currentThrust
-
-    if (this.getSpeed() > maxSpeed) {
-      // If exceeding max speed, proportionally scale down velocity
-      const scale = maxSpeed / currentSpeed
+    // More aggressive speed limiting
+    const currentSpeed = this.getSpeed()
+    if (currentSpeed > MAX_SPEED) {
+      const scale = MAX_SPEED / currentSpeed
       this.velocityX *= scale
       this.velocityY *= scale
     }
