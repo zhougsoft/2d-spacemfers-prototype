@@ -1,16 +1,19 @@
 import Phaser from 'phaser'
 
-const BASE_ROTATION_SPEED = 2 // Maximum rotation speed in degrees per frame
-const BASE_ACCELERATION_SPEED = 0.1 // Base acceleration per frame
+const ACCELERATION_SPEED = 0.1 // Base acceleration speed per frame
 const MAX_SPEED = 10 // Maximum possible speed at 100% thrust
-
 const THRUST_LERP_FACTOR = 0.1 // How quickly thrust changes (0-1)
-const BRAKE_LERP_FACTOR = 0.1 // How quickly the ship stops (0-1)
+const BRAKE_LERP_FACTOR = 0.001 // How quickly the ship stops (0-1)
+
+const ROTATION_SPEED = 2 // Base rotation speed per frame
+const ROTATION_DAMPING_FACTOR = 0.08 // How quickly the ship starts & stops rotating (0-1)
+const ROTATION_STOP_THRESHOLD = 0.15 // How close to target angle before stopping rotation acceleration
 
 export class Ship {
   private sprite: Phaser.GameObjects.Sprite
   private velocityX: number = 0
   private velocityY: number = 0
+  private rotationVelocity: number = 0
   private currentThrust: number = 0
   private targetThrust: number = 0
   private targetAngle: number = 0
@@ -59,18 +62,36 @@ export class Ship {
   }
 
   private updateAngle() {
-    // Calculate shortest rotation path to target angle
     const angleDifference = this.targetAngle - this.sprite.angle
-
-    // Normalize to -180/+180 to ensure ship rotates the shortest direction
     const normalizedDifference = ((angleDifference + 180) % 360) - 180
 
-    // Apply rotation with speed limiting
-    if (Math.abs(normalizedDifference) > BASE_ROTATION_SPEED) {
-      this.sprite.angle += Math.sign(normalizedDifference) * BASE_ROTATION_SPEED
+    const stoppingDistance =
+      (this.rotationVelocity * this.rotationVelocity) /
+      (2 * ROTATION_DAMPING_FACTOR)
+
+    // Smoothly interpolate rotation towards target angle
+    if (Math.abs(normalizedDifference) > ROTATION_STOP_THRESHOLD) {
+      if (Math.abs(normalizedDifference) > stoppingDistance) {
+        // Far from target angle and enough distance to accelerate
+        this.rotationVelocity +=
+          Math.sign(normalizedDifference) * ROTATION_DAMPING_FACTOR
+      } else {
+        // Close to target, start decelerating
+        this.rotationVelocity *= 1 - ROTATION_DAMPING_FACTOR
+      }
     } else {
+      // Very close to target, stop completely
+      this.rotationVelocity = 0
       this.sprite.angle = this.targetAngle
     }
+
+    // Limit rotation speed
+    this.rotationVelocity = Math.max(
+      -ROTATION_SPEED,
+      Math.min(ROTATION_SPEED, this.rotationVelocity)
+    )
+
+    this.sprite.angle += this.rotationVelocity
   }
 
   private updateThrust() {
@@ -86,8 +107,8 @@ export class Ship {
     const currentAngleRadians = (this.sprite.angle - 90) * (Math.PI / 180)
 
     // Calculate thrust vectors based on ship orientation
-    const thrustX = Math.cos(currentAngleRadians) * BASE_ACCELERATION_SPEED
-    const thrustY = Math.sin(currentAngleRadians) * BASE_ACCELERATION_SPEED
+    const thrustX = Math.cos(currentAngleRadians) * ACCELERATION_SPEED
+    const thrustY = Math.sin(currentAngleRadians) * ACCELERATION_SPEED
 
     if (this.targetThrust > 0) {
       // If thrusting, apply thrust to velocity
