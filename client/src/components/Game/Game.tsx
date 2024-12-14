@@ -26,6 +26,8 @@
 import { useCallback, useRef, useState } from 'react'
 import backgroundBaseImage from '../../assets/bg/base.png'
 import backgroundFarImage from '../../assets/bg/far.png'
+import backgroundMidImage from '../../assets/bg/mid.png'
+import backgroundNearImage from '../../assets/bg/near.png'
 import shuttleImage from '../../assets/shuttle.png'
 import { usePlayerContext } from '../../contexts/PlayerContext'
 import { useGameData } from '../../hooks/useGameData'
@@ -40,7 +42,6 @@ import StarSystemMap from './UI/StarSystemMap'
 // Scale factors for converting game world measurements to pixels
 const PIXELS_PER_METER = 10
 const PIXELS_PER_KILOMETER = PIXELS_PER_METER * 1000
-
 const MAP_SIZE = PIXELS_PER_KILOMETER // Total size of the game map in pixels squared
 
 // Camera control factors
@@ -50,7 +51,7 @@ const STARTING_ZOOM = 1
 const ZOOM_SPEED = 0.5
 const BG_PARALLAX_FAR = 0.01
 const BG_PARALLAX_MID = 0.1
-const BG_PARALLAX_NEAR = 0.5
+const BG_PARALLAX_NEAR = 0.2
 
 const Game = () => {
   const { playerId } = usePlayerContext()
@@ -96,6 +97,8 @@ const Game = () => {
   const onPreload = useCallback((scene: Phaser.Scene) => {
     scene.load.image('bg-base', backgroundBaseImage)
     scene.load.image('bg-far', backgroundFarImage)
+    scene.load.image('bg-mid', backgroundMidImage)
+    scene.load.image('bg-near', backgroundNearImage)
     scene.load.image('ship', shuttleImage)
   }, [])
 
@@ -112,10 +115,22 @@ const Game = () => {
       .setOrigin(0, 0)
       .setScrollFactor(0)
 
-    // TODO: add mid and near background layers
+    // Add mid background layer
+    const bgMid = scene.add
+      .tileSprite(0, 0, width, height, 'bg-mid')
+      .setOrigin(0, 0)
+      .setScrollFactor(0)
+
+    // Add near background layer
+    const bgNear = scene.add
+      .tileSprite(0, 0, width, height, 'bg-near')
+      .setOrigin(0, 0)
+      .setScrollFactor(0)
 
     // Set background layers in scene data to access in update loop for parallax logic
     scene.data.set('bg-far', bgFar)
+    scene.data.set('bg-mid', bgMid)
+    scene.data.set('bg-near', bgNear)
 
     // Create the player ship
     const shipSprite = scene.add.sprite(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
@@ -146,9 +161,17 @@ const Game = () => {
       // Update background layer parallax
       const camera = scene.cameras.main
       const bgFar = scene.data.get('bg-far')
+      const bgMid = scene.data.get('bg-mid')
+      const bgNear = scene.data.get('bg-near')
 
       bgFar.tilePositionX = camera.scrollX * BG_PARALLAX_FAR
       bgFar.tilePositionY = camera.scrollY * BG_PARALLAX_FAR
+
+      bgMid.tilePositionX = camera.scrollX * BG_PARALLAX_MID
+      bgMid.tilePositionY = camera.scrollY * BG_PARALLAX_MID
+
+      bgNear.tilePositionX = camera.scrollX * BG_PARALLAX_NEAR
+      bgNear.tilePositionY = camera.scrollY * BG_PARALLAX_NEAR
     },
     []
   )
