@@ -107,23 +107,30 @@ const Game = () => {
     const { width, height } = scene.sys.canvas
 
     // Add static base background
-    scene.add.image(0, 0, 'bg-base').setOrigin(0, 0).setScrollFactor(0)
+    scene.add
+      .image(0, 0, 'bg-base')
+      .setDisplaySize(scene.cameras.main.width, scene.cameras.main.height)
+      .setOrigin(0, 0)
+      .setScrollFactor(0)
 
     // Add far background layer
     const bgFar = scene.add
       .tileSprite(0, 0, width, height, 'bg-far')
+      .setTileScale(0.2)
       .setOrigin(0, 0)
       .setScrollFactor(0)
 
     // Add mid background layer
     const bgMid = scene.add
       .tileSprite(0, 0, width, height, 'bg-mid')
+      .setTileScale(0.2)
       .setOrigin(0, 0)
       .setScrollFactor(0)
 
     // Add near background layer
     const bgNear = scene.add
       .tileSprite(0, 0, width, height, 'bg-near')
+      .setTileScale(0.2)
       .setOrigin(0, 0)
       .setScrollFactor(0)
 
@@ -164,6 +171,7 @@ const Game = () => {
       const bgMid = scene.data.get('bg-mid')
       const bgNear = scene.data.get('bg-near')
 
+      // Apply parallax offsets
       bgFar.tilePositionX = camera.scrollX * BG_PARALLAX_FAR
       bgFar.tilePositionY = camera.scrollY * BG_PARALLAX_FAR
 
