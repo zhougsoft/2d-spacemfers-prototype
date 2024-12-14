@@ -38,6 +38,11 @@ import OverviewPanel from './UI/OverviewPanel'
 import PlayerOverview from './UI/PlayerOverview'
 import ShipControls from './UI/ShipControls'
 import StarSystemMap from './UI/StarSystemMap'
+import { drawDebugGrid } from '../../utils/graphics'
+
+// Feature flags
+const IS_DEBUG_MODE = true
+const IS_BACKGROUND_ENABLED = false
 
 // Scale factors for converting game world measurements to pixels
 const PIXELS_PER_METER = 10
@@ -105,44 +110,47 @@ const Game = () => {
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
-    const { width, height } = scene.sys.canvas
-
     // TODO: make a graphics/camera/backgrounds/parallax handling module/class/thing abstraction to handle the graphic-ey stuff like the stuff below:
 
-    // Add static base background
-    scene.add
-      .image(0, 0, 'bg-base')
-      .setDisplaySize(scene.cameras.main.width, scene.cameras.main.height)
-      .setOrigin(0, 0)
-      .setScrollFactor(0)
+    if (IS_BACKGROUND_ENABLED) {
+      const { width, height } = scene.sys.canvas
+      // Add static base background
+      scene.add
+        .image(0, 0, 'bg-base')
+        .setDisplaySize(scene.cameras.main.width, scene.cameras.main.height)
+        .setOrigin(0, 0)
+        .setScrollFactor(0)
 
-    // Add far background layer
-    const bgFar = scene.add
-      .tileSprite(0, 0, width, height, 'bg-far')
-      .setTileScale(0.2)
-      .setOrigin(0, 0)
-      .setScrollFactor(0)
+      // Add far background layer
+      const bgFar = scene.add
+        .tileSprite(0, 0, width, height, 'bg-far')
+        .setTileScale(0.2)
+        .setOrigin(0, 0)
+        .setScrollFactor(0)
 
-    // Add mid background layer
-    const bgMid = scene.add
-      .tileSprite(0, 0, width, height, 'bg-mid')
-      .setTileScale(0.2)
-      .setOrigin(0, 0)
-      .setScrollFactor(0)
+      // Add mid background layer
+      const bgMid = scene.add
+        .tileSprite(0, 0, width, height, 'bg-mid')
+        .setTileScale(0.2)
+        .setOrigin(0, 0)
+        .setScrollFactor(0)
 
-    // Add near background layer
-    const bgNear = scene.add
-      .tileSprite(0, 0, width, height, 'bg-near')
-      .setTileScale(0.2)
-      .setOrigin(0, 0)
-      .setScrollFactor(0)
+      // Add near background layer
+      const bgNear = scene.add
+        .tileSprite(0, 0, width, height, 'bg-near')
+        .setTileScale(0.2)
+        .setOrigin(0, 0)
+        .setScrollFactor(0)
 
-    // Set background layers in scene data to access in update loop for parallax logic
-    scene.data.set('bg-far', bgFar)
-    scene.data.set('bg-mid', bgMid)
-    scene.data.set('bg-near', bgNear)
+      // Set background layers in scene data to access in update loop for parallax logic
+      scene.data.set('bg-far', bgFar)
+      scene.data.set('bg-mid', bgMid)
+      scene.data.set('bg-near', bgNear)
+    }
 
-    // TODO: add an optional debug mode and display the grid for the map here
+    if (IS_DEBUG_MODE) {
+      drawDebugGrid(scene, MAP_SIZE, PIXELS_PER_METER)
+    }
 
     // Create the player ship
     const shipSprite = scene.add.sprite(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
@@ -170,20 +178,22 @@ const Game = () => {
         setSpeedDisplay(ship.current.getSpeed())
       }
 
-      // Apply background layer parallax offsets
-      const camera = scene.cameras.main
-      const bgFar = scene.data.get('bg-far')
-      const bgMid = scene.data.get('bg-mid')
-      const bgNear = scene.data.get('bg-near')
+      if (IS_BACKGROUND_ENABLED) {
+        // Apply background layer parallax offsets
+        const camera = scene.cameras.main
+        const bgFar = scene.data.get('bg-far')
+        const bgMid = scene.data.get('bg-mid')
+        const bgNear = scene.data.get('bg-near')
 
-      bgFar.tilePositionX = camera.scrollX * BG_PARALLAX_FAR
-      bgFar.tilePositionY = camera.scrollY * BG_PARALLAX_FAR
+        bgFar.tilePositionX = camera.scrollX * BG_PARALLAX_FAR
+        bgFar.tilePositionY = camera.scrollY * BG_PARALLAX_FAR
 
-      bgMid.tilePositionX = camera.scrollX * BG_PARALLAX_MID
-      bgMid.tilePositionY = camera.scrollY * BG_PARALLAX_MID
+        bgMid.tilePositionX = camera.scrollX * BG_PARALLAX_MID
+        bgMid.tilePositionY = camera.scrollY * BG_PARALLAX_MID
 
-      bgNear.tilePositionX = camera.scrollX * BG_PARALLAX_NEAR
-      bgNear.tilePositionY = camera.scrollY * BG_PARALLAX_NEAR
+        bgNear.tilePositionX = camera.scrollX * BG_PARALLAX_NEAR
+        bgNear.tilePositionY = camera.scrollY * BG_PARALLAX_NEAR
+      }
     },
     []
   )
