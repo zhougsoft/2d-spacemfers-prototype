@@ -42,7 +42,7 @@ import StarSystemMap from './UI/StarSystemMap'
 // Scale factors for converting game world measurements to pixels
 const PIXELS_PER_METER = 10
 const PIXELS_PER_KILOMETER = PIXELS_PER_METER * 1000
-const MAP_SIZE = PIXELS_PER_KILOMETER // Total size of the game map in pixels squared
+const MAP_SIZE = PIXELS_PER_KILOMETER * 1 // Total size of the game map in pixels squared (just 1km x 1km for now)
 
 // Camera control factors
 const MIN_ZOOM = 0.25
@@ -56,6 +56,7 @@ const BG_PARALLAX_NEAR = 0.2
 const Game = () => {
   const { playerId } = usePlayerContext()
 
+  // TODO: probably remove the starSystemIndex and starSystemTree entirely since rewriting backend w/ static data & to spatial partitioning system
   // Backend player data & "slow" game state (system data, universe state, etc.)
   const {
     starSystemIndex,
@@ -106,6 +107,8 @@ const Game = () => {
   const onCreate = useCallback((scene: Phaser.Scene) => {
     const { width, height } = scene.sys.canvas
 
+    // TODO: make a graphics/camera/backgrounds/parallax handling module/class/thing abstraction to handle the graphic-ey stuff like the stuff below:
+
     // Add static base background
     scene.add
       .image(0, 0, 'bg-base')
@@ -139,6 +142,8 @@ const Game = () => {
     scene.data.set('bg-mid', bgMid)
     scene.data.set('bg-near', bgNear)
 
+    // TODO: add an optional debug mode and display the grid for the map here
+
     // Create the player ship
     const shipSprite = scene.add.sprite(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
     shipSprite.setScale(1)
@@ -165,13 +170,12 @@ const Game = () => {
         setSpeedDisplay(ship.current.getSpeed())
       }
 
-      // Update background layer parallax
+      // Apply background layer parallax offsets
       const camera = scene.cameras.main
       const bgFar = scene.data.get('bg-far')
       const bgMid = scene.data.get('bg-mid')
       const bgNear = scene.data.get('bg-near')
 
-      // Apply parallax offsets
       bgFar.tilePositionX = camera.scrollX * BG_PARALLAX_FAR
       bgFar.tilePositionY = camera.scrollY * BG_PARALLAX_FAR
 
