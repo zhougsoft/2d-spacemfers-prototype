@@ -4,7 +4,6 @@ import Phaser from 'phaser'
 const ACCELERATION_SPEED = 5 // Base acceleration rate in m/s^2
 const MAX_SPEED = 10 // Maximum velocity in m/s
 const THRUST_LERP_FACTOR = 0.1 // Thrust response smoothing
-const DECEL_LERP_FACTOR = 0.05 // Deceleration smoothing
 const SPEED_DECAY = 0.1 // Velocity reduction with no thrust
 
 // Rotation controls
@@ -28,7 +27,7 @@ export class Ship {
   /**
    * Returns the ship's Phaser sprite object
    */
-  public getSprite() {
+  public getSprite(): Phaser.GameObjects.Sprite {
     return this.sprite
   }
 
@@ -42,21 +41,21 @@ export class Ship {
   /**
    * Returns the ship's current velocity magnitude
    */
-  public getSpeed() {
+  public getSpeed(): number {
     return Math.sqrt(this.velocityX ** 2 + this.velocityY ** 2)
   }
 
   /**
    * Returns the ship's current angle in degrees (0 facing up)
    */
-  public getAngle() {
+  public getAngle(): number {
     return this.sprite.angle - 90
   }
 
   /**
    * Returns the ship's current angle in radians
    */
-  public getAngleRadians() {
+  public getAngleRadians(): number {
     return this.getAngle() * (Math.PI / 180)
   }
 
@@ -115,8 +114,6 @@ export class Ship {
   }
 
   private updateThrust(delta: number) {
-    const deltaSeconds = delta / 1000
-
     // Smooth thrust changes
     this.currentThrust = this.lerp(
       this.currentThrust,
@@ -130,6 +127,7 @@ export class Ship {
     const thrustY = Math.sin(currentAngleRadians) * ACCELERATION_SPEED
 
     // Apply velocity forces based on thrust level
+    const deltaSeconds = delta / 1000
     if (this.targetThrust > 0) {
       this.velocityX += thrustX * this.currentThrust * deltaSeconds
       this.velocityY += thrustY * this.currentThrust * deltaSeconds
@@ -138,21 +136,14 @@ export class Ship {
       this.velocityY *= 1 - SPEED_DECAY * deltaSeconds
     }
 
-    const currentSpeed = this.getSpeed()
-    const maxSpeedForThrust = MAX_SPEED * this.targetThrust
+    const speed = this.getSpeed()
+    const allowedMaxSpeed = MAX_SPEED * this.currentThrust
 
-    // Decelerate if over max speed
-    if (currentSpeed > maxSpeedForThrust) {
-      const scale = maxSpeedForThrust / currentSpeed
-
-      if (this.currentThrust > this.targetThrust) {
-        const lerpedScale = this.lerp(1, scale, DECEL_LERP_FACTOR)
-        this.velocityX *= lerpedScale
-        this.velocityY *= lerpedScale
-      } else {
-        this.velocityX *= scale
-        this.velocityY *= scale
-      }
+    // If current speed exceeds allowed max speed, clamp it
+    if (speed > 0 && speed > allowedMaxSpeed) {
+      const scale = allowedMaxSpeed / speed
+      this.velocityX *= scale
+      this.velocityY *= scale
     }
   }
 
@@ -165,10 +156,10 @@ export class Ship {
   /**
    * Linear interpolation helper
    * @param start Starting value
-   * @param end Target value
+   * @param target Target value
    * @param factor Interpolation factor (0-1)
    */
-  private lerp(start: number, end: number, factor: number) {
-    return start + (end - start) * factor
+  private lerp(start: number, target: number, factor: number) {
+    return start + (target - start) * factor
   }
 }
