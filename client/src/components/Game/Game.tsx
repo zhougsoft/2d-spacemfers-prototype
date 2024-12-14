@@ -24,11 +24,12 @@
  */
 
 import { useCallback, useRef, useState } from 'react'
+import backgroundBaseImage from '../../assets/bg/base.png'
+import backgroundFarImage from '../../assets/bg/far.png'
 import shuttleImage from '../../assets/shuttle.png'
 import { usePlayerContext } from '../../contexts/PlayerContext'
 import { useGameData } from '../../hooks/useGameData'
 import { EMOJI } from '../../utils/constants'
-import { drawMapGrid, drawStarfieldBackground } from '../../utils/graphics'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
@@ -41,13 +42,15 @@ const PIXELS_PER_METER = 10
 const PIXELS_PER_KILOMETER = PIXELS_PER_METER * 1000
 
 const MAP_SIZE = PIXELS_PER_KILOMETER // Total size of the game map in pixels squared
-const LINE_SPACING = PIXELS_PER_METER * 10 // Spacing between grid lines
 
 // Camera control factors
 const MIN_ZOOM = 0.25
 const MAX_ZOOM = 3
-const STARTING_ZOOM = 2
+const STARTING_ZOOM = 1
 const ZOOM_SPEED = 0.5
+const BG_PARALLAX_FAR = 0.01
+const BG_PARALLAX_MID = 0.1
+const BG_PARALLAX_NEAR = 0.5
 
 const Game = () => {
   const { playerId } = usePlayerContext()
@@ -91,14 +94,28 @@ const Game = () => {
 
   // Runs once before the scene is created
   const onPreload = useCallback((scene: Phaser.Scene) => {
+    scene.load.image('bg-base', backgroundBaseImage)
+    scene.load.image('bg-far', backgroundFarImage)
     scene.load.image('ship', shuttleImage)
   }, [])
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
-    // Draw the background graphics
-    drawStarfieldBackground(scene, MAP_SIZE)
-    drawMapGrid(scene, MAP_SIZE, LINE_SPACING)
+    const { width, height } = scene.sys.canvas
+
+    // Add static base background
+    scene.add.image(0, 0, 'bg-base').setOrigin(0, 0).setScrollFactor(0)
+
+    // Add far background layer
+    const bgFar = scene.add
+      .tileSprite(0, 0, width, height, 'bg-far')
+      .setOrigin(0, 0)
+      .setScrollFactor(0)
+
+    // TODO: add mid and near background layers
+
+    // Set background layers in scene data to access in update loop for parallax logic
+    scene.data.set('bg-far', bgFar)
 
     // Create the player ship
     const shipSprite = scene.add.sprite(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
@@ -119,11 +136,19 @@ const Game = () => {
 
   // Runs every frame
   const onUpdate = useCallback(
-    (_scene: Phaser.Scene, _time: number, delta: number) => {
+    (scene: Phaser.Scene, _time: number, delta: number) => {
+      // Update player ship
       if (ship.current) {
         ship.current.update(delta)
         setSpeedDisplay(ship.current.getSpeed())
       }
+
+      // Update background layer parallax
+      const camera = scene.cameras.main
+      const bgFar = scene.data.get('bg-far')
+
+      bgFar.tilePositionX = camera.scrollX * BG_PARALLAX_FAR
+      bgFar.tilePositionY = camera.scrollY * BG_PARALLAX_FAR
     },
     []
   )
