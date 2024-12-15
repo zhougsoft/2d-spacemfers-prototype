@@ -18,9 +18,11 @@ const ShipControls = ({
       SPEED: {speedDisplay.toFixed(2)}
     </div>
     <div>
-      <button onClick={() => setShipThrust(1)}>FULL THRUST</button>
+      <button onClick={() => setShipThrust(0.25)}>25% THRUST</button>
       <br />
-      <button onClick={() => setShipThrust(0.5)}>HALF THRUST</button>
+      <button onClick={() => setShipThrust(0.5)}>50% THRUST</button>
+      <br />
+      <button onClick={() => setShipThrust(1)}>100% THRUST</button>
     </div>
     <div>
       <div>

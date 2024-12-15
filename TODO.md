@@ -1,10 +1,8 @@
 # spacemfers todos
 
 ## the BIG GAME WORLD REFACTOR
-- [ ] make a scaled grid for speed/navigation debugging and developing all of this
-- [ ] create a basic static JSON file for the star system to start fleshing out the schema for new location system
-- SPATIAL PARTITIONING: WHERE DO WE START???
-    - [ ] make a lil prototype-ey thing in phaser-land with the new location system from static file data
+- [x] make a scaled grid for speed/navigation debugging and developing all of this
+- [ ] start hashing out the basic quadrant system for a 100x100 AU star system
 - [ ] make sure everything is tight in Ship class with the pixels-to-meters ratio stuff
 - [ ] yeet the celestial system from db land in favour of the static file
 

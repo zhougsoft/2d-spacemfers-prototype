@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { DataObject } from '../../../../types'
-import { AU_IN_KM, CELESTIAL_TYPES, EMOJI } from '../../../../utils/constants'
+import { AU_IN_KILOMETERS, CELESTIAL_TYPES, EMOJI } from '../../../../utils/constants'
 import { usePlayerCelestialTravel } from '../../../../hooks/usePlayerCelestialTravel'
 import CelestialModal from './CelestialModal'
 import styles from './StarSystemMap.module.css'
@@ -32,7 +32,7 @@ const renderCelestialTree = (
   const formattedDistance = !isNaN(distance)
     ? distance > 0.1
       ? `${distance.toFixed(1).toLocaleString()} au`
-      : `${Math.round(distance * AU_IN_KM).toLocaleString()} km`
+      : `${Math.round(distance * AU_IN_KILOMETERS).toLocaleString()} km`
     : 'n/a'
 
   const celestialInfo = (

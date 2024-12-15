@@ -1,5 +1,5 @@
 import { DataObject, DataIndex } from '../../../types'
-import { AU_IN_KM } from '../../../utils/constants'
+import { AU_IN_KILOMETERS } from '../../../utils/constants'
 
 const OverviewPanel = ({
   playerLocation,
@@ -63,7 +63,7 @@ const OverviewPanel = ({
 
           const distanceValue =
             total_distance_from_player < 0.1
-              ? `${(total_distance_from_player * AU_IN_KM).toFixed(0)} km`
+              ? `${(total_distance_from_player * AU_IN_KILOMETERS).toFixed(0)} km`
               : `${total_distance_from_player.toFixed(1)} au`
 
           return (

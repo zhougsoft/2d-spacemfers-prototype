@@ -31,7 +31,7 @@ import backgroundNearImage from '../../assets/bg/near.png'
 import shuttleImage from '../../assets/shuttle.png'
 import { usePlayerContext } from '../../contexts/PlayerContext'
 import { useGameData } from '../../hooks/useGameData'
-import { EMOJI } from '../../utils/constants'
+import { EMOJI, PIXELS_PER_KILOMETER } from '../../utils/constants'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
@@ -40,14 +40,23 @@ import ShipControls from './UI/ShipControls'
 import StarSystemMap from './UI/StarSystemMap'
 import { drawDebugGrid } from '../../utils/graphics'
 
+
+// ~~~ WIP zone ~~~
+
+// TODO: figure out the big map partitioning
+// split this into 4 quadrants with the star in the middle
+const STAR_SYSTEM_SIZE_AU = 100
+const STAR_LOCATION = {x: 0, y: 0}
+
+// ~~~~~~~~~~~~~~~~
+
+
 // Feature flags
 const IS_DEBUG_MODE = true
 const IS_BACKGROUND_ENABLED = false
+const IS_HUD_ENABLED = false
 
-// Scale factors for converting game world measurements to pixels
-const PIXELS_PER_METER = 10
-const PIXELS_PER_KILOMETER = PIXELS_PER_METER * 1000
-const MAP_SIZE = PIXELS_PER_KILOMETER * 1 // Total size of the game map in pixels squared (just 1km x 1km for now)
+const DEBUG_GRID_SIZE = PIXELS_PER_KILOMETER * 1
 
 // Camera control factors
 const MIN_ZOOM = 0.25
@@ -149,11 +158,11 @@ const Game = () => {
     }
 
     if (IS_DEBUG_MODE) {
-      drawDebugGrid(scene, MAP_SIZE, PIXELS_PER_METER)
+      drawDebugGrid(scene, DEBUG_GRID_SIZE)
     }
 
     // Create the player ship
-    const shipSprite = scene.add.sprite(MAP_SIZE / 2, MAP_SIZE / 2, 'ship')
+    const shipSprite = scene.add.sprite(0, 0, 'ship')
     shipSprite.setScale(1)
     ship.current = new Ship(shipSprite)
 
@@ -176,6 +185,11 @@ const Game = () => {
       if (ship.current) {
         ship.current.update(delta)
         setSpeedDisplay(ship.current.getSpeed())
+
+        // ~~~
+        const { x, y } = ship.current.getPosition()
+        console.log(x, y)
+        // ~~~
       }
 
       if (IS_BACKGROUND_ENABLED) {
@@ -218,7 +232,7 @@ const Game = () => {
           top: 50,
           left: 10,
         }}>
-        {starSystemTree ? (
+        {IS_HUD_ENABLED && starSystemTree ? (
           <div>
             {starSystemMapIsExpanded ? (
               <StarSystemMap
@@ -245,7 +259,7 @@ const Game = () => {
           top: 10,
           right: 10,
         }}>
-        {playerLocation && starSystemIndex ? (
+        {IS_HUD_ENABLED && playerLocation && starSystemIndex ? (
           <OverviewPanel
             playerLocation={playerLocation}
             starSystemIndex={starSystemIndex}
@@ -273,7 +287,7 @@ const Game = () => {
           bottom: 25,
           left: 10,
         }}>
-        {player ? (
+        {IS_HUD_ENABLED && player ? (
           <PlayerOverview
             playerData={{
               player,
