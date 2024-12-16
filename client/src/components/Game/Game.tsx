@@ -31,25 +31,63 @@ import backgroundNearImage from '../../assets/bg/near.png'
 import shuttleImage from '../../assets/shuttle.png'
 import { usePlayerContext } from '../../contexts/PlayerContext'
 import { useGameData } from '../../hooks/useGameData'
-import { EMOJI, PIXELS_PER_KILOMETER } from '../../utils/constants'
+import {
+  AU_IN_METERS,
+  EMOJI,
+  PIXELS_PER_KILOMETER,
+} from '../../utils/constants'
+import { drawDebugGrid } from '../../utils/graphics'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
 import PlayerOverview from './UI/PlayerOverview'
 import ShipControls from './UI/ShipControls'
 import StarSystemMap from './UI/StarSystemMap'
-import { drawDebugGrid } from '../../utils/graphics'
-
 
 // ~~~ WIP zone ~~~
 
-// TODO: figure out the big map partitioning
-// split this into 4 quadrants with the star in the middle
+// TODO: plan out the star system space & coordinate system
+// there is access to the following constants:
+// - PIXELS_PER_METER
+// - PIXELS_PER_KILOMETER
+// - AU_IN_METERS
+// - AU_IN_KILOMETERS
+
 const STAR_SYSTEM_SIZE_AU = 100
-const STAR_LOCATION = {x: 0, y: 0}
+
+interface Celestial {
+  id: string
+  x: number
+  y: number
+}
+
+const starCelestial: Celestial = {
+  id: 'star',
+  // the star will always be at the center of the star system
+  x: 0,
+  y: 0,
+}
+
+const planetCelestial: Celestial = {
+  id: 'planet',
+  // xy coordinates are always represented in meters
+  x: AU_IN_METERS * 1, // 1 AU away from the star
+  y: AU_IN_METERS * 1,
+}
+
+const asteroidCelestial: Celestial = {
+  id: 'asteroid',
+  x: AU_IN_METERS * 4, // 4 AU away from the star
+  y: AU_IN_METERS * 4,
+}
+
+const celestials: Celestial[] = [
+  starCelestial,
+  planetCelestial,
+  asteroidCelestial,
+]
 
 // ~~~~~~~~~~~~~~~~
-
 
 // Feature flags
 const IS_DEBUG_MODE = true
@@ -119,8 +157,6 @@ const Game = () => {
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
-    // TODO: make a graphics/camera/backgrounds/parallax handling module/class/thing abstraction to handle the graphic-ey stuff like the stuff below:
-
     if (IS_BACKGROUND_ENABLED) {
       const { width, height } = scene.sys.canvas
       // Add static base background
@@ -186,10 +222,10 @@ const Game = () => {
         ship.current.update(delta)
         setSpeedDisplay(ship.current.getSpeed())
 
-        // ~~~
+        // ~~~ for debugging purposes ~~~
         const { x, y } = ship.current.getPosition()
         console.log(x, y)
-        // ~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       }
 
       if (IS_BACKGROUND_ENABLED) {

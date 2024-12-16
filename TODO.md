@@ -1,10 +1,15 @@
 # spacemfers todos
 
-## the BIG GAME WORLD REFACTOR
-- [x] make a scaled grid for speed/navigation debugging and developing all of this
-- [ ] start hashing out the basic quadrant system for a 100x100 AU star system
-- [ ] make sure everything is tight in Ship class with the pixels-to-meters ratio stuff
-- [ ] yeet the celestial system from db land in favour of the static file
+## the BIG STAR SYSTEM REFACTOR
+- [ ] refactor ship class to do all state calculations in seconds, meters, and meters-per-second
+    - use the sprite's x & y pixel coordinates as source of truth, but wrap it all in realistic measurements
+- [ ] Represent the star system as a single massive 2D plane in meters.
+    - the system's star is always at (0,0)
+    - player’s coordinates are (playerX, playerY) in meters
+    - convert the measurements to pixels at render time using the constants
+    - no partitioning since there arent a ton of objects; no complexity needed beyond a single coordinate space
+- [ ] make the debug grid do a tiled display thingy with the camera so it doesnt need to render tons of graphics
+- [ ] yeet the old instance-based timestamp-ey celestial system
 
 
 ## other thangs
@@ -12,4 +17,5 @@
 - [ ] add a cool foreground parallax layer that sits between the camera and ship and is really fast with little wispy light & semi-transparent specks
 - [ ] use the ship stats to determine the speed and turn speed (with max speed and mass attributes)
 - [ ] figure out this background/camera/zoom/tiling situation
-    - tldr; we'll need a tiling nebula background, any specialized AI for generating this?
+    - maybe a tiling nebula background is needed? any specialized AI for generating this?
+    - maybe there's a way to do a "skybox" with a 2d view?
