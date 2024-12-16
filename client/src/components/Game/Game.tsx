@@ -29,32 +29,21 @@ import backgroundFarImage from '../../assets/bg/far.png'
 import backgroundMidImage from '../../assets/bg/mid.png'
 import backgroundNearImage from '../../assets/bg/near.png'
 import shuttleImage from '../../assets/shuttle.png'
-import { usePlayerContext } from '../../contexts/PlayerContext'
-import { useGameData } from '../../hooks/useGameData'
-import { AU_IN_METERS, EMOJI, PIXELS_PER_METER } from '../../utils/constants'
+import { AU_IN_METERS, PIXELS_PER_METER } from '../../utils/constants'
 import { createDebugGridTexture } from '../../utils/graphics'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
-import PlayerOverview from './UI/PlayerOverview'
 import ShipControls from './UI/ShipControls'
-import StarSystemMap from './UI/StarSystemMap'
 
 // ~~~ WIP zone ~~~
 
-// TODO: plan out the star system space & coordinate system
-// there is access to the following constants:
-// - PIXELS_PER_METER
-// - PIXELS_PER_KILOMETER
-// - AU_IN_METERS
-// - AU_IN_KILOMETERS
-
-const STAR_SYSTEM_SIZE_AU = 100
-
-interface Celestial {
+// todo: dont export this from here if we end up using it
+export interface Celestial {
   id: string
   x: number
   y: number
+  radius: number
 }
 
 const starCelestial: Celestial = {
@@ -62,6 +51,7 @@ const starCelestial: Celestial = {
   // the star will always be at the center of the star system
   x: 0,
   y: 0,
+  radius: 100,
 }
 
 const planetCelestial: Celestial = {
@@ -69,26 +59,22 @@ const planetCelestial: Celestial = {
   // xy coordinates are always represented in meters
   x: AU_IN_METERS * 1, // 1 AU away from the star
   y: AU_IN_METERS * 1,
+  radius: 50,
 }
 
 const asteroidCelestial: Celestial = {
   id: 'asteroid',
   x: AU_IN_METERS * 4, // 4 AU away from the star
   y: AU_IN_METERS * 4,
+  radius: 25,
 }
-
-const celestials: Celestial[] = [
-  starCelestial,
-  planetCelestial,
-  asteroidCelestial,
-]
 
 // ~~~~~~~~~~~~~~~~
 
 // Feature flags
 const IS_DEBUG_MODE = true
 const IS_BACKGROUND_ENABLED = false
-const IS_HUD_ENABLED = false
+const IS_HUD_ENABLED = true
 
 const DEBUG_GRID_SIZE = PIXELS_PER_METER * 100 // 100m debug grid
 const DEBUG_GRID_KEY = 'debug-grid'
@@ -103,34 +89,19 @@ const BG_PARALLAX_MID = 0.1
 const BG_PARALLAX_NEAR = 0.2
 
 const Game = () => {
-  const { playerId } = usePlayerContext()
-
-  // TODO: probably remove the starSystemIndex and starSystemTree entirely since rewriting backend w/ static data & to spatial partitioning system
-  // Backend player data & "slow" game state (system data, universe state, etc.)
-  const {
-    starSystemIndex,
-    starSystemTree,
-    player,
-    playerLocation,
-    playerShips,
-    activePlayerShip,
-    refreshData: refreshBackendGameData,
-  } = useGameData(playerId)
-
-  // Phaser game state refs for "fast" game state (ship position, velocity, etc.)
+  // Phaser game state refs for "fast" game state (ship position, velocity, celestial locations etc.)
+  const celestialObjects = useRef<Phaser.GameObjects.Arc[]>([])
   const ship = useRef<Ship>()
 
   // UI management state
   const [reloadKey, setReloadKey] = useState(0)
   const [speedDisplay, setSpeedDisplay] = useState(0)
-  const [starSystemMapIsExpanded, setStarSystemMapIsExpanded] = useState(false)
+  const [overviewItems, setOverviewItems] = useState<Celestial[]>([])
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
-    refreshBackendGameData(() => {
-      ship.current = undefined
-      setReloadKey(prev => prev + 1)
-    })
+    ship.current = undefined
+    setReloadKey(prev => prev + 1)
   }
 
   const setShipAngle = (angle: number) => {
@@ -160,7 +131,7 @@ const Game = () => {
       // Add static base background
       scene.add
         .image(0, 0, 'bg-base')
-        .setDisplaySize(scene.cameras.main.width, scene.cameras.main.height)
+        .setDisplaySize(width, height)
         .setOrigin(0, 0)
         .setScrollFactor(0)
 
@@ -199,6 +170,40 @@ const Game = () => {
       gridTile.setScrollFactor(0)
       scene.data.set(DEBUG_GRID_KEY, gridTile)
     }
+
+    // add the sun to the center of the star system
+    const starX = starCelestial.x * PIXELS_PER_METER
+    const starY = starCelestial.y * PIXELS_PER_METER
+    const starRadius = starCelestial.radius * PIXELS_PER_METER
+    const star = scene.add.circle(starX, starY, starRadius, 0xffff00, 0.8)
+
+    // add the planet to the star system
+    const planetX = planetCelestial.x * PIXELS_PER_METER
+    const planetY = planetCelestial.y * PIXELS_PER_METER
+    const planetRadius = planetCelestial.radius * PIXELS_PER_METER
+    const planet = scene.add.circle(
+      planetX,
+      planetY,
+      planetRadius,
+      0x00ff00,
+      0.8
+    )
+
+    // add the asteroid to the star system
+    const asteroidX = asteroidCelestial.x * PIXELS_PER_METER
+    const asteroidY = asteroidCelestial.y * PIXELS_PER_METER
+    const asteroidRadius = asteroidCelestial.radius * PIXELS_PER_METER
+    const asteroid = scene.add.circle(
+      asteroidX,
+      asteroidY,
+      asteroidRadius,
+      0xff0000,
+      0.8
+    )
+
+    // 🤷‍♂️🤷‍♂️🤷‍♂️
+    celestialObjects.current.push(star, planet, asteroid)
+    setOverviewItems([starCelestial, planetCelestial, asteroidCelestial])
 
     // Create the player ship
     const shipSprite = scene.add.sprite(0, 0, 'ship')
@@ -279,26 +284,7 @@ const Game = () => {
           top: 50,
           left: 10,
         }}>
-        {IS_HUD_ENABLED && starSystemTree ? (
-          <div>
-            {starSystemMapIsExpanded ? (
-              <StarSystemMap
-                starSystemTree={starSystemTree}
-                highlightedCelestialId={playerLocation?.celestial_id}
-                playerId={playerId}
-                onDataChange={refreshBackendGameData}
-                player={player}
-                onClose={() => setStarSystemMapIsExpanded(false)}
-              />
-            ) : (
-              <button onClick={() => setStarSystemMapIsExpanded(true)}>
-                {`${EMOJI.MILKY_WAY} system map`}
-              </button>
-            )}
-          </div>
-        ) : (
-          <div>...</div>
-        )}
+        {IS_HUD_ENABLED && <div>...</div>}
       </div>
       <div
         style={{
@@ -306,14 +292,7 @@ const Game = () => {
           top: 10,
           right: 10,
         }}>
-        {IS_HUD_ENABLED && playerLocation && starSystemIndex ? (
-          <OverviewPanel
-            playerLocation={playerLocation}
-            starSystemIndex={starSystemIndex}
-          />
-        ) : (
-          <div>...</div>
-        )}
+        {IS_HUD_ENABLED && <OverviewPanel overviewItems={overviewItems} />}
       </div>
       <div
         style={{
@@ -334,19 +313,7 @@ const Game = () => {
           bottom: 25,
           left: 10,
         }}>
-        {IS_HUD_ENABLED && player ? (
-          <PlayerOverview
-            playerData={{
-              player,
-              playerLocation,
-              playerShips,
-              activePlayerShip,
-            }}
-            starSystemIndex={starSystemIndex}
-          />
-        ) : (
-          <div>...</div>
-        )}
+        {IS_HUD_ENABLED && <div>...</div>}
       </div>
     </div>
   )
