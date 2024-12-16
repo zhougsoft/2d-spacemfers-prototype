@@ -1,14 +1,16 @@
 # spacemfers todos
 
 ## the BIG STAR SYSTEM REFACTOR
-- [ ] refactor ship class to do all state calculations in seconds, meters, and meters-per-second
+- [x] refactor ship class to do all state calculations in seconds, meters, and meters-per-second
     - use the sprite's x & y pixel coordinates as source of truth, but wrap it all in realistic measurements
-- [ ] Represent the star system as a single massive 2D plane in meters.
+- [x] Represent the star system as a single massive 2D plane in meters.
     - the system's star is always at (0,0)
     - player’s coordinates are (playerX, playerY) in meters
     - convert the measurements to pixels at render time using the constants
     - no partitioning since there arent a ton of objects; no complexity needed beyond a single coordinate space
-- [ ] make the debug grid do a tiled display thingy with the camera so it doesnt need to render tons of graphics
+- [x] make the debug grid do a tiled display thingy with the camera so it doesnt need to render tons of graphics
+- [ ] add some stuff to the world and try flying around it and stuff
+- [ ] try warping to something far AF away
 - [ ] yeet the old instance-based timestamp-ey celestial system
 
 

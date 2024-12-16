@@ -31,12 +31,8 @@ import backgroundNearImage from '../../assets/bg/near.png'
 import shuttleImage from '../../assets/shuttle.png'
 import { usePlayerContext } from '../../contexts/PlayerContext'
 import { useGameData } from '../../hooks/useGameData'
-import {
-  AU_IN_METERS,
-  EMOJI,
-  PIXELS_PER_KILOMETER,
-} from '../../utils/constants'
-import { drawDebugGrid } from '../../utils/graphics'
+import { AU_IN_METERS, EMOJI, PIXELS_PER_METER } from '../../utils/constants'
+import { createDebugGridTexture } from '../../utils/graphics'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
@@ -94,7 +90,8 @@ const IS_DEBUG_MODE = true
 const IS_BACKGROUND_ENABLED = false
 const IS_HUD_ENABLED = false
 
-const DEBUG_GRID_SIZE = PIXELS_PER_KILOMETER * 1
+const DEBUG_GRID_SIZE = PIXELS_PER_METER * 100 // 100m debug grid
+const DEBUG_GRID_KEY = 'debug-grid'
 
 // Camera control factors
 const MIN_ZOOM = 0.25
@@ -157,8 +154,9 @@ const Game = () => {
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
+    const { width, height } = scene.sys.canvas
+
     if (IS_BACKGROUND_ENABLED) {
-      const { width, height } = scene.sys.canvas
       // Add static base background
       scene.add
         .image(0, 0, 'bg-base')
@@ -194,7 +192,12 @@ const Game = () => {
     }
 
     if (IS_DEBUG_MODE) {
-      drawDebugGrid(scene, DEBUG_GRID_SIZE)
+      createDebugGridTexture(scene, DEBUG_GRID_SIZE, DEBUG_GRID_KEY)
+      const gridTile = scene.add.tileSprite(0, 0, width, height, DEBUG_GRID_KEY)
+      gridTile.setTileScale(1)
+      gridTile.setOrigin(0, 0)
+      gridTile.setScrollFactor(0)
+      scene.data.set(DEBUG_GRID_KEY, gridTile)
     }
 
     // Create the player ship
@@ -243,6 +246,14 @@ const Game = () => {
 
         bgNear.tilePositionX = camera.scrollX * BG_PARALLAX_NEAR
         bgNear.tilePositionY = camera.scrollY * BG_PARALLAX_NEAR
+      }
+
+      if (IS_DEBUG_MODE) {
+        const gridTile = scene.data.get(
+          DEBUG_GRID_KEY
+        ) as Phaser.GameObjects.TileSprite
+        gridTile.tilePositionX = scene.cameras.main.scrollX
+        gridTile.tilePositionY = scene.cameras.main.scrollY
       }
     },
     []
