@@ -2,8 +2,8 @@ import Phaser from 'phaser'
 import { PIXELS_PER_METER } from '../../../utils/constants'
 
 // Acceleration & speed controls
-const ACCELERATION_SPEED = 5 // m/s^2
-const MAX_SPEED = 10 // m/s
+const ACCELERATION_SPEED = 50 // m/s^2
+const MAX_SPEED = 100 // m/s
 const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.1 // how fast the ship slows down
 
@@ -33,8 +33,8 @@ export class Ship {
     this.sprite = sprite
 
     // Initialize ship position in meters from sprite position in pixels
-    this.posX_m = this.roundToThreeDecimals(sprite.x / PIXELS_PER_METER)
-    this.posY_m = this.roundToThreeDecimals(sprite.y / PIXELS_PER_METER)
+    this.posX_m = sprite.x / PIXELS_PER_METER
+    this.posY_m = sprite.y / PIXELS_PER_METER
   }
 
   // --- Public methods -------------------------------------------------------
@@ -161,22 +161,18 @@ export class Ship {
 
   private updatePosition(deltaSeconds: number) {
     // Update position in meters based on velocity
-    // this.posX_m += this.velX_ms * deltaSeconds
-    // this.posY_m += this.velY_ms * deltaSeconds
-
-    this.posX_m += this.roundToThreeDecimals(this.velX_ms * deltaSeconds)
-    this.posY_m += this.roundToThreeDecimals(this.velY_ms * deltaSeconds)
+    this.posX_m += this.velX_ms * deltaSeconds
+    this.posY_m += this.velY_ms * deltaSeconds
 
     // Convert meters to pixels and update sprite position for rendering
     this.sprite.x = this.posX_m * PIXELS_PER_METER
     this.sprite.y = this.posY_m * PIXELS_PER_METER
   }
 
+  /**
+   * Linear interpolation helper
+   */
   private lerp(start: number, target: number, factor: number) {
     return start + (target - start) * factor
-  }
-
-  private roundToThreeDecimals(num: number) {
-    return Math.round(num * 1000) / 1000
   }
 }
