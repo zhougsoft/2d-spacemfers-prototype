@@ -1,28 +1,43 @@
 import Phaser from 'phaser'
+import { PIXELS_PER_METER } from '../../../utils/constants'
 
 // Acceleration & speed controls
-const ACCELERATION_SPEED = 5 // Base acceleration rate in m/s^2
-const MAX_SPEED = 10 // Maximum velocity in m/s
-const THRUST_LERP_FACTOR = 0.1 // Thrust response smoothing
-const SPEED_DECAY = 0.1 // Velocity reduction with no thrust
+const ACCELERATION_SPEED = 5 // m/s^2
+const MAX_SPEED = 10 // m/s
+const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
+const SPEED_DECAY = 0.1 // how fast the ship slows down
 
 // Rotation controls
-const ROTATION_SPEED = 10 // Maximum rotation speed per frame
-const ROTATION_DAMPING_FACTOR = 0.01 // Rotation acceleration/deceleration rate
-const ROTATION_STOP_THRESHOLD = 0.15 // Angle difference before stopping rotation
+const ROTATION_SPEED = 10 // degrees/frame max rotation velocity
+const ROTATION_DAMPING_FACTOR = 0.01 // how fast the ship stops rotating
+const ROTATION_STOP_THRESHOLD = 0.15 // how close to the target angle to stop
 
 export class Ship {
   private sprite: Phaser.GameObjects.Sprite
-  private velocityX: number = 0
-  private velocityY: number = 0
-  private rotationVelocity: number = 0
-  private currentThrust: number = 0
-  private targetThrust: number = 0
-  private targetAngle: number = 0
 
+  private posX_m: number = 0 // ship position X in meters
+  private posY_m: number = 0 // ship position Y in meters
+  private velX_ms: number = 0 // ship velocity X in m/s
+  private velY_ms: number = 0 // ship velocity Y in m/s
+  private rotationVel: number = 0 // ship rotation velocity in degrees/frame
+
+  private currentThrust: number = 0 // current thrust level (0 to 1)
+  private targetThrust: number = 0 // target thrust level (0 to 1)
+  private targetAngle: number = 0 // target angle in degrees (0 to 359)
+
+  /**
+   * Ship constructor
+   * @param sprite Phaser sprite object representing the ship
+   */
   constructor(sprite: Phaser.GameObjects.Sprite) {
     this.sprite = sprite
+
+    // Initialize ship position in meters from sprite position in pixels
+    this.posX_m = this.roundToThreeDecimals(sprite.x / PIXELS_PER_METER)
+    this.posY_m = this.roundToThreeDecimals(sprite.y / PIXELS_PER_METER)
   }
+
+  // --- Public methods -------------------------------------------------------
 
   /**
    * Returns the ship's Phaser sprite object
@@ -32,17 +47,17 @@ export class Ship {
   }
 
   /**
-   * Returns the ship's current position as a 2D vector
+   * Returns the ship's current position in meters
    */
   public getPosition(): { x: number; y: number } {
-    return { x: this.sprite.x, y: this.sprite.y }
+    return { x: this.posX_m, y: this.posY_m }
   }
 
   /**
-   * Returns the ship's current velocity magnitude
+   * Returns the ship's current speed in m/s
    */
   public getSpeed(): number {
-    return Math.sqrt(this.velocityX ** 2 + this.velocityY ** 2)
+    return Math.sqrt(this.velX_ms ** 2 + this.velY_ms ** 2)
   }
 
   /**
@@ -60,7 +75,8 @@ export class Ship {
   }
 
   /**
-   * Sets the desired rotation angle for the ship
+   * Sets the desired rotation angle for the ship (in degrees)
+   * @param angle 0 to 359
    */
   public setTargetAngle(angle: number) {
     this.targetAngle = Math.max(0, Math.min(359, angle))
@@ -68,6 +84,7 @@ export class Ship {
 
   /**
    * Sets the desired thrust level for the ship's engines
+   * @param thrust 0 to 1
    */
   public setTargetThrust(thrust: number) {
     this.targetThrust = Math.max(0, Math.min(1, thrust))
@@ -75,91 +92,91 @@ export class Ship {
 
   /**
    * Main physics update loop for the ship
+   * @param delta time since last frame in ms
    */
   public update(delta: number) {
+    const deltaSeconds = delta / 1000
     this.updateAngle(delta)
-    this.updateThrust(delta)
-    this.updatePosition()
+    this.updateThrust(deltaSeconds)
+    this.updatePosition(deltaSeconds)
   }
 
+  // --- Private methods ------------------------------------------------------
+
   private updateAngle(delta: number) {
-    // Calculate shortest rotation path to target angle
     const angleDifference = this.targetAngle - this.sprite.angle
     const normalizedDifference = ((angleDifference + 180) % 360) - 180
 
-    // Calculate distance needed to stop rotation at current velocity
     const stoppingDistance =
-      (this.rotationVelocity * this.rotationVelocity) /
-      (2 * ROTATION_DAMPING_FACTOR)
+      (this.rotationVel * this.rotationVel) / (2 * ROTATION_DAMPING_FACTOR)
 
-    // Handle rotation acceleration and deceleration
     if (Math.abs(normalizedDifference) > ROTATION_STOP_THRESHOLD) {
       if (Math.abs(normalizedDifference) > stoppingDistance) {
-        this.rotationVelocity +=
+        this.rotationVel +=
           Math.sign(normalizedDifference) * ROTATION_DAMPING_FACTOR * delta
       } else {
-        this.rotationVelocity *= 1 - ROTATION_DAMPING_FACTOR * delta
+        this.rotationVel *= 1 - ROTATION_DAMPING_FACTOR * delta
       }
     } else {
-      this.rotationVelocity = 0
+      this.rotationVel = 0
       this.sprite.angle = this.targetAngle
     }
 
-    // Apply rotation speed limits
-    this.rotationVelocity = Math.max(
+    this.rotationVel = Math.max(
       -ROTATION_SPEED,
-      Math.min(ROTATION_SPEED, this.rotationVelocity)
+      Math.min(ROTATION_SPEED, this.rotationVel)
     )
-    this.sprite.angle += this.rotationVelocity
+
+    this.sprite.angle += this.rotationVel
   }
 
-  private updateThrust(delta: number) {
-    // Smooth thrust changes
+  private updateThrust(deltaSeconds: number) {
     this.currentThrust = this.lerp(
       this.currentThrust,
       this.targetThrust,
       THRUST_LERP_FACTOR
     )
 
-    // Convert ship angle to radians for thrust calculation
     const currentAngleRadians = this.getAngleRadians()
     const thrustX = Math.cos(currentAngleRadians) * ACCELERATION_SPEED
     const thrustY = Math.sin(currentAngleRadians) * ACCELERATION_SPEED
 
-    // Apply velocity forces based on thrust level
-    const deltaSeconds = delta / 1000
     if (this.targetThrust > 0) {
-      this.velocityX += thrustX * this.currentThrust * deltaSeconds
-      this.velocityY += thrustY * this.currentThrust * deltaSeconds
+      this.velX_ms += thrustX * this.currentThrust * deltaSeconds
+      this.velY_ms += thrustY * this.currentThrust * deltaSeconds
     } else {
-      this.velocityX *= 1 - SPEED_DECAY * deltaSeconds
-      this.velocityY *= 1 - SPEED_DECAY * deltaSeconds
+      this.velX_ms *= 1 - SPEED_DECAY * deltaSeconds
+      this.velY_ms *= 1 - SPEED_DECAY * deltaSeconds
     }
 
     const speed = this.getSpeed()
     const allowedMaxSpeed = MAX_SPEED * this.currentThrust
 
-    // If current speed exceeds allowed max speed, clamp it
     if (speed > 0 && speed > allowedMaxSpeed) {
       const scale = allowedMaxSpeed / speed
-      this.velocityX *= scale
-      this.velocityY *= scale
+      this.velX_ms *= scale
+      this.velY_ms *= scale
     }
   }
 
-  private updatePosition() {
-    // Apply current velocity to ship position
-    this.sprite.x += this.velocityX
-    this.sprite.y += this.velocityY
+  private updatePosition(deltaSeconds: number) {
+    // Update position in meters based on velocity
+    // this.posX_m += this.velX_ms * deltaSeconds
+    // this.posY_m += this.velY_ms * deltaSeconds
+
+    this.posX_m += this.roundToThreeDecimals(this.velX_ms * deltaSeconds)
+    this.posY_m += this.roundToThreeDecimals(this.velY_ms * deltaSeconds)
+
+    // Convert meters to pixels and update sprite position for rendering
+    this.sprite.x = this.posX_m * PIXELS_PER_METER
+    this.sprite.y = this.posY_m * PIXELS_PER_METER
   }
 
-  /**
-   * Linear interpolation helper
-   * @param start Starting value
-   * @param target Target value
-   * @param factor Interpolation factor (0-1)
-   */
   private lerp(start: number, target: number, factor: number) {
     return start + (target - start) * factor
+  }
+
+  private roundToThreeDecimals(num: number) {
+    return Math.round(num * 1000) / 1000
   }
 }
