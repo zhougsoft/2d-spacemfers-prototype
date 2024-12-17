@@ -46,14 +46,6 @@ export interface Celestial {
   radius: number
 }
 
-const starCelestial: Celestial = {
-  id: 'star',
-  // the star will always be at the center of the star system
-  x: 0,
-  y: 0,
-  radius: 100,
-}
-
 const planetCelestial: Celestial = {
   id: 'planet',
   // xy coordinates are always represented in meters
@@ -96,7 +88,6 @@ const Game = () => {
   // UI management state
   const [reloadKey, setReloadKey] = useState(0)
   const [speedDisplay, setSpeedDisplay] = useState(0)
-  const [overviewItems, setOverviewItems] = useState<Celestial[]>([])
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
@@ -171,12 +162,6 @@ const Game = () => {
       scene.data.set(DEBUG_GRID_KEY, gridTile)
     }
 
-    // add the sun to the center of the star system
-    const starX = starCelestial.x * PIXELS_PER_METER
-    const starY = starCelestial.y * PIXELS_PER_METER
-    const starRadius = starCelestial.radius * PIXELS_PER_METER
-    const star = scene.add.circle(starX, starY, starRadius, 0xffff00, 0.8)
-
     // add the planet to the star system
     const planetX = planetCelestial.x * PIXELS_PER_METER
     const planetY = planetCelestial.y * PIXELS_PER_METER
@@ -202,8 +187,7 @@ const Game = () => {
     )
 
     // 🤷‍♂️🤷‍♂️🤷‍♂️
-    celestialObjects.current.push(star, planet, asteroid)
-    setOverviewItems([starCelestial, planetCelestial, asteroidCelestial])
+    celestialObjects.current.push(planet, asteroid)
 
     // Create the player ship
     const shipSprite = scene.add.sprite(0, 0, 'ship')
@@ -292,7 +276,7 @@ const Game = () => {
           top: 10,
           right: 10,
         }}>
-        {IS_HUD_ENABLED && <OverviewPanel overviewItems={overviewItems} />}
+        {IS_HUD_ENABLED && <OverviewPanel overviewItems={[]} />}
       </div>
       <div
         style={{

@@ -1,6 +1,8 @@
-import { Celestial } from '../Game'
-
-const OverviewPanel = ({ overviewItems }: { overviewItems: Celestial[] }) => {
+const OverviewPanel = ({
+  overviewItems,
+}: {
+  overviewItems: { name: string; distance: number }[]
+}) => {
   return (
     <table>
       <thead>
