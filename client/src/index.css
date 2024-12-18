@@ -1,5 +1,6 @@
 :root {
-  --root-font-size: 12px;
+  font-size: 12px;
+
   --font-primary: monospace;
 
   --color-bg: #111;
@@ -35,7 +36,6 @@
 
 html,
 body {
-  font-size: var(--root-font-size) !important;
   margin: 0;
   padding: 0;
 }
