@@ -1,0 +1,56 @@
+{
+  "shuttle": {
+    "area_m2": 20,
+    "mass_t": 1000,
+    "max_velocity_ms": 500,
+    "warp_speed_au": 5,
+    "power_capacity": 1,
+    "toughness": 1,
+    "cargo_capacity_m2": 10
+  },
+  "corvette": {
+    "area_m2": 100,
+    "mass_t": 2000,
+    "max_velocity_ms": 350,
+    "warp_speed_au": 5,
+    "power_capacity": 2,
+    "toughness": 3,
+    "cargo_capacity_m2": 200
+  },
+  "frigate": {
+    "area_m2": 200,
+    "mass_t": 3000,
+    "max_velocity_ms": 300,
+    "warp_speed_au": 4.5,
+    "power_capacity": 3,
+    "toughness": 6,
+    "cargo_capacity_m2": 400
+  },
+  "corsair": {
+    "area_m2": 400,
+    "mass_t": 15000,
+    "max_velocity_ms": 250,
+    "warp_speed_au": 4,
+    "power_capacity": 20,
+    "toughness": 20,
+    "cargo_capacity_m2": 500
+  },
+  "cruiser": {
+    "area_m2": 800,
+    "mass_t": 30000,
+    "max_velocity_ms": 150,
+    "warp_speed_au": 3.5,
+    "power_capacity": 40,
+    "toughness": 40,
+    "cargo_capacity_m2": 600
+  },
+  "hauler": {
+    "area_m2": 1000,
+    "mass_t": 20000,
+    "max_velocity_ms": 150,
+    "warp_speed_au": 3,
+    "power_capacity": 5,
+    "toughness": 15,
+    "cargo_capacity_m2": 3500
+  }
+}
