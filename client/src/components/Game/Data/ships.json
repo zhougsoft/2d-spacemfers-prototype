@@ -8,7 +8,7 @@
     "toughness": 1,
     "cargo_capacity_m2": 10
   },
-  "corvette": {
+  "corsair": {
     "area_m2": 75,
     "mass_t": 2000,
     "max_velocity_ms": 350,
@@ -17,7 +17,7 @@
     "toughness": 3,
     "cargo_capacity_m2": 200
   },
-  "frigate": {
+  "corvette": {
     "area_m2": 150,
     "mass_t": 3000,
     "max_velocity_ms": 300,
@@ -26,7 +26,7 @@
     "toughness": 6,
     "cargo_capacity_m2": 400
   },
-  "corsair": {
+  "frigate": {
     "area_m2": 300,
     "mass_t": 15000,
     "max_velocity_ms": 250,
