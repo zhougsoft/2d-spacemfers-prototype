@@ -24,13 +24,11 @@
  */
 
 import { useCallback, useRef, useState } from 'react'
-import backgroundBaseImage from '../../assets/bg/base.png'
-import backgroundFarImage from '../../assets/bg/far.png'
-import backgroundMidImage from '../../assets/bg/mid.png'
-import backgroundNearImage from '../../assets/bg/near.png'
+
 import shuttleImage from '../../assets/shuttle.png'
 import { createDebugGridTexture } from '../../utils/graphics'
 import { Camera } from './Logic/Camera'
+import { Background } from './Logic/Background'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
@@ -52,6 +50,7 @@ const BG_PARALLAX_NEAR = 0.2
 
 const Game = () => {
   // Game state object refs
+  const background = useRef<Background>()
   const ship = useRef<Ship>()
   const camera = useRef<Camera>()
 
@@ -77,18 +76,16 @@ const Game = () => {
 
   // Runs once before the scene is created
   const onPreload = useCallback((scene: Phaser.Scene) => {
-    scene.load.image('bg-base', backgroundBaseImage)
-    scene.load.image('bg-far', backgroundFarImage)
-    scene.load.image('bg-mid', backgroundMidImage)
-    scene.load.image('bg-near', backgroundNearImage)
+    background.current = new Background(scene)
+    background.current.preload()
     scene.load.image('ship', shuttleImage)
   }, [])
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
-    const { width, height } = scene.sys.canvas
+    if (IS_BACKGROUND_ENABLED && background.current) {
+      const { width, height } = background.current.getScreenSize()
 
-    if (IS_BACKGROUND_ENABLED) {
       // Add static base background
       scene.add
         .image(0, 0, 'bg-base')
@@ -123,7 +120,8 @@ const Game = () => {
       scene.data.set('bg-near', bgNear)
     }
 
-    if (IS_DEBUG_MODE) {
+    if (IS_DEBUG_MODE && background.current) {
+      const { width, height } = background.current.getScreenSize()
       createDebugGridTexture(scene, DEBUG_GRID_SIZE, DEBUG_GRID_KEY)
       const gridTile = scene.add.tileSprite(0, 0, width, height, DEBUG_GRID_KEY)
       gridTile.setTileScale(1)
@@ -132,7 +130,7 @@ const Game = () => {
       scene.data.set(DEBUG_GRID_KEY, gridTile)
     }
 
-    // Create the player ship
+    // Add the player ship
     const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
     ship.current = new Ship(shipSprite)
 
@@ -153,8 +151,8 @@ const Game = () => {
         setSpeedDisplay(ship.current.getSpeed())
 
         // ~~~ for debugging purposes ~~~
-        const { x, y } = ship.current.getPosition()
-        console.log(x, y)
+        // const { x, y } = ship.current.getPosition()
+        // console.log(x, y)
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       }
 
