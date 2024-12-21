@@ -1,10 +1,3 @@
-export const PIXELS_PER_METER = 10
-export const PIXELS_PER_KILOMETER = PIXELS_PER_METER * 1000
-
-export const KILOMETER_IN_METERS = 1000
-export const AU_IN_METERS = 149597870700
-export const AU_IN_KILOMETERS = AU_IN_METERS / 1000
-
 export const EMOJI = {
   ALIEN: '👽',
   ALIEN_MONSTER: '👾',

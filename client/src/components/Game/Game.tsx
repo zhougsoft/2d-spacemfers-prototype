@@ -29,46 +29,18 @@ import backgroundFarImage from '../../assets/bg/far.png'
 import backgroundMidImage from '../../assets/bg/mid.png'
 import backgroundNearImage from '../../assets/bg/near.png'
 import shuttleImage from '../../assets/shuttle.png'
-import { AU_IN_METERS, PIXELS_PER_METER } from '../../utils/constants'
 import { createDebugGridTexture } from '../../utils/graphics'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
 import ShipControls from './UI/ShipControls'
 
-// ~~~ WIP zone ~~~
-
-// todo: dont export this from here if we end up using it
-export interface Celestial {
-  id: string
-  x: number
-  y: number
-  radius: number
-}
-
-const planetCelestial: Celestial = {
-  id: 'planet',
-  // xy coordinates are always represented in meters
-  x: AU_IN_METERS * 1, // 1 AU away from the star
-  y: AU_IN_METERS * 1,
-  radius: 50,
-}
-
-const asteroidCelestial: Celestial = {
-  id: 'asteroid',
-  x: AU_IN_METERS * 4, // 4 AU away from the star
-  y: AU_IN_METERS * 4,
-  radius: 25,
-}
-
-// ~~~~~~~~~~~~~~~~
-
 // Feature flags
 const IS_DEBUG_MODE = true
 const IS_BACKGROUND_ENABLED = false
 const IS_HUD_ENABLED = true
 
-const DEBUG_GRID_SIZE = PIXELS_PER_METER * 100 // 100m debug grid
+const DEBUG_GRID_SIZE = 100 // 100m debug grid
 const DEBUG_GRID_KEY = 'debug-grid'
 
 // Camera control factors
@@ -82,7 +54,6 @@ const BG_PARALLAX_NEAR = 0.2
 
 const Game = () => {
   // Phaser game state refs for "fast" game state (ship position, velocity, celestial locations etc.)
-  const celestialObjects = useRef<Phaser.GameObjects.Arc[]>([])
   const ship = useRef<Ship>()
 
   // UI management state
@@ -161,33 +132,6 @@ const Game = () => {
       gridTile.setScrollFactor(0)
       scene.data.set(DEBUG_GRID_KEY, gridTile)
     }
-
-    // add the planet to the star system
-    const planetX = planetCelestial.x * PIXELS_PER_METER
-    const planetY = planetCelestial.y * PIXELS_PER_METER
-    const planetRadius = planetCelestial.radius * PIXELS_PER_METER
-    const planet = scene.add.circle(
-      planetX,
-      planetY,
-      planetRadius,
-      0x00ff00,
-      0.8
-    )
-
-    // add the asteroid to the star system
-    const asteroidX = asteroidCelestial.x * PIXELS_PER_METER
-    const asteroidY = asteroidCelestial.y * PIXELS_PER_METER
-    const asteroidRadius = asteroidCelestial.radius * PIXELS_PER_METER
-    const asteroid = scene.add.circle(
-      asteroidX,
-      asteroidY,
-      asteroidRadius,
-      0xff0000,
-      0.8
-    )
-
-    // 🤷‍♂️🤷‍♂️🤷‍♂️
-    celestialObjects.current.push(planet, asteroid)
 
     // Create the player ship
     const shipSprite = scene.add.sprite(0, 0, 'ship')

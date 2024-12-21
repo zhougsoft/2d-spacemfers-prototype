@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import { PIXELS_PER_METER } from './constants'
+import { metersToPixels } from './measurements'
 
 export const createDebugGridTexture = (
   scene: Phaser.Scene,
@@ -10,20 +10,21 @@ export const createDebugGridTexture = (
   const graphics = scene.make.graphics({ x: 0, y: 0 }, false)
 
   // Draw 1m lines
+  const minorInterval = metersToPixels(1)
   graphics.lineStyle(1, 0x333333, 0.25)
   graphics.beginPath()
-  for (let x = 0; x <= meters; x += PIXELS_PER_METER) {
+  for (let x = 0; x <= meters; x += minorInterval) {
     graphics.moveTo(x, 0)
     graphics.lineTo(x, meters)
   }
-  for (let y = 0; y <= meters; y += PIXELS_PER_METER) {
+  for (let y = 0; y <= meters; y += minorInterval) {
     graphics.moveTo(0, y)
     graphics.lineTo(meters, y)
   }
   graphics.strokePath()
 
   // Draw 10m lines
-  const mediumInterval = 10 * PIXELS_PER_METER
+  const mediumInterval = metersToPixels(10)
   graphics.lineStyle(2, 0x666666, 0.5)
   graphics.beginPath()
   for (let x = 0; x <= meters; x += mediumInterval) {
@@ -37,7 +38,7 @@ export const createDebugGridTexture = (
   graphics.strokePath()
 
   // Draw 100m lines
-  const majorInterval = 100 * PIXELS_PER_METER
+  const majorInterval = metersToPixels(100)
   graphics.lineStyle(3, 0xcccccc, 0.75)
   graphics.beginPath()
   for (let x = 0; x <= meters; x += majorInterval) {
@@ -50,6 +51,7 @@ export const createDebugGridTexture = (
   }
   graphics.strokePath()
 
+  // Generate a texture from the graphics object & clean up
   graphics.generateTexture(textureKey, meters, meters)
   graphics.destroy()
 }

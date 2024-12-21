@@ -1,5 +1,9 @@
 import Phaser from 'phaser'
-import { PIXELS_PER_METER } from '../../../utils/constants'
+import {
+  metersToPixels,
+  PIXELS_PER_METER,
+  pixelsToMeters,
+} from '../../../utils/measurements'
 
 // Acceleration & speed controls
 const ACCELERATION_SPEED = 50 // m/s^2
@@ -33,8 +37,8 @@ export class Ship {
     this.sprite = sprite
 
     // Initialize ship position in meters from sprite position in pixels
-    this.posX_m = sprite.x / PIXELS_PER_METER
-    this.posY_m = sprite.y / PIXELS_PER_METER
+    this.posX_m = pixelsToMeters(sprite.x)
+    this.posY_m = pixelsToMeters(sprite.y)
   }
 
   // --- Public methods -------------------------------------------------------
@@ -165,8 +169,8 @@ export class Ship {
     this.posY_m += this.velY_ms * deltaSeconds
 
     // Convert meters to pixels and update sprite position for rendering
-    this.sprite.x = this.posX_m * PIXELS_PER_METER
-    this.sprite.y = this.posY_m * PIXELS_PER_METER
+    this.sprite.x = metersToPixels(this.posX_m)
+    this.sprite.y = metersToPixels(this.posY_m)
   }
 
   /**
