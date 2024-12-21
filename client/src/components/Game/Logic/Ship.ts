@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import { metersToPixels, pixelsToMeters } from '../../../utils/measurements'
 
 // Acceleration & speed controls
-const ACCELERATION_SPEED = 50 // m/s^2
+const ACCELERATION_SPEED = 50 // m/s²
 const MAX_SPEED = 100 // m/s
 const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.001 // how fast the ship slows down
@@ -40,7 +40,7 @@ export class Ship {
   // --- Public methods -------------------------------------------------------
 
   /**
-   * Returns the ship's Phaser sprite object
+   * Returns the ship's Phaser sprite game object
    */
   public getSprite(): Phaser.GameObjects.Sprite {
     return this.sprite
@@ -95,7 +95,7 @@ export class Ship {
    * @param delta time since last frame in ms
    */
   public update(delta: number) {
-    const deltaSeconds = delta / 1000
+    const deltaSeconds = delta * 0.001
     this.updateAngle(delta)
     this.updateThrust(deltaSeconds)
     this.updatePosition(deltaSeconds)

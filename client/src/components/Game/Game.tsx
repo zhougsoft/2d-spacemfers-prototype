@@ -42,7 +42,7 @@ const IS_BACKGROUND_ENABLED = false
 const IS_HUD_ENABLED = true
 
 // Debug settings
-const DEBUG_GRID_SIZE = 100 // 100m debug grid
+const DEBUG_GRID_SIZE = 100 // 100m² debug grid
 const DEBUG_GRID_KEY = 'debug-grid'
 
 // Parallax control factors
@@ -133,8 +133,7 @@ const Game = () => {
     }
 
     // Create the player ship
-    const shipSprite = scene.add.sprite(0, 0, 'ship')
-    shipSprite.setScale(1)
+    const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
     ship.current = new Ship(shipSprite)
 
     // Set up camera

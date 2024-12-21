@@ -38,11 +38,20 @@
   "cruiser": {
     "area_m2": 600,
     "mass_t": 30000,
-    "max_velocity_ms": 150,
+    "max_velocity_ms": 200,
     "warp_speed_au": 3.5,
     "power_capacity": 40,
     "toughness": 40,
     "cargo_capacity_m2": 600
+  },
+  "galleon": {
+    "area_m2": 1200,
+    "mass_t": 100000,
+    "max_velocity_ms": 100,
+    "warp_speed_au": 3,
+    "power_capacity": 100,
+    "toughness": 100,
+    "cargo_capacity_m2": 1000
   },
   "hauler": {
     "area_m2": 750,
