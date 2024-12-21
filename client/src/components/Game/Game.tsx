@@ -30,6 +30,7 @@ import backgroundMidImage from '../../assets/bg/mid.png'
 import backgroundNearImage from '../../assets/bg/near.png'
 import shuttleImage from '../../assets/shuttle.png'
 import { createDebugGridTexture } from '../../utils/graphics'
+import { Camera } from './Logic/Camera'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
@@ -40,23 +41,21 @@ const IS_DEBUG_MODE = true
 const IS_BACKGROUND_ENABLED = false
 const IS_HUD_ENABLED = true
 
+// Debug settings
 const DEBUG_GRID_SIZE = 100 // 100m debug grid
 const DEBUG_GRID_KEY = 'debug-grid'
 
-// Camera control factors
-const MIN_ZOOM = 0.25
-const MAX_ZOOM = 3
-const STARTING_ZOOM = 1
-const ZOOM_SPEED = 0.5
+// Parallax control factors
 const BG_PARALLAX_FAR = 0.01
 const BG_PARALLAX_MID = 0.1
 const BG_PARALLAX_NEAR = 0.2
 
 const Game = () => {
-  // Phaser game state refs for "fast" game state (ship position, velocity, celestial locations etc.)
+  // Game state object refs
   const ship = useRef<Ship>()
+  const camera = useRef<Camera>()
 
-  // UI management state
+  // UI state management
   const [reloadKey, setReloadKey] = useState(0)
   const [speedDisplay, setSpeedDisplay] = useState(0)
 
@@ -139,14 +138,10 @@ const Game = () => {
     ship.current = new Ship(shipSprite)
 
     // Set up camera
-    scene.cameras.main.setBackgroundColor('#000000')
-    scene.cameras.main.setZoom(STARTING_ZOOM)
-    scene.cameras.main.startFollow(ship.current.getSprite(), false, 0.75, 0.75)
-
-    // Add camera zoom in/out controls on scroll
+    camera.current = new Camera(scene.cameras.main)
+    camera.current.follow(ship.current.getSprite())
     scene.input.on('wheel', (_: any, __: any, ___: number, deltaY: number) => {
-      const zoom = scene.cameras.main.zoom - (deltaY * ZOOM_SPEED) / 1000
-      scene.cameras.main.setZoom(Math.min(Math.max(zoom, MIN_ZOOM), MAX_ZOOM))
+      if (camera.current) camera.current.zoom(deltaY)
     })
   }, [])
 
@@ -164,29 +159,33 @@ const Game = () => {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       }
 
-      if (IS_BACKGROUND_ENABLED) {
+      if (IS_BACKGROUND_ENABLED && camera.current) {
         // Apply background layer parallax offsets
-        const camera = scene.cameras.main
         const bgFar = scene.data.get('bg-far')
         const bgMid = scene.data.get('bg-mid')
         const bgNear = scene.data.get('bg-near')
 
-        bgFar.tilePositionX = camera.scrollX * BG_PARALLAX_FAR
-        bgFar.tilePositionY = camera.scrollY * BG_PARALLAX_FAR
+        const { x, y } = camera.current.getScroll()
 
-        bgMid.tilePositionX = camera.scrollX * BG_PARALLAX_MID
-        bgMid.tilePositionY = camera.scrollY * BG_PARALLAX_MID
+        bgFar.tilePositionX = x * BG_PARALLAX_FAR
+        bgFar.tilePositionY = y * BG_PARALLAX_FAR
 
-        bgNear.tilePositionX = camera.scrollX * BG_PARALLAX_NEAR
-        bgNear.tilePositionY = camera.scrollY * BG_PARALLAX_NEAR
+        bgMid.tilePositionX = x * BG_PARALLAX_MID
+        bgMid.tilePositionY = y * BG_PARALLAX_MID
+
+        bgNear.tilePositionX = x * BG_PARALLAX_NEAR
+        bgNear.tilePositionY = y * BG_PARALLAX_NEAR
       }
 
-      if (IS_DEBUG_MODE) {
+      if (IS_DEBUG_MODE && camera.current) {
         const gridTile = scene.data.get(
           DEBUG_GRID_KEY
         ) as Phaser.GameObjects.TileSprite
-        gridTile.tilePositionX = scene.cameras.main.scrollX
-        gridTile.tilePositionY = scene.cameras.main.scrollY
+
+        const { x, y } = camera.current.getScroll()
+
+        gridTile.tilePositionX = x
+        gridTile.tilePositionY = y
       }
     },
     []
