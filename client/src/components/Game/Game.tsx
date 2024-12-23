@@ -98,11 +98,8 @@ const Game = () => {
     ship.current = new Ship(shipSprite)
 
     // Set up camera
-    camera.current = new Camera(scene.cameras.main)
+    camera.current = new Camera(scene)
     camera.current.follow(ship.current.getSprite())
-    scene.input.on('wheel', (_: any, __: any, ___: number, deltaY: number) => {
-      if (camera.current) camera.current.zoom(deltaY)
-    })
   }, [])
 
   // Runs every frame
