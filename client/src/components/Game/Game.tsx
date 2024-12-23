@@ -24,7 +24,6 @@
  */
 
 import { useCallback, useRef, useState } from 'react'
-
 import shuttleImage from '../../assets/shuttle.png'
 import { createDebugGridTexture } from '../../utils/graphics'
 import { Camera } from './Logic/Camera'
@@ -36,17 +35,12 @@ import ShipControls from './UI/ShipControls'
 
 // Feature flags
 const IS_DEBUG_MODE = true
-const IS_BACKGROUND_ENABLED = false
+const IS_BACKGROUND_ENABLED = true
 const IS_HUD_ENABLED = true
 
 // Debug settings
 const DEBUG_GRID_SIZE = 100 // 100m² debug grid
 const DEBUG_GRID_KEY = 'debug-grid'
-
-// Parallax control factors
-const BG_PARALLAX_FAR = 0.01
-const BG_PARALLAX_MID = 0.1
-const BG_PARALLAX_NEAR = 0.2
 
 const Game = () => {
   // Game state object refs
@@ -83,43 +77,12 @@ const Game = () => {
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
+    // Create background layers
     if (IS_BACKGROUND_ENABLED && background.current) {
-      const { width, height } = background.current.getScreenSize()
-
-      // Add static base background
-      scene.add
-        .image(0, 0, 'bg-base')
-        .setDisplaySize(width, height)
-        .setOrigin(0, 0)
-        .setScrollFactor(0)
-
-      // Add far background layer
-      const bgFar = scene.add
-        .tileSprite(0, 0, width, height, 'bg-far')
-        .setTileScale(0.2)
-        .setOrigin(0, 0)
-        .setScrollFactor(0)
-
-      // Add mid background layer
-      const bgMid = scene.add
-        .tileSprite(0, 0, width, height, 'bg-mid')
-        .setTileScale(0.2)
-        .setOrigin(0, 0)
-        .setScrollFactor(0)
-
-      // Add near background layer
-      const bgNear = scene.add
-        .tileSprite(0, 0, width, height, 'bg-near')
-        .setTileScale(0.2)
-        .setOrigin(0, 0)
-        .setScrollFactor(0)
-
-      // Set background layers in scene data to access in update loop for parallax logic
-      scene.data.set('bg-far', bgFar)
-      scene.data.set('bg-mid', bgMid)
-      scene.data.set('bg-near', bgNear)
+      background.current.create()
     }
 
+    // Create debug grid
     if (IS_DEBUG_MODE && background.current) {
       const { width, height } = background.current.getScreenSize()
       createDebugGridTexture(scene, DEBUG_GRID_SIZE, DEBUG_GRID_KEY)
@@ -156,24 +119,13 @@ const Game = () => {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       }
 
-      if (IS_BACKGROUND_ENABLED && camera.current) {
-        // Apply background layer parallax offsets
-        const bgFar = scene.data.get('bg-far')
-        const bgMid = scene.data.get('bg-mid')
-        const bgNear = scene.data.get('bg-near')
-
+      // Update background parallax
+      if (IS_BACKGROUND_ENABLED && background.current && camera.current) {
         const { x, y } = camera.current.getScroll()
-
-        bgFar.tilePositionX = x * BG_PARALLAX_FAR
-        bgFar.tilePositionY = y * BG_PARALLAX_FAR
-
-        bgMid.tilePositionX = x * BG_PARALLAX_MID
-        bgMid.tilePositionY = y * BG_PARALLAX_MID
-
-        bgNear.tilePositionX = x * BG_PARALLAX_NEAR
-        bgNear.tilePositionY = y * BG_PARALLAX_NEAR
+        background.current.updateParallax(x, y)
       }
 
+      // Update debug grid position
       if (IS_DEBUG_MODE && camera.current) {
         const gridTile = scene.data.get(
           DEBUG_GRID_KEY
