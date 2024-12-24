@@ -39,34 +39,29 @@ export class Background {
 
   /**
    * Instantiates the background layer image/tilesprites, run on scene create
-   * @param width Pixel width of the background layers
-   * @param height Pixel height of the background layers
+   * @param width World space width in pixels
+   * @param height World space height in pixels
    */
   public create(width: number, height: number) {
-    const locX = width * 0.5
-    const locY = height * 0.5
-    const originX = 0.5
-    const originY = 0.5
-
     // Add far background layer
     const far = this.scene.add
-      .tileSprite(locX, locY, width, height, this.LAYER_KEY_FAR)
+      .tileSprite(0, 0, width, height, this.LAYER_KEY_FAR)
       .setTileScale(this.LAYER_TILE_SCALE)
-      .setOrigin(originX, originY)
+      .setOrigin(0, 0)
       .setScrollFactor(0)
 
     // Add mid background layer
     const mid = this.scene.add
-      .tileSprite(locX, locY, width, height, this.LAYER_KEY_MID)
+      .tileSprite(0, 0, width, height, this.LAYER_KEY_MID)
       .setTileScale(this.LAYER_TILE_SCALE)
-      .setOrigin(originX, originY)
+      .setOrigin(0, 0)
       .setScrollFactor(0)
 
     // Add near background layer
     const near = this.scene.add
-      .tileSprite(locX, locY, width, height, this.LAYER_KEY_NEAR)
+      .tileSprite(0, 0, width, height, this.LAYER_KEY_NEAR)
       .setTileScale(this.LAYER_TILE_SCALE)
-      .setOrigin(originX, originY)
+      .setOrigin(0, 0)
       .setScrollFactor(0)
 
     this.bgLayerFar = far
@@ -74,19 +69,13 @@ export class Background {
     this.bgLayerNear = near
   }
 
-  // Resize & position background layers on screen resize or zoom change
+  /**
+   * WIP: Resize the background layers to fit the world space pixel dimensions
+   * @param width World space width in pixels
+   * @param height World space height in pixels
+   */
   public resize(width: number, height: number) {
-    const locX = width * 0.5
-    const locY = height * 0.5
-
-    this.bgLayerFar?.setSize(width, height)
-    this.bgLayerFar?.setPosition(locX, locY)
-
-    this.bgLayerMid?.setSize(width, height)
-    this.bgLayerMid?.setPosition(locX, locY)
-
-    this.bgLayerNear?.setSize(width, height)
-    this.bgLayerNear?.setPosition(locX, locY)
+    // TODO
   }
 
   public updateParallax(scrollX: number, scrollY: number) {
