@@ -77,14 +77,17 @@ const Game = () => {
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
+    // Set up camera
+    camera.current = new Camera(scene)
+
     // Create background layers
     if (IS_BACKGROUND_ENABLED && background.current) {
       background.current.create()
     }
 
     // Create debug grid
-    if (IS_DEBUG_MODE && background.current) {
-      const { width, height } = background.current.getScreenSize()
+    if (IS_DEBUG_MODE) {
+      const { width, height } = camera.current.getViewportSize()
       createDebugGridTexture(scene, DEBUG_GRID_SIZE, DEBUG_GRID_KEY)
       const gridTile = scene.add.tileSprite(0, 0, width, height, DEBUG_GRID_KEY)
       gridTile.setTileScale(1)
@@ -93,13 +96,10 @@ const Game = () => {
       scene.data.set(DEBUG_GRID_KEY, gridTile)
     }
 
-    // Add the player ship
+    // Add the player ship & follow w/ the camera
     const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
     ship.current = new Ship(shipSprite)
-
-    // Set up camera
-    camera.current = new Camera(scene)
-    camera.current.follow(ship.current.getSprite())
+    camera.current.follow(shipSprite)
   }, [])
 
   // Runs every frame

@@ -35,10 +35,6 @@ export class Background {
     this.bgLayerFar = null
     this.bgLayerMid = null
     this.bgLayerNear = null
-
-    scene.scale.on('resize', () => {
-      this.setScreenSize(scene.sys.canvas.width, scene.sys.canvas.height)
-    })
   }
 
   // Preloads the background layer images, run on scene preload
@@ -86,15 +82,6 @@ export class Background {
     this.bgLayerFar = far
     this.bgLayerMid = mid
     this.bgLayerNear = near
-  }
-
-  public getScreenSize() {
-    return { width: this.screenWidth, height: this.screenHeight }
-  }
-
-  public setScreenSize(width: number, height: number) {
-    this.screenWidth = width
-    this.screenHeight = height
   }
 
   public updateParallax(scrollX: number, scrollY: number) {
