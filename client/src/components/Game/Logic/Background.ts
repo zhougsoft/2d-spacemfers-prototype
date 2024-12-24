@@ -1,13 +1,11 @@
 import Phaser from 'phaser'
 
-import bgLayerBase from '../../../assets/bg/base.png'
 import bgLayerFar from '../../../assets/bg/far.png'
 import bgLayerMid from '../../../assets/bg/mid.png'
 import bgLayerNear from '../../../assets/bg/near.png'
 
 export class Background {
   // Phaser game object keys
-  private readonly LAYER_KEY_BASE = 'bg-base'
   private readonly LAYER_KEY_FAR = 'bg-far'
   private readonly LAYER_KEY_MID = 'bg-mid'
   private readonly LAYER_KEY_NEAR = 'bg-near'
@@ -20,7 +18,6 @@ export class Background {
 
   private scene: Phaser.Scene
 
-  private bgLayerBase: Phaser.GameObjects.Image | null
   private bgLayerFar: Phaser.GameObjects.TileSprite | null
   private bgLayerMid: Phaser.GameObjects.TileSprite | null
   private bgLayerNear: Phaser.GameObjects.TileSprite | null
@@ -28,7 +25,6 @@ export class Background {
   constructor(scene: Phaser.Scene) {
     this.scene = scene
 
-    this.bgLayerBase = null
     this.bgLayerFar = null
     this.bgLayerMid = null
     this.bgLayerNear = null
@@ -36,7 +32,6 @@ export class Background {
 
   // Preloads the background layer images, run on scene preload
   public preload() {
-    this.scene.load.image(this.LAYER_KEY_BASE, bgLayerBase)
     this.scene.load.image(this.LAYER_KEY_FAR, bgLayerFar)
     this.scene.load.image(this.LAYER_KEY_MID, bgLayerMid)
     this.scene.load.image(this.LAYER_KEY_NEAR, bgLayerNear)
@@ -52,13 +47,6 @@ export class Background {
     const locY = height * 0.5
     const originX = 0.5
     const originY = 0.5
-
-    // Add static base background layer
-    const base = this.scene.add
-      .image(locX, locY, this.LAYER_KEY_BASE)
-      .setDisplaySize(width, height)
-      .setOrigin(originX, originY)
-      .setScrollFactor(0)
 
     // Add far background layer
     const far = this.scene.add
@@ -81,17 +69,13 @@ export class Background {
       .setOrigin(originX, originY)
       .setScrollFactor(0)
 
-    this.bgLayerBase = base
     this.bgLayerFar = far
     this.bgLayerMid = mid
     this.bgLayerNear = near
   }
 
+  // Resize & position background layers on screen resize or zoom change
   public resize(width: number, height: number) {
-    // Update base background "skybox" layer size
-    this.bgLayerBase?.setDisplaySize(width, height)
-
-    // Resize & recenter parallax background layers
     const locX = width * 0.5
     const locY = height * 0.5
 
