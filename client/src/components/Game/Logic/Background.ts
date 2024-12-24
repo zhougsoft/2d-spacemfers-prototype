@@ -12,14 +12,13 @@ export class Background {
   private readonly LAYER_KEY_MID = 'bg-mid'
   private readonly LAYER_KEY_NEAR = 'bg-near'
 
-  // Parallax control factors
+  // Parallax layer control factors
+  private readonly LAYER_TILE_SCALE = 0.2
   private readonly PARALLAX_FAR = 0.01
   private readonly PARALLAX_MID = 0.1
   private readonly PARALLAX_NEAR = 0.2
 
   private scene: Phaser.Scene
-  private screenWidth: number
-  private screenHeight: number
 
   private bgLayerBase: Phaser.GameObjects.Image | null
   private bgLayerFar: Phaser.GameObjects.TileSprite | null
@@ -28,8 +27,6 @@ export class Background {
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene
-    this.screenWidth = scene.sys.canvas.width
-    this.screenHeight = scene.sys.canvas.height
 
     this.bgLayerBase = null
     this.bgLayerFar = null
@@ -45,43 +42,67 @@ export class Background {
     this.scene.load.image(this.LAYER_KEY_NEAR, bgLayerNear)
   }
 
-  // Instantiates the background layer tilesprites, run on scene create
-  public create() {
-    const width = this.screenWidth
-    const height = this.screenHeight
+  /**
+   * Instantiates the background layer image/tilesprites, run on scene create
+   * @param width Pixel width of the background layers
+   * @param height Pixel height of the background layers
+   */
+  public create(width: number, height: number) {
+    const locX = width * 0.5
+    const locY = height * 0.5
+    const originX = 0.5
+    const originY = 0.5
 
     // Add static base background layer
     const base = this.scene.add
-      .image(0, 0, this.LAYER_KEY_BASE)
+      .image(locX, locY, this.LAYER_KEY_BASE)
       .setDisplaySize(width, height)
-      .setOrigin(0, 0)
+      .setOrigin(originX, originY)
       .setScrollFactor(0)
 
     // Add far background layer
     const far = this.scene.add
-      .tileSprite(0, 0, width, height, this.LAYER_KEY_FAR)
-      .setTileScale(0.2)
-      .setOrigin(0, 0)
+      .tileSprite(locX, locY, width, height, this.LAYER_KEY_FAR)
+      .setTileScale(this.LAYER_TILE_SCALE)
+      .setOrigin(originX, originY)
       .setScrollFactor(0)
 
     // Add mid background layer
     const mid = this.scene.add
-      .tileSprite(0, 0, width, height, this.LAYER_KEY_MID)
-      .setTileScale(0.2)
-      .setOrigin(0, 0)
+      .tileSprite(locX, locY, width, height, this.LAYER_KEY_MID)
+      .setTileScale(this.LAYER_TILE_SCALE)
+      .setOrigin(originX, originY)
       .setScrollFactor(0)
 
     // Add near background layer
     const near = this.scene.add
-      .tileSprite(0, 0, width, height, this.LAYER_KEY_NEAR)
-      .setTileScale(0.2)
-      .setOrigin(0, 0)
+      .tileSprite(locX, locY, width, height, this.LAYER_KEY_NEAR)
+      .setTileScale(this.LAYER_TILE_SCALE)
+      .setOrigin(originX, originY)
       .setScrollFactor(0)
 
     this.bgLayerBase = base
     this.bgLayerFar = far
     this.bgLayerMid = mid
     this.bgLayerNear = near
+  }
+
+  public resize(width: number, height: number) {
+    // Update base background "skybox" layer size
+    this.bgLayerBase?.setDisplaySize(width, height)
+
+    // Resize & recenter parallax background layers
+    const locX = width * 0.5
+    const locY = height * 0.5
+
+    this.bgLayerFar?.setSize(width, height)
+    this.bgLayerFar?.setPosition(locX, locY)
+
+    this.bgLayerMid?.setSize(width, height)
+    this.bgLayerMid?.setPosition(locX, locY)
+
+    this.bgLayerNear?.setSize(width, height)
+    this.bgLayerNear?.setPosition(locX, locY)
   }
 
   public updateParallax(scrollX: number, scrollY: number) {

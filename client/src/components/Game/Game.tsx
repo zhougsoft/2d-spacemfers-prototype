@@ -70,23 +70,24 @@ const Game = () => {
 
   // Runs once before the scene is created
   const onPreload = useCallback((scene: Phaser.Scene) => {
+    // Instantiate background & camera
     background.current = new Background(scene)
+    camera.current = new Camera(scene, background.current)
+
     background.current.preload()
     scene.load.image('ship', shuttleImage)
   }, [])
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
-    // Set up camera
-    camera.current = new Camera(scene)
-
     // Create background layers
-    if (IS_BACKGROUND_ENABLED && background.current) {
-      background.current.create()
+    if (IS_BACKGROUND_ENABLED && camera.current && background.current) {
+      const { width, height } = camera.current.getViewportSize()
+      background.current.create(width, height)
     }
 
     // Create debug grid
-    if (IS_DEBUG_MODE) {
+    if (IS_DEBUG_MODE && camera.current) {
       const { width, height } = camera.current.getViewportSize()
       createDebugGridTexture(scene, DEBUG_GRID_SIZE, DEBUG_GRID_KEY)
       const gridTile = scene.add.tileSprite(0, 0, width, height, DEBUG_GRID_KEY)
@@ -99,7 +100,7 @@ const Game = () => {
     // Add the player ship & follow w/ the camera
     const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
     ship.current = new Ship(shipSprite)
-    camera.current.follow(shipSprite)
+    camera.current?.follow(shipSprite)
   }, [])
 
   // Runs every frame
@@ -108,12 +109,8 @@ const Game = () => {
       // Update player ship
       if (ship.current) {
         ship.current.update(delta)
+        // TODO: debounce this
         setSpeedDisplay(ship.current.getSpeed())
-
-        // ~~~ for debugging purposes ~~~
-        // const { x, y } = ship.current.getPosition()
-        // console.log(x, y)
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       }
 
       // Update background parallax
@@ -127,9 +124,7 @@ const Game = () => {
         const gridTile = scene.data.get(
           DEBUG_GRID_KEY
         ) as Phaser.GameObjects.TileSprite
-
         const { x, y } = camera.current.getScroll()
-
         gridTile.tilePositionX = x
         gridTile.tilePositionY = y
       }

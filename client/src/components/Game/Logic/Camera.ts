@@ -1,4 +1,6 @@
 import Phaser from 'phaser'
+import { pixelsToMeters } from '../../../utils/measurements'
+import { Background } from './Background'
 
 const MIN_ZOOM = 0.25
 const MAX_ZOOM = 3
@@ -12,8 +14,9 @@ export class Camera {
   private viewportHeight: number
   private currentZoom: number = 1
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, background: Background) {
     this.scene = scene
+
     this.camera = scene.cameras.main
     this.camera.setZoom(this.currentZoom)
     this.camera.setBackgroundColor('#000000')
@@ -25,19 +28,33 @@ export class Camera {
     scene.input.on('wheel', (_: any, __: any, ___: number, deltaY: number) => {
       this.updateZoom(deltaY)
       this.updateViewport()
+      const { width, height } = this.getViewportSize()
+      background.resize(width, height)
     })
 
     // Update viewport size on screen resize
     scene.scale.on('resize', () => {
       this.updateViewport()
+      const { width, height } = this.getViewportSize()
+      background.resize(width, height)
     })
   }
 
   /**
-   * Returns the amount of game world pixels visible in the viewport
+   * Returns the amount of game world units (pixels) visible in the viewport
    */
   public getViewportSize() {
     return { width: this.viewportWidth, height: this.viewportHeight }
+  }
+
+  /**
+   * Returns the amount of game world meters visible in the viewport
+   */
+  public getViewportSizeMeters() {
+    return {
+      width: pixelsToMeters(this.viewportWidth),
+      height: pixelsToMeters(this.viewportHeight),
+    }
   }
 
   /**
