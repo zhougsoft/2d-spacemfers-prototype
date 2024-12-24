@@ -28,27 +28,29 @@ export class Camera {
     scene.input.on('wheel', (_: any, __: any, ___: number, deltaY: number) => {
       this.updateZoom(deltaY)
       this.updateViewport()
-      const { width, height } = this.getViewportSize()
+      const { width, height } = this.getViewportSizePixels()
       background.resize(width, height)
     })
 
     // Update viewport size on screen resize
     scene.scale.on('resize', () => {
       this.updateViewport()
-      const { width, height } = this.getViewportSize()
+      const { width, height } = this.getViewportSizePixels()
       background.resize(width, height)
     })
   }
 
   /**
-   * Returns the amount of game world units (pixels) visible in the viewport
+   * Returns the amount of Phaser game world units (pixels) visible in the viewport.
+   * Scales with the camera zoom level
    */
-  public getViewportSize() {
+  public getViewportSizePixels() {
     return { width: this.viewportWidth, height: this.viewportHeight }
   }
 
   /**
-   * Returns the amount of game world meters visible in the viewport
+   * Returns the amount of game world metric space (meters) visible in the viewport.
+   * Scales with the camera zoom level
    */
   public getViewportSizeMeters() {
     return {

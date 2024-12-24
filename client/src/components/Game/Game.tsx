@@ -82,13 +82,13 @@ const Game = () => {
   const onCreate = useCallback((scene: Phaser.Scene) => {
     // Create background layers
     if (IS_BACKGROUND_ENABLED && camera.current && background.current) {
-      const { width, height } = camera.current.getViewportSize()
+      const { width, height } = camera.current.getViewportSizePixels()
       background.current.create(width, height)
     }
 
     // Create debug grid
     if (IS_DEBUG_MODE && camera.current) {
-      const { width, height } = camera.current.getViewportSize()
+      const { width, height } = camera.current.getViewportSizePixels()
       createDebugGridTexture(scene, DEBUG_GRID_SIZE, DEBUG_GRID_KEY)
       const gridTile = scene.add.tileSprite(0, 0, width, height, DEBUG_GRID_KEY)
       gridTile.setTileScale(1)
