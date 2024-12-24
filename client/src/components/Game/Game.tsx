@@ -34,9 +34,9 @@ import OverviewPanel from './UI/OverviewPanel'
 import ShipControls from './UI/ShipControls'
 
 // Feature flags
-const IS_DEBUG_MODE = true
+const IS_DEBUG_MODE = false
 const IS_BACKGROUND_ENABLED = true
-const IS_HUD_ENABLED = true
+const IS_HUD_ENABLED = false
 
 // Debug settings
 const DEBUG_GRID_SIZE = 100 // 100m² debug grid
@@ -70,10 +70,9 @@ const Game = () => {
 
   // Runs once before the scene is created
   const onPreload = useCallback((scene: Phaser.Scene) => {
-    // Instantiate background & camera
     background.current = new Background(scene)
-    camera.current = new Camera(scene, background.current)
-
+    camera.current = new Camera(scene, zoom => background.current?.zoom(zoom))
+    
     background.current.preload()
     scene.load.image('ship', shuttleImage)
   }, [])
@@ -81,14 +80,13 @@ const Game = () => {
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
     // Create background layers
-    if (IS_BACKGROUND_ENABLED && camera.current && background.current) {
-      const { width, height } = camera.current.getViewportSizePixels()
-      background.current.create(width, height)
+    if (IS_BACKGROUND_ENABLED && background.current) {
+      background.current.create()
     }
 
     // Create debug grid
     if (IS_DEBUG_MODE && camera.current) {
-      const { width, height } = camera.current.getViewportSizePixels()
+      const { width, height } = camera.current.getWorldView()
       createDebugGridTexture(scene, DEBUG_GRID_SIZE, DEBUG_GRID_KEY)
       const gridTile = scene.add.tileSprite(0, 0, width, height, DEBUG_GRID_KEY)
       gridTile.setTileScale(1)
@@ -142,7 +140,7 @@ const Game = () => {
         onUpdate={onUpdate}
       />
       <button
-        style={{ position: 'absolute', top: 0, left: 0, fontWeight: 'bold' }}
+        style={{ position: 'absolute', top: 0, right: 0, fontWeight: 'bold' }}
         onClick={reload}>
         RELOAD
       </button>

@@ -37,7 +37,7 @@ export class Ship {
     this.posY_m = pixelsToMeters(sprite.y)
   }
 
-  // --- Public methods -------------------------------------------------------
+  // ~~~ PUBLIC METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   /**
    * Returns the ship's Phaser sprite game object
@@ -101,7 +101,7 @@ export class Ship {
     this.updatePosition(deltaSeconds)
   }
 
-  // --- Private methods ------------------------------------------------------
+  // ~~~ PRIVATE METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   private updateAngle(delta: number) {
     const angleDifference = this.targetAngle - this.sprite.angle
@@ -169,9 +169,7 @@ export class Ship {
     this.sprite.y = metersToPixels(this.posY_m)
   }
 
-  /**
-   * Linear interpolation helper
-   */
+  // TODO: put this in a utils file
   private lerp(start: number, target: number, factor: number) {
     return start + (target - start) * factor
   }

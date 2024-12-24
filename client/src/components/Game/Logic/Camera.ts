@@ -1,62 +1,31 @@
 import Phaser from 'phaser'
-import { pixelsToMeters } from '../../../utils/measurements'
-import { Background } from './Background'
-
-const MIN_ZOOM = 0.25
-const MAX_ZOOM = 3
-const ZOOM_SPEED = 0.5
 
 export class Camera {
-  private scene: Phaser.Scene
-  private camera: Phaser.Cameras.Scene2D.Camera
+  private readonly MIN_ZOOM = 0.25
+  private readonly MAX_ZOOM = 3
+  private readonly ZOOM_SPEED = 0.5
 
-  private viewportWidth: number
-  private viewportHeight: number
+  private camera: Phaser.Cameras.Scene2D.Camera
   private currentZoom: number = 1
 
-  constructor(scene: Phaser.Scene, background: Background) {
-    this.scene = scene
-
+  constructor(scene: Phaser.Scene, onZoom: (zoom: number, width: number, height: number) => void) {
     this.camera = scene.cameras.main
     this.camera.setZoom(this.currentZoom)
     this.camera.setBackgroundColor('#000000')
 
-    this.viewportWidth = scene.sys.canvas.width
-    this.viewportHeight = scene.sys.canvas.height
-
-    // Update zoom level & viewport size on scroll
-    scene.input.on('wheel', (_: any, __: any, ___: number, deltaY: number) => {
+    scene.input.on('wheel', (_: any, __: any, ___: any, deltaY: number) => {
       this.updateZoom(deltaY)
-      this.updateViewport()
-      const { width, height } = this.getViewportSizePixels()
-      background.resize(width, height)
-    })
-
-    // Update viewport size on screen resize
-    scene.scale.on('resize', () => {
-      this.updateViewport()
-      const { width, height } = this.getViewportSizePixels()
-      background.resize(width, height)
+      onZoom(this.currentZoom, this.camera.worldView.width, this.camera.worldView.height)
     })
   }
 
-  /**
-   * Returns the amount of Phaser game world units (pixels) visible in the viewport.
-   * Scales with the camera zoom level
-   */
-  public getViewportSizePixels() {
-    return { width: this.viewportWidth, height: this.viewportHeight }
-  }
+  // ~~~ PUBLIC METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   /**
-   * Returns the amount of game world metric space (meters) visible in the viewport.
-   * Scales with the camera zoom level
+   * Returns a Phaser Rectangle object representing the world space visible in the camera
    */
-  public getViewportSizeMeters() {
-    return {
-      width: pixelsToMeters(this.viewportWidth),
-      height: pixelsToMeters(this.viewportHeight),
-    }
+  public getWorldView() {
+    return this.camera.worldView
   }
 
   /**
@@ -81,30 +50,16 @@ export class Camera {
     this.camera.startFollow(target, false, 0.75, 0.75)
   }
 
-  private clamp(value: number, min: number, max: number) {
-    return Math.min(Math.max(value, min), max)
-  }
+  // ~~~ PRIVATE METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   private updateZoom(deltaY: number) {
-    const zoomCalc = this.camera.zoom - (deltaY * ZOOM_SPEED) / 1000
-    this.currentZoom = this.clamp(zoomCalc, MIN_ZOOM, MAX_ZOOM)
+    const zoomCalc = this.camera.zoom - (deltaY * this.ZOOM_SPEED) / 1000
+    this.currentZoom = this.clamp(zoomCalc, this.MIN_ZOOM, this.MAX_ZOOM)
     this.camera.setZoom(this.currentZoom)
   }
 
-  private updateViewport() {
-    const { width, height } = this.scene.sys.canvas
-    if (this.currentZoom > 0) {
-      // zoomed in
-      this.viewportHeight = height / this.currentZoom
-      this.viewportWidth = width / this.currentZoom
-    } else if (this.currentZoom < 0) {
-      // zoomed out
-      this.viewportHeight = height * this.currentZoom
-      this.viewportWidth = width * this.currentZoom
-    } else {
-      // zoom is 0
-      this.viewportHeight = height
-      this.viewportWidth = width
-    }
+  // TODO: put this in a utils file
+  private clamp(value: number, min: number, max: number) {
+    return Math.min(Math.max(value, min), max)
   }
 }
