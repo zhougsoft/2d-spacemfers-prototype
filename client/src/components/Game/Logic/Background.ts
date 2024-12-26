@@ -93,33 +93,9 @@ export class Background {
   /**
    * Zoom the background layers to the given zoom level
    * @param zoom The current zoom level to set the background layers to
+   * @param zoomTier The current zoom tier to determine which layers to show (between 1-7)
    */
-  public zoom(zoom: number) {
-    // ~~~ THIS STUFF SHOULD BE IN CAMERA CLASS!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    const { width: worldViewWidth, height: worldViewHeight } =
-      this.scene.cameras.main.worldView
-
-    console.log('worldViewWidth:', worldViewWidth)
-
-    const zoomTiers = [
-      { tier: 1, width: 480, height: 270 },
-      { tier: 2, width: 720, height: 405 },
-      { tier: 3, width: 1366, height: 768 },
-      { tier: 4, width: 1920, height: 1080 },
-      { tier: 5, width: 2560, height: 1440 },
-      { tier: 6, width: 3840, height: 2160 },
-    ]
-
-    const tier = zoomTiers.find(
-      tier => worldViewWidth < tier.width || worldViewHeight < tier.height
-    )
-
-    // Default to tier 7 (max) if no tier is found
-    const zoomTier = tier ? tier.tier : 7
-
-    console.log('zoom tier:', zoomTier)
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+  public zoom(zoom: number, zoomTier: number) {
     if (this.bgLayerFar) {
       this.bgLayerFar.setScale(this.LAYER_SCALE * zoom * this.PARALLAX_FAR)
       this.bgLayerFar.setVisible(zoomTier < 5)
@@ -132,7 +108,6 @@ export class Background {
 
     if (this.bgLayerNear) {
       this.bgLayerNear.setScale(this.LAYER_SCALE * zoom * this.PARALLAX_NEAR)
-      this.bgLayerNear.setVisible(zoomTier < 7)
     }
   }
   /**

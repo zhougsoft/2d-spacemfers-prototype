@@ -24,7 +24,7 @@
  */
 
 import { useCallback, useRef, useState } from 'react'
-import shuttleImage from '../../assets/shuttle.png'
+import shipImage from '../../assets/shuttle.png'
 import { createDebugGridTexture } from '../../utils/graphics'
 import { Camera } from './Logic/Camera'
 import { Background } from './Logic/Background'
@@ -70,11 +70,15 @@ const Game = () => {
 
   // Runs once before the scene is created
   const onPreload = useCallback((scene: Phaser.Scene) => {
+    // Setup background & camera
     background.current = new Background(scene)
-    camera.current = new Camera(scene, zoom => background.current?.zoom(zoom))
-    
+    camera.current = new Camera(scene, (zoom, zoomTier) =>
+      background.current?.zoom(zoom, zoomTier)
+    )
+
+    // Preload assets
     background.current.preload()
-    scene.load.image('ship', shuttleImage)
+    scene.load.image('ship', shipImage)
   }, [])
 
   // Runs once when the scene is created
