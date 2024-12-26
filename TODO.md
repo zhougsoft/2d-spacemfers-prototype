@@ -20,7 +20,6 @@ warping between planets and just flying around and exploring and stuff.
 
 ### MISC
 
-- [ ] fix the janky flight; not smooth, i think its floating point num related, maybe the rounding somewhere in the navigation logic
 - [ ] add a cool foreground parallax layer that sits between the camera and ship and is really fast with little wispy light & semi-transparent specks
 - [ ] use the ship stats to determine the speed and turn speed (with max speed and mass attributes)
 - [ ] make the offset of the nebula background based on the coordinates within the entire system, place a bright sun thing right in the middle of the nebula background so it will be realistic where the sun is in relation to where you are in the star system

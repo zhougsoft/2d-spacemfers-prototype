@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 export class Camera {
   private readonly MIN_ZOOM = 0.25
   private readonly MAX_ZOOM = 3
-  private readonly DEFAULT_ZOOM = 1.5
+  private readonly STARTING_ZOOM = 1
   private readonly ZOOM_SPEED = 0.5
 
   private readonly ZOOM_TIERS = [
@@ -22,7 +22,7 @@ export class Camera {
     onZoom: (zoom: number, zoomTeir: number) => void
   ) {
     this.camera = scene.cameras.main
-    this.camera.setZoom(this.DEFAULT_ZOOM)
+    this.camera.setZoom(this.STARTING_ZOOM)
     this.camera.setBackgroundColor('#000000')
 
     scene.input.on('wheel', (_: any, __: any, ___: any, deltaY: number) => {
@@ -72,13 +72,13 @@ export class Camera {
    * @param target The Phaser game object to follow
    */
   public follow(target: Phaser.GameObjects.GameObject) {
-    this.camera.startFollow(target, false, 0.75, 0.75)
+    this.camera.startFollow(target, false)
   }
 
   // ~~~ PRIVATE METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   private updateZoom(deltaY: number) {
-    const newZoom = this.camera.zoom - (deltaY * this.ZOOM_SPEED) / 1000
+    const newZoom = this.camera.zoom - (deltaY * this.ZOOM_SPEED) * 0.001
     this.camera.setZoom(this.clamp(newZoom, this.MIN_ZOOM, this.MAX_ZOOM))
   }
 

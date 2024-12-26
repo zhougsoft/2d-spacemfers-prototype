@@ -2,8 +2,8 @@ import Phaser from 'phaser'
 import { metersToPixels, pixelsToMeters } from '../../../utils/measurements'
 
 // Acceleration & speed controls
-const ACCELERATION_SPEED = 50 // m/s²
-const MAX_SPEED = 100 // m/s
+const ACCELERATION_SPEED = 100 // m/s²
+const MAX_SPEED = 500 // m/s
 const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.001 // how fast the ship slows down
 

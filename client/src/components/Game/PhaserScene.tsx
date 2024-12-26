@@ -45,6 +45,9 @@ const createPhaserConfig = (
   const phaserConfig: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     scene: Scene,
+    backgroundColor: PHASER_BACKGROUND_COLOR,
+    roundPixels: false,
+    autoFocus: true,
     scale: {
       mode: Phaser.Scale.RESIZE,
       width: '100%',
@@ -52,12 +55,11 @@ const createPhaserConfig = (
       parent,
     },
     render: {
-      antialias: false,
       pixelArt: true,
-      roundPixels: true,
+      antialias: false,
+      roundPixels: false,
     },
     input: { mouse: true },
-    backgroundColor: PHASER_BACKGROUND_COLOR,
   }
 
   return phaserConfig
