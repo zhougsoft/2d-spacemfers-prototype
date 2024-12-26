@@ -13,13 +13,13 @@ export class Background {
   // Background layer settings
   private readonly LAYER_WIDTH = 1920
   private readonly LAYER_HEIGHT = 1080
-  private readonly LAYER_SCALE = 2
-  private readonly LAYER_TILE_SCALE = 0.5
+  private readonly LAYER_SCALE = 50
+  private readonly LAYER_TILE_SCALE = 0.1
 
   // Parallax control factors
-  private readonly PARALLAX_FAR = 0.05
-  private readonly PARALLAX_MID = 0.1
-  private readonly PARALLAX_NEAR = 0.2
+  private readonly PARALLAX_FAR = 0.1
+  private readonly PARALLAX_MID = 0.2
+  private readonly PARALLAX_NEAR = 0.3
 
   private scene: Phaser.Scene
 
@@ -50,19 +50,20 @@ export class Background {
    * Instantiates the background layer image/tilesprites, run on scene create
    */
   public create() {
-    const locX = this.scene.scale.gameSize.width * 0.5
-    const locY = this.scene.scale.gameSize.height * 0.5
+    const { width, height } = this.getGameSize()
+    const locX = width * 0.5
+    const locY = height * 0.5
 
     const originX = 0.5
     const originY = 0.5
 
-    const width = this.LAYER_WIDTH
-    const height = this.LAYER_HEIGHT
+    const layerWidth = this.LAYER_WIDTH
+    const layerHeight = this.LAYER_HEIGHT
     const tileScale = this.LAYER_TILE_SCALE
 
     // Add far background layer
     const far = this.scene.add
-      .tileSprite(locX, locY, width, height, this.LAYER_KEY_FAR)
+      .tileSprite(locX, locY, layerWidth, layerHeight, this.LAYER_KEY_FAR)
       .setOrigin(originX, originY)
       .setScale(this.LAYER_SCALE * this.PARALLAX_FAR)
       .setTileScale(tileScale)
@@ -70,7 +71,7 @@ export class Background {
 
     // Add mid background layer
     const mid = this.scene.add
-      .tileSprite(locX, locY, width, height, this.LAYER_KEY_MID)
+      .tileSprite(locX, locY, layerWidth, layerHeight, this.LAYER_KEY_MID)
       .setOrigin(originY, originY)
       .setScale(this.LAYER_SCALE * this.PARALLAX_MID)
       .setTileScale(tileScale)
@@ -78,7 +79,7 @@ export class Background {
 
     // Add near background layer
     const near = this.scene.add
-      .tileSprite(locX, locY, width, height, this.LAYER_KEY_NEAR)
+      .tileSprite(locX, locY, layerWidth, layerHeight, this.LAYER_KEY_NEAR)
       .setOrigin(originY, originY)
       .setScale(this.LAYER_SCALE * this.PARALLAX_NEAR)
       .setTileScale(tileScale)
@@ -94,12 +95,39 @@ export class Background {
    * @param zoom The current zoom level to set the background layers to
    */
   public zoom(zoom: number) {
+    // ~~~ THIS STUFF SHOULD BE IN CAMERA CLASS!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    const { width: worldViewWidth, height: worldViewHeight } =
+      this.scene.cameras.main.worldView
+
+    console.log('worldViewWidth:', worldViewWidth)
+
+    const zoomTiers = [
+      { tier: 1, width: 480, height: 270 },
+      { tier: 2, width: 720, height: 405 },
+      { tier: 3, width: 1366, height: 768 },
+      { tier: 4, width: 1920, height: 1080 },
+      { tier: 5, width: 2560, height: 1440 },
+      { tier: 6, width: 3840, height: 2160 },
+    ]
+
+    const tier = zoomTiers.find(
+      tier => worldViewWidth < tier.width || worldViewHeight < tier.height
+    )
+
+    // Default to tier 7 (max) if no tier is found
+    const zoomTier = tier ? tier.tier : 7
+
+    console.log('zoom tier:', zoomTier)
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     if (this.bgLayerFar) {
       this.bgLayerFar.setScale(this.LAYER_SCALE * zoom * this.PARALLAX_FAR)
+      this.bgLayerFar.setVisible(zoomTier < 6)
     }
 
     if (this.bgLayerMid) {
       this.bgLayerMid.setScale(this.LAYER_SCALE * zoom * this.PARALLAX_MID)
+      this.bgLayerMid.setVisible(zoomTier < 7)
     }
 
     if (this.bgLayerNear) {
