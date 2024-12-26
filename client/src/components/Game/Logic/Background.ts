@@ -13,12 +13,12 @@ export class Background {
   // Background layer settings
   private readonly LAYER_WIDTH = 1920
   private readonly LAYER_HEIGHT = 1080
-  private readonly LAYER_SCALE = 50
+  private readonly LAYER_SCALE = 30
   private readonly LAYER_TILE_SCALE = 0.1
 
   // Parallax control factors
-  private readonly PARALLAX_FAR = 0.1
-  private readonly PARALLAX_MID = 0.2
+  private readonly PARALLAX_FAR = 0.05
+  private readonly PARALLAX_MID = 0.15
   private readonly PARALLAX_NEAR = 0.3
 
   private scene: Phaser.Scene
@@ -122,16 +122,17 @@ export class Background {
 
     if (this.bgLayerFar) {
       this.bgLayerFar.setScale(this.LAYER_SCALE * zoom * this.PARALLAX_FAR)
-      this.bgLayerFar.setVisible(zoomTier < 6)
+      this.bgLayerFar.setVisible(zoomTier < 5)
     }
 
     if (this.bgLayerMid) {
       this.bgLayerMid.setScale(this.LAYER_SCALE * zoom * this.PARALLAX_MID)
-      this.bgLayerMid.setVisible(zoomTier < 7)
+      this.bgLayerMid.setVisible(zoomTier < 6)
     }
 
     if (this.bgLayerNear) {
       this.bgLayerNear.setScale(this.LAYER_SCALE * zoom * this.PARALLAX_NEAR)
+      this.bgLayerNear.setVisible(zoomTier < 7)
     }
   }
   /**
