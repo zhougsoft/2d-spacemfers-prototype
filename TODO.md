@@ -18,8 +18,17 @@ warping between planets and just flying around and exploring and stuff.
   - this will be a bit of a job since the player is coupled w/ the old location system
   - not big prio since backend isn't being used for this yet, it's all in the game client
 
+### MVP UI
+
+the basic ui needed for moving forward
+
+- [ ] a "Selected Item Panel" - this sits above the `<OverviewPanel />` and shows the global selection (keep this in state or ref or smth in `<Game />`)
+- [ ] update the ship controls, make that group it's own component as well
+- [ ] top left: show current location like x & y and stuff just for now
+- [ ] bottom left: show current player & chat/social stuff (just hardcoded placeholders for now)
+
 ### MISC
 
-- [ ] add a cool foreground parallax layer that sits between the camera and ship and is really fast with little wispy light & semi-transparent specks
+- [ ] add more parallax layers for further zooms, reuse the 3 textures but group them in teirs or whatever, like 2 layers of the far png, 2 for mid etc; will get more zoom distance coverage out of them without needing to make a huge initial one to cover entire viewport 
 - [ ] use the ship stats to determine the speed and turn speed (with max speed and mass attributes)
-- [ ] make the offset of the nebula background based on the coordinates within the entire system, place a bright sun thing right in the middle of the nebula background so it will be realistic where the sun is in relation to where you are in the star system
+- [ ] place a bright sun thing in the background so it will be realistic where the sun is in relation to where you are in the star system, ex: if ur bottom right of star system, sun will be shining in top left
