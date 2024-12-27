@@ -11,15 +11,15 @@ export class Background {
   private readonly LAYER_KEY_NEAR = 'bg-near'
 
   // Background layer settings
-  private readonly LAYER_WIDTH = 1920
-  private readonly LAYER_HEIGHT = 1080
-  private readonly LAYER_SCALE = 30
+  private readonly LAYER_WIDTH = 3000
+  private readonly LAYER_HEIGHT = 2000
+  private readonly LAYER_SCALE = 50
   private readonly LAYER_TILE_SCALE = 0.1
 
   // Parallax control factors
   private readonly PARALLAX_FAR = 0.05
-  private readonly PARALLAX_MID = 0.15
-  private readonly PARALLAX_NEAR = 0.3
+  private readonly PARALLAX_MID = 0.1
+  private readonly PARALLAX_NEAR = 0.15
 
   private scene: Phaser.Scene
 
@@ -57,32 +57,46 @@ export class Background {
     const originX = 0.5
     const originY = 0.5
 
-    const layerWidth = this.LAYER_WIDTH
-    const layerHeight = this.LAYER_HEIGHT
-    const tileScale = this.LAYER_TILE_SCALE
-
     // Add far background layer
     const far = this.scene.add
-      .tileSprite(locX, locY, layerWidth, layerHeight, this.LAYER_KEY_FAR)
+      .tileSprite(
+        locX,
+        locY,
+        this.LAYER_WIDTH,
+        this.LAYER_HEIGHT,
+        this.LAYER_KEY_FAR
+      )
       .setOrigin(originX, originY)
       .setScale(this.LAYER_SCALE * this.PARALLAX_FAR)
-      .setTileScale(tileScale)
+      .setTileScale(this.LAYER_TILE_SCALE)
       .setScrollFactor(0)
 
     // Add mid background layer
     const mid = this.scene.add
-      .tileSprite(locX, locY, layerWidth, layerHeight, this.LAYER_KEY_MID)
+      .tileSprite(
+        locX,
+        locY,
+        this.LAYER_WIDTH,
+        this.LAYER_HEIGHT,
+        this.LAYER_KEY_MID
+      )
       .setOrigin(originY, originY)
       .setScale(this.LAYER_SCALE * this.PARALLAX_MID)
-      .setTileScale(tileScale)
+      .setTileScale(this.LAYER_TILE_SCALE)
       .setScrollFactor(0)
 
     // Add near background layer
     const near = this.scene.add
-      .tileSprite(locX, locY, layerWidth, layerHeight, this.LAYER_KEY_NEAR)
+      .tileSprite(
+        locX,
+        locY,
+        this.LAYER_WIDTH,
+        this.LAYER_HEIGHT,
+        this.LAYER_KEY_NEAR
+      )
       .setOrigin(originY, originY)
       .setScale(this.LAYER_SCALE * this.PARALLAX_NEAR)
-      .setTileScale(tileScale)
+      .setTileScale(this.LAYER_TILE_SCALE)
       .setScrollFactor(0)
 
     this.bgLayerFar = far
