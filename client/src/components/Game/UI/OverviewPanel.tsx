@@ -1,8 +1,13 @@
 const OverviewPanel = ({
   overviewItems,
+  playerPosition,
 }: {
-  overviewItems: { name: string; distance: number }[]
+  overviewItems: Phaser.GameObjects.Sprite[]
+  playerPosition: { x: number; y: number }
 }) => {
+  
+  console.log('OverviewPanel', { overviewItems, playerPosition })
+
   return (
     <table>
       <thead>

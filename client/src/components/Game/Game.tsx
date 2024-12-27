@@ -26,28 +26,30 @@
 import { useCallback, useRef, useState } from 'react'
 import asteroidImage from '../../assets/asteroid.png'
 import shipImage from '../../assets/shuttle.png'
-import { createDebugGridTexture } from '../../utils/graphics'
+import { metersToPixels } from '../../utils/measurements'
 import { Camera } from './Logic/Camera'
 import { Background } from './Logic/Background'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
 import ShipControls from './UI/ShipControls'
-import { metersToPixels } from '../../utils/measurements'
 
-// Feature flags
-const IS_BACKGROUND_ENABLED = true
-const IS_HUD_ENABLED = false
+const IS_HUD_ENABLED = true
 
 const Game = () => {
   // Game state object refs
   const background = useRef<Background>()
-  const ship = useRef<Ship>()
   const camera = useRef<Camera>()
+  const sceneSprites = useRef<Phaser.GameObjects.Sprite[]>()
+  const ship = useRef<Ship>()
 
   // UI state management
   const [reloadKey, setReloadKey] = useState(0)
-  const [speedDisplay, setSpeedDisplay] = useState(0)
+  const [playerSpeed, setPlayerSpeed] = useState(0)
+  const [playerPosition, setPlayerPosition] = useState({ x: 0, y: 0 })
+  const [overviewItems, setOverviewItems] = useState<
+    Phaser.GameObjects.Sprite[]
+  >([])
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
@@ -61,6 +63,10 @@ const Game = () => {
 
   const setShipThrust = (thrust: number) => {
     ship.current?.setTargetThrust(thrust)
+  }
+
+  const onSceneSpriteClick = (sprite: Phaser.GameObjects.Sprite) => {
+    console.log('sprite clicked:', sprite)
   }
 
   // ~~~ PHASER SCENE CALLBACKS ~~~
@@ -82,25 +88,49 @@ const Game = () => {
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
     // Create background layers
-    if (IS_BACKGROUND_ENABLED && background.current) {
+    if (background.current) {
       background.current.create()
     }
 
-    // Add some asteroids to the scene for testing zooms & stuff
-    scene.add
+    // Create some test asteroid game objects
+    const asteroid1 = scene.add
       .sprite(metersToPixels(-100), metersToPixels(-100), 'asteroid')
       .setScale(1)
       .setRotation(1)
+      .setInteractive()
 
-    scene.add
+    const asteroid2 = scene.add
       .sprite(metersToPixels(-90), metersToPixels(-60), 'asteroid')
       .setScale(0.75)
       .setRotation(0.75)
+      .setInteractive()
 
-    scene.add
+    const asteroid3 = scene.add
       .sprite(metersToPixels(-75), metersToPixels(-25), 'asteroid')
       .setScale(1.5)
       .setRotation(0.25)
+      .setInteractive()
+
+    // just hold stuff in a ref array for now
+    sceneSprites.current = [asteroid1, asteroid2, asteroid3]
+
+    // Add game object click event
+    scene.input.on(
+      'pointerdown',
+      (
+        _pointer: Phaser.Input.Pointer,
+        gameObjects: Phaser.GameObjects.GameObject[]
+      ) => {
+        if (gameObjects.length > 0) {
+          const clickedSprite = sceneSprites.current?.find(
+            a => a === gameObjects[0]
+          )
+          if (clickedSprite) {
+            onSceneSpriteClick(clickedSprite)
+          }
+        }
+      }
+    )
 
     // Add the player ship & follow w/ the camera
     const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
@@ -115,13 +145,20 @@ const Game = () => {
       if (ship.current) {
         ship.current.update(delta)
         // TODO: debounce this
-        setSpeedDisplay(ship.current.getSpeed())
+        setPlayerSpeed(ship.current.getSpeed())
+        setPlayerPosition(ship.current.getPosition())
       }
 
       // Update background parallax
-      if (IS_BACKGROUND_ENABLED && background.current && camera.current) {
+      if (background.current && camera.current) {
         const { x, y } = camera.current.getScroll()
         background.current.updateParallax(x, y)
+      }
+
+      // Update overview UI
+      if (sceneSprites.current) {
+        // TODO: debounce this
+        setOverviewItems(sceneSprites.current)
       }
     },
     []
@@ -137,7 +174,7 @@ const Game = () => {
         onUpdate={onUpdate}
       />
       <button
-        style={{ position: 'absolute', top: 0, right: 0, fontWeight: 'bold' }}
+        style={{ position: 'absolute', top: 0, left: 0, fontWeight: 'bold' }}
         onClick={reload}>
         RELOAD
       </button>
@@ -155,7 +192,12 @@ const Game = () => {
           top: 10,
           right: 10,
         }}>
-        {IS_HUD_ENABLED && <OverviewPanel overviewItems={[]} />}
+        {IS_HUD_ENABLED && (
+          <OverviewPanel
+            overviewItems={overviewItems}
+            playerPosition={playerPosition}
+          />
+        )}
       </div>
       <div
         style={{
@@ -165,7 +207,7 @@ const Game = () => {
           transform: 'translateX(-50%)',
         }}>
         <ShipControls
-          speedDisplay={speedDisplay}
+          speedDisplay={playerSpeed}
           setShipAngle={setShipAngle}
           setShipThrust={setShipThrust}
         />

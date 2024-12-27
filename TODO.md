@@ -5,7 +5,7 @@
 warping between planets and just flying around and exploring and stuff.
 
 - [x] get camera/background combo + screen responsiveness working GOOD ENOUGH
-- [ ] add some predefined stuff in the view and check it out at different zoom levels and stuff
+- [x] add some predefined stuff in the view and check it out at different zoom levels and stuff
 - [ ] tinker with an approach system: for starters, just a debug btn to approach a predefined spot
   - align to target
   - thrust to max speed
