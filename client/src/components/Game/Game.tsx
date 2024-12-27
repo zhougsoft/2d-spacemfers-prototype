@@ -35,20 +35,22 @@ import OverviewPanel from './UI/OverviewPanel'
 import ShipControls from './UI/ShipControls'
 
 const IS_HUD_ENABLED = true
+const OVERVIEW_UPDATE_INTERVAL = 1000 // every 1 second
 
 const Game = () => {
-  // Game state object refs
+  // Game refs
   const background = useRef<Background>()
   const camera = useRef<Camera>()
   const sceneEntities = useRef<Phaser.GameObjects.Sprite[]>()
   const ship = useRef<Ship>()
 
-  // UI state management
+  // UI state
   const [reloadKey, setReloadKey] = useState(0)
   const [playerSpeed, setPlayerSpeed] = useState(0)
   const [overviewItems, setOverviewItems] = useState<
     { distance: number; name: string }[]
   >([])
+  const lastOverviewUpdate = useRef(0)
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
@@ -56,7 +58,7 @@ const Game = () => {
     setReloadKey(prev => prev + 1)
   }
 
-  const refreshOverviewPanel = () => {
+  const refreshOverviewPanel = useCallback(() => {
     if (!ship.current || !sceneEntities.current) return
     const { x, y } = ship.current.getPosition()
 
@@ -68,7 +70,7 @@ const Game = () => {
     }))
 
     setOverviewItems(items)
-  }
+  }, [])
 
   const setShipAngle = (angle: number) => {
     ship.current?.setTargetAngle(angle)
@@ -153,11 +155,10 @@ const Game = () => {
 
   // Runs every frame
   const onUpdate = useCallback(
-    (_scene: Phaser.Scene, _time: number, delta: number) => {
+    (_scene: Phaser.Scene, time: number, delta: number) => {
       // Update player ship
       if (ship.current) {
         ship.current.update(delta)
-        // TODO: slightly debounce this update
         setPlayerSpeed(ship.current.getSpeed())
       }
 
@@ -167,8 +168,11 @@ const Game = () => {
         background.current.updateParallax(x, y)
       }
 
-      // TODO: debounce this to run every 1 second based on the time stuff provided from Phaser
-      refreshOverviewPanel()
+      // Update overview panel in intervals
+      if (time - lastOverviewUpdate.current >= OVERVIEW_UPDATE_INTERVAL) {
+        refreshOverviewPanel()
+        lastOverviewUpdate.current = time
+      }
     },
     []
   )
