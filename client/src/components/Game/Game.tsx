@@ -60,10 +60,9 @@ const Game = () => {
     if (!ship.current || !sceneEntities.current) return
     const { x, y } = ship.current.getPosition()
 
-    // TODO: this calculation is wrong, things seem further away than they are
     const items = sceneEntities.current.map((item, index) => ({
-      distance: pixelsToMeters(
-        Math.sqrt((item.x - x) ** 2 + (item.y - y) ** 2)
+      distance: Math.sqrt(
+        (pixelsToMeters(item.x) - x) ** 2 + (pixelsToMeters(item.y) - y) ** 2
       ),
       name: `item #${index + 1}`,
     }))
