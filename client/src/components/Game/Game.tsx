@@ -24,6 +24,7 @@
  */
 
 import { useCallback, useRef, useState } from 'react'
+import asteroidImage from '../../assets/asteroid.png'
 import shipImage from '../../assets/shuttle.png'
 import { createDebugGridTexture } from '../../utils/graphics'
 import { Camera } from './Logic/Camera'
@@ -32,15 +33,11 @@ import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
 import OverviewPanel from './UI/OverviewPanel'
 import ShipControls from './UI/ShipControls'
+import { metersToPixels } from '../../utils/measurements'
 
 // Feature flags
-const IS_DEBUG_MODE = false
 const IS_BACKGROUND_ENABLED = true
 const IS_HUD_ENABLED = false
-
-// Debug settings
-const DEBUG_GRID_SIZE = 100 // 100m² debug grid
-const DEBUG_GRID_KEY = 'debug-grid'
 
 const Game = () => {
   // Game state object refs
@@ -79,6 +76,7 @@ const Game = () => {
     // Preload assets
     background.current.preload()
     scene.load.image('ship', shipImage)
+    scene.load.image('asteroid', asteroidImage)
   }, [])
 
   // Runs once when the scene is created
@@ -88,16 +86,21 @@ const Game = () => {
       background.current.create()
     }
 
-    // Create debug grid
-    if (IS_DEBUG_MODE && camera.current) {
-      const { width, height } = camera.current.getWorldView()
-      createDebugGridTexture(scene, DEBUG_GRID_SIZE, DEBUG_GRID_KEY)
-      const gridTile = scene.add.tileSprite(0, 0, width, height, DEBUG_GRID_KEY)
-      gridTile.setTileScale(1)
-      gridTile.setOrigin(0, 0)
-      gridTile.setScrollFactor(0)
-      scene.data.set(DEBUG_GRID_KEY, gridTile)
-    }
+    // Add some asteroids to the scene for testing zooms & stuff
+    scene.add
+      .sprite(metersToPixels(-100), metersToPixels(-100), 'asteroid')
+      .setScale(1)
+      .setRotation(1)
+
+    scene.add
+      .sprite(metersToPixels(-90), metersToPixels(-60), 'asteroid')
+      .setScale(0.75)
+      .setRotation(0.75)
+
+    scene.add
+      .sprite(metersToPixels(-75), metersToPixels(-25), 'asteroid')
+      .setScale(1.5)
+      .setRotation(0.25)
 
     // Add the player ship & follow w/ the camera
     const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
@@ -107,7 +110,7 @@ const Game = () => {
 
   // Runs every frame
   const onUpdate = useCallback(
-    (scene: Phaser.Scene, _time: number, delta: number) => {
+    (_scene: Phaser.Scene, _time: number, delta: number) => {
       // Update player ship
       if (ship.current) {
         ship.current.update(delta)
@@ -119,16 +122,6 @@ const Game = () => {
       if (IS_BACKGROUND_ENABLED && background.current && camera.current) {
         const { x, y } = camera.current.getScroll()
         background.current.updateParallax(x, y)
-      }
-
-      // Update debug grid position
-      if (IS_DEBUG_MODE && camera.current) {
-        const gridTile = scene.data.get(
-          DEBUG_GRID_KEY
-        ) as Phaser.GameObjects.TileSprite
-        const { x, y } = camera.current.getScroll()
-        gridTile.tilePositionX = x
-        gridTile.tilePositionY = y
       }
     },
     []
