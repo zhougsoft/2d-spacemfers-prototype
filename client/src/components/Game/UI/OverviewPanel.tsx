@@ -1,29 +1,24 @@
 const OverviewPanel = ({
   overviewItems,
-  playerPosition,
 }: {
-  overviewItems: Phaser.GameObjects.Sprite[]
-  playerPosition: { x: number; y: number }
-}) => {
-  
-  console.log('OverviewPanel', { overviewItems, playerPosition })
-
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>distance</th>
-          <th>name</th>
+  overviewItems: { distance: number; name: string }[]
+}) => (
+  <table>
+    <thead>
+      <tr>
+        <th>distance</th>
+        <th>name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {overviewItems.map((data, index) => (
+        <tr key={index}>
+          <td>{`${Math.round(data.distance)}m`}</td>
+          <td>{data.name}</td>
         </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>???</td>
-          <td>???</td>
-        </tr>
-      </tbody>
-    </table>
-  )
-}
+      ))}
+    </tbody>
+  </table>
+)
 
 export default OverviewPanel

@@ -26,7 +26,7 @@
 import { useCallback, useRef, useState } from 'react'
 import asteroidImage from '../../assets/asteroid.png'
 import shipImage from '../../assets/shuttle.png'
-import { metersToPixels } from '../../utils/measurements'
+import { metersToPixels, pixelsToMeters } from '../../utils/measurements'
 import { Camera } from './Logic/Camera'
 import { Background } from './Logic/Background'
 import { Ship } from './Logic/Ship'
@@ -40,21 +40,35 @@ const Game = () => {
   // Game state object refs
   const background = useRef<Background>()
   const camera = useRef<Camera>()
-  const sceneSprites = useRef<Phaser.GameObjects.Sprite[]>()
+  const sceneEntities = useRef<Phaser.GameObjects.Sprite[]>()
   const ship = useRef<Ship>()
 
   // UI state management
   const [reloadKey, setReloadKey] = useState(0)
   const [playerSpeed, setPlayerSpeed] = useState(0)
-  const [playerPosition, setPlayerPosition] = useState({ x: 0, y: 0 })
   const [overviewItems, setOverviewItems] = useState<
-    Phaser.GameObjects.Sprite[]
+    { distance: number; name: string }[]
   >([])
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
     ship.current = undefined
     setReloadKey(prev => prev + 1)
+  }
+
+  const refreshOverviewPanel = () => {
+    if (!ship.current || !sceneEntities.current) return
+    const { x, y } = ship.current.getPosition()
+
+    // TODO: this calculation is wrong, things seem further away than they are
+    const items = sceneEntities.current.map((item, index) => ({
+      distance: pixelsToMeters(
+        Math.sqrt((item.x - x) ** 2 + (item.y - y) ** 2)
+      ),
+      name: `item #${index + 1}`,
+    }))
+
+    setOverviewItems(items)
   }
 
   const setShipAngle = (angle: number) => {
@@ -65,7 +79,7 @@ const Game = () => {
     ship.current?.setTargetThrust(thrust)
   }
 
-  const onSceneSpriteClick = (sprite: Phaser.GameObjects.Sprite) => {
+  const onSceneEntityClick = (sprite: Phaser.GameObjects.Sprite) => {
     console.log('sprite clicked:', sprite)
   }
 
@@ -112,7 +126,7 @@ const Game = () => {
       .setInteractive()
 
     // just hold stuff in a ref array for now
-    sceneSprites.current = [asteroid1, asteroid2, asteroid3]
+    sceneEntities.current = [asteroid1, asteroid2, asteroid3]
 
     // Add game object click event
     scene.input.on(
@@ -122,11 +136,11 @@ const Game = () => {
         gameObjects: Phaser.GameObjects.GameObject[]
       ) => {
         if (gameObjects.length > 0) {
-          const clickedSprite = sceneSprites.current?.find(
+          const clickedEntity = sceneEntities.current?.find(
             a => a === gameObjects[0]
           )
-          if (clickedSprite) {
-            onSceneSpriteClick(clickedSprite)
+          if (clickedEntity) {
+            onSceneEntityClick(clickedEntity)
           }
         }
       }
@@ -144,9 +158,8 @@ const Game = () => {
       // Update player ship
       if (ship.current) {
         ship.current.update(delta)
-        // TODO: debounce this
+        // TODO: slightly debounce this update
         setPlayerSpeed(ship.current.getSpeed())
-        setPlayerPosition(ship.current.getPosition())
       }
 
       // Update background parallax
@@ -155,11 +168,8 @@ const Game = () => {
         background.current.updateParallax(x, y)
       }
 
-      // Update overview UI
-      if (sceneSprites.current) {
-        // TODO: debounce this
-        setOverviewItems(sceneSprites.current)
-      }
+      // TODO: debounce this to run every 1 second based on the time stuff provided from Phaser
+      refreshOverviewPanel()
     },
     []
   )
@@ -192,12 +202,7 @@ const Game = () => {
           top: 10,
           right: 10,
         }}>
-        {IS_HUD_ENABLED && (
-          <OverviewPanel
-            overviewItems={overviewItems}
-            playerPosition={playerPosition}
-          />
-        )}
+        {IS_HUD_ENABLED && <OverviewPanel overviewItems={overviewItems} />}
       </div>
       <div
         style={{
