@@ -24,8 +24,7 @@
   --color-button-border: var(--color-bg-lightest);
   --color-button-hover: var(--color-bg-lighter);
 
-  --padding-ui: 0.1rem 0.5rem;
-  --padding-table: 0.25rem 0.5rem;
+  --padding-ui: 0.2rem 0.5rem;
 }
 
 *,
@@ -90,7 +89,7 @@ th,
 td {
   text-align: left;
   outline: 1px solid var(--color-bg-light);
-  padding: var(--padding-table);
+  padding: var(--padding-ui);
 }
 
 th {
@@ -99,6 +98,10 @@ th {
 
 pre {
   font-size: 1rem;
+}
+
+.padding-ui {
+  padding: var(--padding-ui);
 }
 
 .outline-dark {

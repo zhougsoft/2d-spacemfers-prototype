@@ -31,30 +31,46 @@ import { Camera } from './Logic/Camera'
 import { Background } from './Logic/Background'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
-import OverviewPanel from './UI/OverviewPanel'
+import OverviewPanel, { type OverviewItem } from './UI/OverviewPanel'
+import SelectedItemPanel from './UI/SelectedItemPanel'
 import ShipControls from './UI/ShipControls'
 
 const IS_HUD_ENABLED = true
 const OVERVIEW_UPDATE_INTERVAL = 1000 // every 1 second
 
+interface SceneEntity {
+  id: string
+  sprite: Phaser.GameObjects.Sprite
+}
+
 const Game = () => {
   // Game refs
   const background = useRef<Background>()
   const camera = useRef<Camera>()
-  const sceneEntities = useRef<Phaser.GameObjects.Sprite[]>()
+  const sceneEntities = useRef<SceneEntity[]>()
   const ship = useRef<Ship>()
 
   // UI state
   const [reloadKey, setReloadKey] = useState(0)
   const [playerSpeed, setPlayerSpeed] = useState(0)
-  const [overviewItems, setOverviewItems] = useState<
-    { distance: number; name: string }[]
-  >([])
+  const [playerLocation, setPlayerLocation] = useState({ x: 0, y: 0 })
+  const [selectedItem, setSelectedItem] = useState<OverviewItem | null>(null)
+  const [overviewItems, setOverviewItems] = useState<OverviewItem[]>([])
   const lastOverviewUpdate = useRef(0)
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
     ship.current = undefined
+    background.current = undefined
+    camera.current = undefined
+    sceneEntities.current = undefined
+
+    setPlayerSpeed(0)
+    setPlayerLocation({ x: 0, y: 0 })
+    setSelectedItem(null)
+    setOverviewItems([])
+    lastOverviewUpdate.current = 0
+
     setReloadKey(prev => prev + 1)
   }
 
@@ -62,12 +78,15 @@ const Game = () => {
     if (!ship.current || !sceneEntities.current) return
     const { x, y } = ship.current.getPosition()
 
-    const items = sceneEntities.current.map((item, index) => ({
-      distance: Math.sqrt(
-        (pixelsToMeters(item.x) - x) ** 2 + (pixelsToMeters(item.y) - y) ** 2
-      ),
-      name: `item #${index + 1}`,
-    }))
+    const items = sceneEntities.current
+      .map(sceneEntity => ({
+        distance: Math.sqrt(
+          (pixelsToMeters(sceneEntity.sprite.x) - x) ** 2 +
+            (pixelsToMeters(sceneEntity.sprite.y) - y) ** 2
+        ),
+        id: sceneEntity.id,
+      }))
+      .sort((a, b) => a.distance - b.distance)
 
     setOverviewItems(items)
   }, [])
@@ -80,8 +99,20 @@ const Game = () => {
     ship.current?.setTargetThrust(thrust)
   }
 
-  const onSceneEntityClick = (sprite: Phaser.GameObjects.Sprite) => {
-    console.log('sprite clicked:', sprite)
+  const onSceneEntityClick = (sceneEntityId: string) => {
+    console.log(
+      sceneEntityId,
+      overviewItems.map(item => item.id)
+    )
+
+    // TODO: why are the IDs different in sceneEntities.current and overviewItems?
+    // why are they out of sync sometimes? id: overviewItems is empty but sceneEntities.current has items
+    // likely related to crypto.randomUUID(); need a reliable way to represent scene entities in the overview panel
+    const item = overviewItems.find(item => item.id === sceneEntityId)
+
+    console.log(sceneEntities.current, overviewItems)
+
+    setSelectedItem(item ?? null)
   }
 
   // ~~~ PHASER SCENE CALLBACKS ~~~
@@ -108,42 +139,44 @@ const Game = () => {
     }
 
     // Create some test asteroid game objects
-    const asteroid1 = scene.add
-      .sprite(metersToPixels(-100), metersToPixels(-100), 'asteroid')
-      .setScale(1)
-      .setRotation(1)
-      .setInteractive()
+    const createAsteroid = (
+      x: number,
+      y: number,
+      scale: number,
+      rotation: number
+    ) => {
+      return {
+        id: crypto.randomUUID().split('-')[0],
+        sprite: scene.add
+          .sprite(metersToPixels(x), metersToPixels(y), 'asteroid')
+          .setScale(scale)
+          .setRotation(rotation)
+          .setInteractive(),
+      }
+    }
 
-    const asteroid2 = scene.add
-      .sprite(metersToPixels(-90), metersToPixels(-60), 'asteroid')
-      .setScale(0.75)
-      .setRotation(0.75)
-      .setInteractive()
-
-    const asteroid3 = scene.add
-      .sprite(metersToPixels(-75), metersToPixels(-25), 'asteroid')
-      .setScale(1.5)
-      .setRotation(0.25)
-      .setInteractive()
+    const asteroids = []
+    asteroids.push(createAsteroid(0, -100, 3, 0.4))
+    asteroids.push(createAsteroid(-150, -125, 2, 1.5))
+    asteroids.push(createAsteroid(-100, -100, 1, 1.1))
+    asteroids.push(createAsteroid(-90, -60, 0.75, 0.8))
+    asteroids.push(createAsteroid(-75, -25, 1.5, 0.3))
+    asteroids.push(createAsteroid(-45, -5, 0.5, 1.3))
 
     // just hold stuff in a ref array for now
-    sceneEntities.current = [asteroid1, asteroid2, asteroid3]
+    sceneEntities.current = [...asteroids]
 
     // Add game object click event
     scene.input.on(
       'pointerdown',
-      (
-        _pointer: Phaser.Input.Pointer,
-        gameObjects: Phaser.GameObjects.GameObject[]
-      ) => {
-        if (gameObjects.length > 0) {
-          const clickedEntity = sceneEntities.current?.find(
-            a => a === gameObjects[0]
-          )
-          if (clickedEntity) {
-            onSceneEntityClick(clickedEntity)
-          }
-        }
+      (_: any, gameObjects: Phaser.GameObjects.GameObject[]) => {
+        if (gameObjects.length === 0) return
+
+        const clickedEntity = sceneEntities.current?.find(
+          sceneEntity => sceneEntity.sprite === gameObjects[0]
+        )
+
+        if (clickedEntity) onSceneEntityClick(clickedEntity.id)
       }
     )
 
@@ -151,6 +184,9 @@ const Game = () => {
     const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
     ship.current = new Ship(shipSprite)
     camera.current?.follow(shipSprite)
+
+    // Initialize overview panel data
+    refreshOverviewPanel()
   }, [])
 
   // Runs every frame
@@ -160,6 +196,7 @@ const Game = () => {
       if (ship.current) {
         ship.current.update(delta)
         setPlayerSpeed(ship.current.getSpeed())
+        setPlayerLocation(ship.current.getPosition())
       }
 
       // Update background parallax
@@ -168,7 +205,7 @@ const Game = () => {
         background.current.updateParallax(x, y)
       }
 
-      // Update overview panel in intervals
+      // Update overview panel data in intervals
       if (time - lastOverviewUpdate.current >= OVERVIEW_UPDATE_INTERVAL) {
         refreshOverviewPanel()
         lastOverviewUpdate.current = time
@@ -197,15 +234,29 @@ const Game = () => {
           top: 50,
           left: 10,
         }}>
-        {IS_HUD_ENABLED && <div>...</div>}
+        {IS_HUD_ENABLED && (
+          <div>{`( x: ${playerLocation.x.toFixed(
+            3
+          )}m, y: ${playerLocation.y.toFixed(3)}m )`}</div>
+        )}
       </div>
       <div
         style={{
           position: 'absolute',
           top: 10,
           right: 10,
+          maxWidth: '20rem',
         }}>
-        {IS_HUD_ENABLED && <OverviewPanel overviewItems={overviewItems} />}
+        {IS_HUD_ENABLED && (
+          <>
+            <SelectedItemPanel selectedItem={selectedItem} />
+            <OverviewPanel
+              overviewItems={overviewItems}
+              selectedItem={selectedItem}
+              setSelectedItem={setSelectedItem}
+            />
+          </>
+        )}
       </div>
       <div
         style={{
