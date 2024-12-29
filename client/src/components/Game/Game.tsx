@@ -99,19 +99,9 @@ const Game = () => {
     ship.current?.setTargetThrust(thrust)
   }
 
-  const onSceneEntityClick = (sceneEntityId: string) => {
-    console.log(
-      sceneEntityId,
-      overviewItems.map(item => item.id)
-    )
-
-    // TODO: why are the IDs different in sceneEntities.current and overviewItems?
-    // why are they out of sync sometimes? id: overviewItems is empty but sceneEntities.current has items
-    // likely related to crypto.randomUUID(); need a reliable way to represent scene entities in the overview panel
-    const item = overviewItems.find(item => item.id === sceneEntityId)
-
-    console.log(sceneEntities.current, overviewItems)
-
+  // TODO: wip
+  const onSceneEntityClick = (sceneEntity: SceneEntity) => {
+    const item = overviewItems.find(item => item.id === sceneEntity.id)
     setSelectedItem(item ?? null)
   }
 
@@ -139,23 +129,26 @@ const Game = () => {
     }
 
     // Create some test asteroid game objects
+    const asteroids = []
+
     const createAsteroid = (
       x: number,
       y: number,
       scale: number,
       rotation: number
     ) => {
+      const id = `asteroid-${asteroids.length + 1}`
       return {
-        id: crypto.randomUUID().split('-')[0],
+        id,
         sprite: scene.add
           .sprite(metersToPixels(x), metersToPixels(y), 'asteroid')
+          .setName(id)
           .setScale(scale)
           .setRotation(rotation)
           .setInteractive(),
       }
     }
 
-    const asteroids = []
     asteroids.push(createAsteroid(0, -100, 3, 0.4))
     asteroids.push(createAsteroid(-150, -125, 2, 1.5))
     asteroids.push(createAsteroid(-100, -100, 1, 1.1))
@@ -173,10 +166,14 @@ const Game = () => {
         if (gameObjects.length === 0) return
 
         const clickedEntity = sceneEntities.current?.find(
-          sceneEntity => sceneEntity.sprite === gameObjects[0]
+          sceneEntity => sceneEntity.sprite.name === gameObjects[0].name
         )
 
-        if (clickedEntity) onSceneEntityClick(clickedEntity.id)
+        // TODO: why does this only wwork when i console log it?
+        // and why is the distance always wrong in the selected item?
+        console.log('clickedEntity', clickedEntity)
+
+        if (clickedEntity) onSceneEntityClick(clickedEntity)
       }
     )
 
