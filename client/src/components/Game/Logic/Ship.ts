@@ -8,9 +8,8 @@ const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.001 // how fast the ship slows down
 
 // Rotation controls
-const ROTATION_SPEED = 10 // degrees/frame max rotation velocity
-const ROTATION_DAMPING_FACTOR = 0.01 // how fast the ship stops rotating
-const ROTATION_STOP_THRESHOLD = 0.15 // how close to the target angle to stop
+const ROTATION_SPEED = 90 // degrees per second (max turn rate)
+const ROTATION_AGILITY = 4.0 // how quickly we “accelerate” toward the target angle
 
 export class Ship {
   private sprite: Phaser.GameObjects.Sprite
@@ -19,11 +18,10 @@ export class Ship {
   private posY_m: number = 0 // ship position Y in meters
   private velX_ms: number = 0 // ship velocity X in m/s
   private velY_ms: number = 0 // ship velocity Y in m/s
-  private rotationVel: number = 0 // ship rotation velocity in degrees/frame
 
   private currentThrust: number = 0 // current thrust level (0 to 1)
   private targetThrust: number = 0 // target thrust level (0 to 1)
-  private targetAngle: number = 0 // target angle in degrees (0 to 359)
+  private targetAngle: number = 0 // target angle in degrees (0 to 359, 0 facing up)
 
   /**
    * Ship constructor
@@ -31,10 +29,11 @@ export class Ship {
    */
   constructor(sprite: Phaser.GameObjects.Sprite) {
     this.sprite = sprite
+    this.setAngle(-90)
 
     // Initialize ship position in meters from sprite position in pixels
-    this.posX_m = pixelsToMeters(sprite.x)
-    this.posY_m = pixelsToMeters(sprite.y)
+    this.posX_m = pixelsToMeters(this.sprite.x)
+    this.posY_m = pixelsToMeters(this.sprite.y)
   }
 
   // ~~~ PUBLIC METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,7 +63,14 @@ export class Ship {
    * Returns the ship's current angle in degrees (0 facing up)
    */
   public getAngle(): number {
-    return this.sprite.angle - 90
+    return this.sprite.angle - 90 // subtract 90° for Phaser sprite angle offset
+  }
+
+  /**
+   * Sets the ship's current angle in degrees (0 facing up)
+   */
+  public setAngle(angle: number) {
+    this.sprite.angle = angle + 90 // add 90° for Phaser sprite angle offset
   }
 
   /**
@@ -75,7 +81,7 @@ export class Ship {
   }
 
   /**
-   * Sets the desired rotation angle for the ship (in degrees)
+   * Sets the desired rotation angle for the ship in degrees (0 facing up)
    * @param angle 0 to 359
    */
   public setTargetAngle(angle: number) {
@@ -96,38 +102,25 @@ export class Ship {
    */
   public update(delta: number) {
     const deltaSeconds = delta * 0.001
-    this.updateAngle(delta)
+    this.updateAngle(deltaSeconds)
     this.updateThrust(deltaSeconds)
     this.updatePosition(deltaSeconds)
   }
 
   // ~~~ PRIVATE METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  private updateAngle(delta: number) {
-    const angleDifference = this.targetAngle - this.sprite.angle
-    const normalizedDifference = ((angleDifference + 180) % 360) - 180
-
-    const stoppingDistance =
-      (this.rotationVel * this.rotationVel) / (2 * ROTATION_DAMPING_FACTOR)
-
-    if (Math.abs(normalizedDifference) > ROTATION_STOP_THRESHOLD) {
-      if (Math.abs(normalizedDifference) > stoppingDistance) {
-        this.rotationVel +=
-          Math.sign(normalizedDifference) * ROTATION_DAMPING_FACTOR * delta
-      } else {
-        this.rotationVel *= 1 - ROTATION_DAMPING_FACTOR * delta
-      }
-    } else {
-      this.rotationVel = 0
-      this.sprite.angle = this.targetAngle
-    }
-
-    this.rotationVel = Math.max(
-      -ROTATION_SPEED,
-      Math.min(ROTATION_SPEED, this.rotationVel)
+  private updateAngle(deltaSeconds: number) {
+    const currentAngle = this.getAngle()
+    const angleDiff = Phaser.Math.Angle.WrapDegrees(
+      this.targetAngle - currentAngle - 90
     )
 
-    this.sprite.angle += this.rotationVel
+    const maxStep = ROTATION_SPEED * deltaSeconds
+    let rotationStep = angleDiff * ROTATION_AGILITY * deltaSeconds
+    rotationStep = Phaser.Math.Clamp(rotationStep, -maxStep, maxStep)
+
+    const newAngle = currentAngle + rotationStep
+    this.setAngle(newAngle)
   }
 
   private updateThrust(deltaSeconds: number) {
