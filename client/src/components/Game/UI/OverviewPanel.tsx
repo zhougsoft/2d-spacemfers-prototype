@@ -1,18 +1,15 @@
-export interface OverviewItem {
-  distance: number
-  id: string
-}
+import type { EntityInfo } from '../Logic/EntityManager'
 
 interface OverviewPanelProps {
-  overviewItems: OverviewItem[]
-  selectedItem: OverviewItem | null
-  setSelectedItem: (item: OverviewItem) => void
+  overviewItems: EntityInfo[]
+  selectedItemId: string | null
+  onSelectItem: (id: string) => void
 }
 
 const OverviewPanel = ({
   overviewItems,
-  selectedItem,
-  setSelectedItem,
+  selectedItemId,
+  onSelectItem,
 }: OverviewPanelProps) => (
   <table>
     <thead>
@@ -22,13 +19,13 @@ const OverviewPanel = ({
       </tr>
     </thead>
     <tbody>
-      {overviewItems.map((item, index) => (
+      {overviewItems.map(item => (
         <tr
-          key={index}
-          onClick={() => setSelectedItem(item)}
+          key={item.id}
+          onClick={() => onSelectItem(item.id)}
           style={{
             cursor: 'pointer',
-            backgroundColor: selectedItem === item ? 'red' : 'inherit',
+            backgroundColor: selectedItemId === item.id ? 'red' : 'inherit',
           }}>
           <td>{`${Math.round(item.distance)}m`}</td>
           <td>{item.id}</td>

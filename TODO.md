@@ -6,10 +6,9 @@ warping between planets and just flying around and exploring and stuff.
 
 - [x] get camera/background combo + screen responsiveness working GOOD ENOUGH
 - [x] add some predefined stuff in the view and check it out at different zoom levels and stuff
-- [ ] tinker with an approach system: for starters, just a debug btn to approach a predefined spot
-  - align to target
-  - thrust to max speed
-- [ ] add some predefined stuff far AF away, like 10+ au
+- [ ] create "align-to" system
+- [ ] create "approach" system
+- [ ] add some predefined stuff far AF away, like 10+ AU; make it show in overview nice (in AU units)
 - [ ] tinker with a warp system: for starters, just a debug btn to warp to predefined spots far away
   - align to target
   - thrust to max speed
@@ -22,10 +21,10 @@ warping between planets and just flying around and exploring and stuff.
 
 the basic ui needed for moving forward
 
-- [ ] a "Selected Item Panel" - this sits above the `<OverviewPanel />` and shows the global selection (keep this in state or ref or smth in `<Game />`)
-- [ ] update the ship controls, make that group it's own component as well
-- [ ] top left: show current location like x & y and stuff just for now
-- [ ] bottom left: show current player & chat/social stuff (just hardcoded placeholders for now)
+- [x] a "Selected Item Panel"
+- [x] top left: show current location like x & y and stuff just for now
+- [ ] update the ship controls with slider for granular percentage, make that group it's own component as well
+- [ ] hijack the default context menu; just do a no-op for now
 
 ### MISC
 

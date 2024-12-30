@@ -1,9 +1,9 @@
-import type { OverviewItem } from './OverviewPanel'
+import type { EntityInfo } from '../Logic/EntityManager'
 
 const SelectedItemPanel = ({
   selectedItem,
 }: {
-  selectedItem: OverviewItem | null
+  selectedItem: EntityInfo | null
 }) => (
   <div className="outline-light padding-ui">
     {selectedItem ? (

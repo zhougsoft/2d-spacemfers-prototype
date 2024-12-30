@@ -26,70 +26,60 @@
 import { useCallback, useRef, useState } from 'react'
 import asteroidImage from '../../assets/asteroid.png'
 import shipImage from '../../assets/shuttle.png'
-import { metersToPixels, pixelsToMeters } from '../../utils/measurements'
-import { Camera } from './Logic/Camera'
+import { metersToPixels } from '../../utils/measurements'
 import { Background } from './Logic/Background'
+import { Camera } from './Logic/Camera'
+import { EntityManager, type EntityInfo } from './Logic/EntityManager'
 import { Ship } from './Logic/Ship'
 import PhaserScene from './PhaserScene'
-import OverviewPanel, { type OverviewItem } from './UI/OverviewPanel'
+import OverviewPanel from './UI/OverviewPanel'
 import SelectedItemPanel from './UI/SelectedItemPanel'
 import ShipControls from './UI/ShipControls'
 
 const IS_HUD_ENABLED = true
 const OVERVIEW_UPDATE_INTERVAL = 1000 // every 1 second
 
-interface SceneEntity {
-  id: string
-  sprite: Phaser.GameObjects.Sprite
-}
-
 const Game = () => {
   // Game refs
   const background = useRef<Background>()
   const camera = useRef<Camera>()
-  const sceneEntities = useRef<SceneEntity[]>()
+  const entityManager = useRef<EntityManager>()
   const ship = useRef<Ship>()
 
   // UI state
   const [reloadKey, setReloadKey] = useState(0)
   const [playerSpeed, setPlayerSpeed] = useState(0)
   const [playerLocation, setPlayerLocation] = useState({ x: 0, y: 0 })
-  const [selectedItem, setSelectedItem] = useState<OverviewItem | null>(null)
-  const [overviewItems, setOverviewItems] = useState<OverviewItem[]>([])
+  const [overviewItems, setOverviewItems] = useState<EntityInfo[]>([])
+  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
   const lastOverviewUpdate = useRef(0)
 
   // Resets all game state to initial values & forces a fresh Phaser instance
   const reload = () => {
-    ship.current = undefined
     background.current = undefined
     camera.current = undefined
-    sceneEntities.current = undefined
+    entityManager.current = undefined
+    ship.current = undefined
 
     setPlayerSpeed(0)
     setPlayerLocation({ x: 0, y: 0 })
-    setSelectedItem(null)
     setOverviewItems([])
+    setSelectedEntityId(null)
     lastOverviewUpdate.current = 0
 
     setReloadKey(prev => prev + 1)
   }
 
-  const refreshOverviewPanel = useCallback(() => {
-    if (!ship.current || !sceneEntities.current) return
+  const refreshOverviewItems = useCallback(() => {
+    if (!ship.current || !entityManager.current) return
     const { x, y } = ship.current.getPosition()
-
-    const items = sceneEntities.current
-      .map(sceneEntity => ({
-        distance: Math.sqrt(
-          (pixelsToMeters(sceneEntity.sprite.x) - x) ** 2 +
-            (pixelsToMeters(sceneEntity.sprite.y) - y) ** 2
-        ),
-        id: sceneEntity.id,
-      }))
-      .sort((a, b) => a.distance - b.distance)
-
-    setOverviewItems(items)
+    const entities = entityManager.current.getEntitiesInfo(x, y)
+    setOverviewItems(entities)
   }, [])
+
+  const handleEntitySelection = (id: string | null) => {
+    setSelectedEntityId(id)
+  }
 
   const setShipAngle = (angle: number) => {
     ship.current?.setTargetAngle(angle)
@@ -97,12 +87,6 @@ const Game = () => {
 
   const setShipThrust = (thrust: number) => {
     ship.current?.setTargetThrust(thrust)
-  }
-
-  // TODO: wip
-  const onSceneEntityClick = (sceneEntity: SceneEntity) => {
-    const item = overviewItems.find(item => item.id === sceneEntity.id)
-    setSelectedItem(item ?? null)
   }
 
   // ~~~ PHASER SCENE CALLBACKS ~~~
@@ -128,52 +112,41 @@ const Game = () => {
       background.current.create()
     }
 
-    // Create some test asteroid game objects
-    const asteroids = []
+    entityManager.current = new EntityManager()
 
-    const createAsteroid = (
+    // Create some test asteroid game objects
+    const createAsteroidEntity = (
       x: number,
       y: number,
       scale: number,
       rotation: number
     ) => {
-      const id = `asteroid-${asteroids.length + 1}`
-      return {
-        id,
-        sprite: scene.add
-          .sprite(metersToPixels(x), metersToPixels(y), 'asteroid')
-          .setName(id)
-          .setScale(scale)
-          .setRotation(rotation)
-          .setInteractive(),
-      }
+      const id = `asteroid-${entityManager.current?.getEntities().length! + 1}`
+      const sprite = scene.add
+        .sprite(metersToPixels(x), metersToPixels(y), 'asteroid')
+        .setName(id)
+        .setScale(scale)
+        .setRotation(rotation)
+        .setInteractive()
+
+      entityManager.current?.addEntity({ id, sprite })
+      return { id, sprite }
     }
 
-    asteroids.push(createAsteroid(0, -100, 3, 0.4))
-    asteroids.push(createAsteroid(-150, -125, 2, 1.5))
-    asteroids.push(createAsteroid(-100, -100, 1, 1.1))
-    asteroids.push(createAsteroid(-90, -60, 0.75, 0.8))
-    asteroids.push(createAsteroid(-75, -25, 1.5, 0.3))
-    asteroids.push(createAsteroid(-45, -5, 0.5, 1.3))
-
-    // just hold stuff in a ref array for now
-    sceneEntities.current = [...asteroids]
+    createAsteroidEntity(0, -100, 3, 0.4)
+    createAsteroidEntity(-150, -125, 2, 1.5)
+    createAsteroidEntity(-100, -100, 1, 1.1)
+    createAsteroidEntity(-90, -60, 0.75, 0.8)
+    createAsteroidEntity(-75, -25, 1.5, 0.3)
+    createAsteroidEntity(-45, -5, 0.5, 1.3)
 
     // Add game object click event
     scene.input.on(
       'pointerdown',
       (_: any, gameObjects: Phaser.GameObjects.GameObject[]) => {
         if (gameObjects.length === 0) return
-
-        const clickedEntity = sceneEntities.current?.find(
-          sceneEntity => sceneEntity.sprite.name === gameObjects[0].name
-        )
-
-        // TODO: why does this only wwork when i console log it?
-        // and why is the distance always wrong in the selected item?
-        console.log('clickedEntity', clickedEntity)
-
-        if (clickedEntity) onSceneEntityClick(clickedEntity)
+        const clickedId = gameObjects[0].name
+        handleEntitySelection(clickedId)
       }
     )
 
@@ -183,7 +156,7 @@ const Game = () => {
     camera.current?.follow(shipSprite)
 
     // Initialize overview panel data
-    refreshOverviewPanel()
+    refreshOverviewItems()
   }, [])
 
   // Runs every frame
@@ -204,7 +177,7 @@ const Game = () => {
 
       // Update overview panel data in intervals
       if (time - lastOverviewUpdate.current >= OVERVIEW_UPDATE_INTERVAL) {
-        refreshOverviewPanel()
+        refreshOverviewItems()
         lastOverviewUpdate.current = time
       }
     },
@@ -246,11 +219,16 @@ const Game = () => {
         }}>
         {IS_HUD_ENABLED && (
           <>
-            <SelectedItemPanel selectedItem={selectedItem} />
+            <SelectedItemPanel
+              selectedItem={
+                overviewItems.find(entity => entity.id === selectedEntityId) ??
+                null
+              }
+            />
             <OverviewPanel
               overviewItems={overviewItems}
-              selectedItem={selectedItem}
-              setSelectedItem={setSelectedItem}
+              selectedItemId={selectedEntityId}
+              onSelectItem={id => handleEntitySelection(id)}
             />
           </>
         )}
