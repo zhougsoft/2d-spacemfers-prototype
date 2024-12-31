@@ -72,6 +72,7 @@ const Game = () => {
 
   const refreshOverviewItems = useCallback(() => {
     if (!ship.current || !entityManager.current) return
+
     const { x, y } = ship.current.getPosition()
     const entities = entityManager.current.getEntitiesInfo(x, y)
     setOverviewItems(entities)
@@ -79,6 +80,15 @@ const Game = () => {
 
   const handleEntitySelection = (id: string | null) => {
     setSelectedEntityId(id)
+  }
+
+  const handleAlignTo = (id: string) => {
+    if (!ship.current || !entityManager.current) return
+
+    const targetPosition = entityManager.current.getEntityPosition(id)
+    if (!targetPosition) return
+
+    ship.current.alignTo(targetPosition.x, targetPosition.y)
   }
 
   const setShipAngle = (angle: number) => {
@@ -224,6 +234,7 @@ const Game = () => {
                 overviewItems.find(entity => entity.id === selectedEntityId) ??
                 null
               }
+              onAlignTo={handleAlignTo}
             />
             <OverviewPanel
               overviewItems={overviewItems}

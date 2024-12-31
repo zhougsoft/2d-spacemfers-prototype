@@ -13,16 +13,30 @@ export interface EntityInfo {
 export class EntityManager {
   private entities: GameEntity[] = []
 
-  addEntity(entity: GameEntity) {
+  public addEntity(entity: GameEntity) {
     this.entities.push(entity)
   }
 
-  getEntities() {
+  public getEntities() {
     return this.entities
   }
 
-  getEntityById(id: string) {
+  public getEntityById(id: string) {
     return this.entities.find(entity => entity.id === id)
+  }
+
+  /**
+   * Returns the position of an entity in the game world
+   * @param id ID of the entity to get the position of
+   */
+  public getEntityPosition(id: string): { x: number; y: number } | null {
+    const entity = this.getEntityById(id)
+    if (!entity) return null
+
+    return {
+      x: pixelsToMeters(entity.sprite.x),
+      y: pixelsToMeters(entity.sprite.y),
+    }
   }
 
   /**

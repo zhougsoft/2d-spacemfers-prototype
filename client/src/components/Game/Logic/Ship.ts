@@ -67,7 +67,7 @@ export class Ship {
    * @param angle 0 to 359
    */
   public setTargetAngle(angle: number) {
-    this.targetAngle = Math.max(0, Math.min(359, angle))
+    this.targetAngle = Phaser.Math.Clamp(angle, 0, 359)
   }
 
   /**
@@ -75,7 +75,24 @@ export class Ship {
    * @param thrust 0 to 1
    */
   public setTargetThrust(thrust: number) {
-    this.targetThrust = Math.max(0, Math.min(1, thrust))
+    this.targetThrust = Phaser.Math.Clamp(thrust, 0, 1)
+  }
+
+  /**
+   * Aligns the ship to face a target game world position
+   * @param targetX target X coordinate in meters
+   * @param targetY target Y coordinate in meters
+   */
+  public alignTo(targetX: number, targetY: number) {
+    const dx = targetX - this.posX_m
+    const dy = targetY - this.posY_m
+    const angleRadians = Math.atan2(dy, dx)
+
+    // Convert to degrees and add 90 to account for Phaser's orientation
+    const angleDegrees = (angleRadians * 180) / Math.PI + 90
+
+    // Wrap to 0-359 range
+    this.setTargetAngle((angleDegrees + 360) % 360)
   }
 
   /**
