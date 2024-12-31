@@ -1,15 +1,11 @@
 import Phaser from 'phaser'
 import { metersToPixels, pixelsToMeters } from '../../../utils/measurements'
 
-// Acceleration & speed controls
 const ACCELERATION_SPEED = 100 // m/s²
 const MAX_SPEED = 500 // m/s
 const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.001 // how fast the ship slows down
-
-// Rotation controls
-const ROTATION_SPEED = 90 // degrees per second (max turn rate)
-const ROTATION_AGILITY = 4.0 // how quickly we “accelerate” toward the target angle
+const ROTATION_SPEED = 100 // degrees per second
 
 export class Ship {
   private sprite: Phaser.GameObjects.Sprite
@@ -29,7 +25,6 @@ export class Ship {
    */
   constructor(sprite: Phaser.GameObjects.Sprite) {
     this.sprite = sprite
-    this.setAngle(-90)
 
     // Initialize ship position in meters from sprite position in pixels
     this.posX_m = pixelsToMeters(this.sprite.x)
@@ -37,13 +32,6 @@ export class Ship {
   }
 
   // ~~~ PUBLIC METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  /**
-   * Returns the ship's Phaser sprite game object
-   */
-  public getSprite(): Phaser.GameObjects.Sprite {
-    return this.sprite
-  }
 
   /**
    * Returns the ship's current position in meters
@@ -60,28 +48,22 @@ export class Ship {
   }
 
   /**
-   * Returns the ship's current angle in degrees (0 facing up)
+   * Returns the ship's current angle in degrees (based on sprite angle)
    */
   public getAngle(): number {
-    return this.sprite.angle - 90 // subtract 90° for Phaser sprite angle offset
+    return this.sprite.angle
   }
 
   /**
-   * Sets the ship's current angle in degrees (0 facing up)
+   * Returns the ship's current alignment in radians; use for physics calculations
    */
-  public setAngle(angle: number) {
-    this.sprite.angle = angle + 90 // add 90° for Phaser sprite angle offset
+  public getAlignmentRadians(): number {
+    // Subtract 90 degrees to account for Phaser's right-facing default orientation
+    return (this.getAngle() - 90) * (Math.PI / 180)
   }
 
   /**
-   * Returns the ship's current angle in radians
-   */
-  public getAngleRadians(): number {
-    return this.getAngle() * (Math.PI / 180)
-  }
-
-  /**
-   * Sets the desired rotation angle for the ship in degrees (0 facing up)
+   * Sets the desired rotation angle for the ship in degrees
    * @param angle 0 to 359
    */
   public setTargetAngle(angle: number) {
@@ -110,29 +92,28 @@ export class Ship {
   // ~~~ PRIVATE METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   private updateAngle(deltaSeconds: number) {
-    const currentAngle = this.getAngle()
+    const currentAngle = this.sprite.angle
     const angleDiff = Phaser.Math.Angle.WrapDegrees(
-      this.targetAngle - currentAngle - 90
+      this.targetAngle - currentAngle
     )
 
     const maxStep = ROTATION_SPEED * deltaSeconds
-    let rotationStep = angleDiff * ROTATION_AGILITY * deltaSeconds
+    let rotationStep = angleDiff * deltaSeconds
     rotationStep = Phaser.Math.Clamp(rotationStep, -maxStep, maxStep)
 
-    const newAngle = currentAngle + rotationStep
-    this.setAngle(newAngle)
+    this.sprite.angle = currentAngle + rotationStep
   }
 
   private updateThrust(deltaSeconds: number) {
-    this.currentThrust = this.lerp(
+    this.currentThrust = Phaser.Math.Linear(
       this.currentThrust,
       this.targetThrust,
       THRUST_LERP_FACTOR
     )
 
-    const currentAngleRadians = this.getAngleRadians()
-    const thrustX = Math.cos(currentAngleRadians) * ACCELERATION_SPEED
-    const thrustY = Math.sin(currentAngleRadians) * ACCELERATION_SPEED
+    const currentAlignmentRadians = this.getAlignmentRadians()
+    const thrustX = Math.cos(currentAlignmentRadians) * ACCELERATION_SPEED
+    const thrustY = Math.sin(currentAlignmentRadians) * ACCELERATION_SPEED
 
     if (this.targetThrust > 0) {
       this.velX_ms += thrustX * this.currentThrust * deltaSeconds
@@ -160,10 +141,5 @@ export class Ship {
     // Convert meters to pixels and update sprite position for rendering
     this.sprite.x = metersToPixels(this.posX_m)
     this.sprite.y = metersToPixels(this.posY_m)
-  }
-
-  // TODO: put this in a utils file
-  private lerp(start: number, target: number, factor: number) {
-    return start + (target - start) * factor
   }
 }
