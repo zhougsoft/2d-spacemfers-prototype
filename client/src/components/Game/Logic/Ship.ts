@@ -6,6 +6,8 @@ const MAX_SPEED = 500 // m/s
 const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.001 // how fast the ship slows down
 const ROTATION_SPEED = 100 // degrees per second
+const APPROACH_STOP_DISTANCE = 10 // min distance in meters from target to stop approaching
+const APPROACH_MIN_ANGLE = 10 // min angle in degrees from target before starting approach
 
 export class Ship {
   private sprite: Phaser.GameObjects.Sprite
@@ -18,6 +20,9 @@ export class Ship {
   private currentThrust: number = 0 // current thrust level (0 to 1)
   private targetThrust: number = 0 // target thrust level (0 to 1)
   private targetAngle: number = 0 // target angle in degrees (0 to 359, 0 facing up)
+
+  private approachTargetX: number | null = null // target X for approach command
+  private approachTargetY: number | null = null // target Y for approach command
 
   /**
    * Ship constructor
@@ -96,10 +101,39 @@ export class Ship {
   }
 
   /**
+   * Commands the ship to approach a target position until within minimum distance
+   * @param targetX target X coordinate in meters
+   * @param targetY target Y coordinate in meters
+   */
+  public approach(targetX: number, targetY: number) {
+    this.approachTargetX = targetX
+    this.approachTargetY = targetY
+    this.alignTo(targetX, targetY)
+  }
+
+  /**
+   * Clears the ship's current approach target
+   */
+  public clearApproachTarget() {
+    this.approachTargetX = null
+    this.approachTargetY = null
+  }
+
+  /**
+   * Stops the ship and clears any approach target
+   */
+  public stop() {
+    this.clearApproachTarget()
+    this.setTargetThrust(0)
+  }
+
+  /**
    * Main physics update loop for the ship
    * @param delta time since last frame in ms
    */
   public update(delta: number) {
+    this.updateApproach()
+
     const deltaSeconds = delta * 0.001
     this.updateAngle(deltaSeconds)
     this.updateThrust(deltaSeconds)
@@ -107,6 +141,26 @@ export class Ship {
   }
 
   // ~~~ PRIVATE METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  private updateApproach() {
+    if (!this.approachTargetX || !this.approachTargetY) return
+
+    const dx = this.approachTargetX - this.posX_m
+    const dy = this.approachTargetY - this.posY_m
+    const distanceToTarget = Math.sqrt(dx * dx + dy * dy)
+
+    if (distanceToTarget <= APPROACH_STOP_DISTANCE) {
+      this.stop()
+      return
+    }
+
+    // Apply thrust if within the minimum degrees of target angle
+    const targetAngle = (Math.atan2(dy, dx) * 180) / Math.PI + 90
+    const angleDiff = Math.abs(
+      Phaser.Math.Angle.WrapDegrees(targetAngle - this.sprite.angle)
+    )
+    this.setTargetThrust(angleDiff < APPROACH_MIN_ANGLE ? 1 : 0)
+  }
 
   private updateAngle(deltaSeconds: number) {
     const currentAngle = this.sprite.angle

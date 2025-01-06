@@ -91,6 +91,15 @@ const Game = () => {
     ship.current.alignTo(targetPosition.x, targetPosition.y)
   }
 
+  const handleApproach = (id: string) => {
+    if (!ship.current || !entityManager.current) return
+
+    const targetPosition = entityManager.current.getEntityPosition(id)
+    if (!targetPosition) return
+
+    ship.current.approach(targetPosition.x, targetPosition.y)
+  }
+
   const setShipAngle = (angle: number) => {
     ship.current?.setTargetAngle(angle)
   }
@@ -235,6 +244,7 @@ const Game = () => {
                 null
               }
               onAlignTo={handleAlignTo}
+              onApproach={handleApproach}
             />
             <OverviewPanel
               overviewItems={overviewItems}
