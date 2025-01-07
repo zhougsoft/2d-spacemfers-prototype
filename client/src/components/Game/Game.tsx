@@ -26,7 +26,7 @@
 import { useCallback, useRef, useState } from 'react'
 import asteroidImage from '../../assets/asteroid.png'
 import shipImage from '../../assets/shuttle.png'
-import { COLOR } from '../../utils/constants'
+import { COLOR_HEX } from '../../utils/constants'
 import { metersToPixels } from '../../utils/measurements'
 import { Background } from './Logic/Background'
 import { Camera } from './Logic/Camera'
@@ -42,7 +42,7 @@ const OVERVIEW_UPDATE_INTERVAL = 1000 // every 1 second
 
 const SELECTION_BOX_SIZE = 24 // in screen pixels
 const SELECTION_BOX_LINE_WIDTH = 2 // in screen pixels
-const SELECTION_BOX_COLOR = 0xcafe80
+const SELECTION_BOX_COLOR = COLOR_HEX.GREEN
 
 const Game = () => {
   // Game refs
@@ -89,29 +89,9 @@ const Game = () => {
     selectedEntityIdRef.current = id
     setSelectedEntityId(id)
 
-    selectionBox.current?.clear()
-
     if (id && entityManager.current) {
       const entity = entityManager.current.getEntities().find(e => e.id === id)
-      if (entity) {
-        selectionBox.current
-          ?.clear()
-          .lineStyle(SELECTION_BOX_LINE_WIDTH, SELECTION_BOX_COLOR, 1)
-          .fillStyle(SELECTION_BOX_COLOR, 0.1)
-          .strokeRect(
-            -SELECTION_BOX_SIZE / 2,
-            -SELECTION_BOX_SIZE / 2,
-            SELECTION_BOX_SIZE,
-            SELECTION_BOX_SIZE
-          )
-          .fillRect(
-            -SELECTION_BOX_SIZE / 2,
-            -SELECTION_BOX_SIZE / 2,
-            SELECTION_BOX_SIZE,
-            SELECTION_BOX_SIZE
-          )
-          .setVisible(true)
-      }
+      if (entity) selectionBox.current?.setVisible(true)
     }
   }
 
@@ -192,7 +172,31 @@ const Game = () => {
     createAsteroidEntity(-75, -25, 1.5, 0.3)
     createAsteroidEntity(-45, -5, 0.5, 1.3)
 
-    // Add game object click event
+    // Create selection box graphics object
+    selectionBox.current = scene.add
+      .graphics()
+      .lineStyle(SELECTION_BOX_LINE_WIDTH, SELECTION_BOX_COLOR, 0.8)
+      .fillStyle(SELECTION_BOX_COLOR, 0.1)
+      .strokeRect(
+        -SELECTION_BOX_SIZE / 2,
+        -SELECTION_BOX_SIZE / 2,
+        SELECTION_BOX_SIZE,
+        SELECTION_BOX_SIZE
+      )
+      .fillRect(
+        -SELECTION_BOX_SIZE / 2,
+        -SELECTION_BOX_SIZE / 2,
+        SELECTION_BOX_SIZE,
+        SELECTION_BOX_SIZE
+      )
+      .setVisible(false)
+
+    // Add the player ship & follow w/ the camera
+    const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
+    ship.current = new Ship(shipSprite)
+    camera.current?.follow(shipSprite)
+
+    // Add game object click event for entity selection
     scene.input.on(
       'pointerdown',
       (_: any, gameObjects: Phaser.GameObjects.GameObject[]) => {
@@ -201,14 +205,6 @@ const Game = () => {
         handleEntitySelection(clickedId)
       }
     )
-
-    // Create selection box graphics object
-    selectionBox.current = scene.add.graphics().setVisible(false)
-
-    // Add the player ship & follow w/ the camera
-    const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
-    ship.current = new Ship(shipSprite)
-    camera.current?.follow(shipSprite)
 
     // Initialize overview panel data
     refreshOverviewItems()

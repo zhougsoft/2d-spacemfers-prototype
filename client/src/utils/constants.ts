@@ -1,9 +1,17 @@
-export const COLOR = {
+export const COLOR_STRING = {
   BLUE: '#5dd3ff',
   GREEN: '#cafe80',
   ORANGE: '#ffb470',
   RED: '#ff7077',
   YELLOW: '#ffe260',
+}
+
+export const COLOR_HEX = {
+  BLUE: 0x5dd3ff,
+  GREEN: 0xcafe80,
+  ORANGE: 0xffb470,
+  RED: 0xff7077,
+  YELLOW: 0xffe260,
 }
 
 export const EMOJI = {

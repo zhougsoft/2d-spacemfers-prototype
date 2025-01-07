@@ -1,3 +1,4 @@
+import { COLOR_STRING } from '../../../utils/constants'
 import type { EntityInfo } from '../Logic/EntityManager'
 
 interface OverviewPanelProps {
@@ -25,7 +26,8 @@ const OverviewPanel = ({
           onClick={() => onSelectItem(item.id)}
           style={{
             cursor: 'pointer',
-            backgroundColor: selectedItemId === item.id ? 'red' : 'inherit',
+            color: selectedItemId === item.id ? 'black' : 'inherit',
+            backgroundColor: selectedItemId === item.id ? COLOR_STRING.GREEN : 'inherit',
           }}>
           <td>{`${Math.round(item.distance)}m`}</td>
           <td>{item.id}</td>

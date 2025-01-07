@@ -9,13 +9,25 @@ const SelectedItemPanel = ({
   onAlignTo: (id: string) => void
   onApproach: (id: string) => void
 }) => (
-  <div className="outline-light padding-ui">
+  <div
+    className="outline-light padding-ui"
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      minHeight: '6rem',
+      height: '100%',
+    }}>
     {selectedItem ? (
       <>
-        <div>{selectedItem.id}</div>
-        <div>{`${Math.round(selectedItem.distance)}m`}</div>
-        <button onClick={() => onAlignTo(selectedItem.id)}>align to</button>
-        <button onClick={() => onApproach(selectedItem.id)}>approach</button>
+        <div>
+          <div>{selectedItem.id}</div>
+          <div>{`${Math.round(selectedItem.distance)}m`}</div>
+        </div>
+        <div>
+          <button onClick={() => onAlignTo(selectedItem.id)}>align to</button>
+          <button onClick={() => onApproach(selectedItem.id)}>approach</button>
+        </div>
       </>
     ) : (
       <div>no item selected</div>
