@@ -2,12 +2,14 @@ interface ShipControlsProps {
   speedDisplay: number
   setShipAngle: (angle: number) => void
   setShipThrust: (thrust: number) => void
+  onShipStop: () => void
 }
 
 const ShipControls = ({
   speedDisplay,
   setShipAngle,
   setShipThrust,
+  onShipStop,
 }: ShipControlsProps) => (
   <div>
     <div
@@ -32,7 +34,7 @@ const ShipControls = ({
       </div>
       <div>
         <button onClick={() => setShipAngle(270)}>⬅️</button>
-        <button onClick={() => setShipThrust(0)}>🛑</button>
+        <button onClick={() => onShipStop()}>🛑</button>
         <button onClick={() => setShipAngle(90)}>➡️</button>
       </div>
       <div>

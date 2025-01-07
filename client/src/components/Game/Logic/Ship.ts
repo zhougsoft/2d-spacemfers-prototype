@@ -7,7 +7,7 @@ const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.001 // how fast the ship slows down
 const ROTATION_SPEED = 100 // degrees per second
 const APPROACH_STOP_DISTANCE = 10 // min distance in meters from target to stop approaching
-const APPROACH_MIN_ANGLE = 10 // min angle in degrees from target before starting approach
+const APPROACH_MIN_ANGLE = 45 // min angle in degrees from target before starting approach
 
 export class Ship {
   private sprite: Phaser.GameObjects.Sprite
@@ -123,8 +123,8 @@ export class Ship {
    * Stops the ship and clears any approach target
    */
   public stop() {
-    this.clearApproachTarget()
     this.setTargetThrust(0)
+    this.clearApproachTarget()
   }
 
   /**
@@ -143,7 +143,7 @@ export class Ship {
   // ~~~ PRIVATE METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   private updateApproach() {
-    if (!this.approachTargetX || !this.approachTargetY) return
+    if (this.approachTargetX === null || this.approachTargetY === null) return
 
     const dx = this.approachTargetX - this.posX_m
     const dy = this.approachTargetY - this.posY_m
@@ -159,6 +159,8 @@ export class Ship {
     const angleDiff = Math.abs(
       Phaser.Math.Angle.WrapDegrees(targetAngle - this.sprite.angle)
     )
+
+    this.alignTo(this.approachTargetX, this.approachTargetY)
     this.setTargetThrust(angleDiff < APPROACH_MIN_ANGLE ? 1 : 0)
   }
 

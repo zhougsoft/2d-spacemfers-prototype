@@ -17,7 +17,7 @@
  *    - NOTE: React useState values cannot be accessed in Phaser callbacks, but their setters can be called
  *
  * 3. Input Flow:
- *    - UI buttons trigger state changes, ex: setShipAngle() & setShipThrust()
+ *    - UI buttons trigger state changes, ex: handleAlignTo() & handleApproach()
  *    - Changes call game logic object refs
  *    - Game logic is applied based on these changes in the Phaser update loop
  *    - Updated values display in UI via React state setters called from the Phaser update loop
@@ -119,6 +119,10 @@ const Game = () => {
 
   const setShipThrust = (thrust: number) => {
     ship.current?.setTargetThrust(thrust)
+  }
+
+  const handleShipStop = () => {
+    ship.current?.stop()
   }
 
   // ~~~ PHASER SCENE CALLBACKS ~~~
@@ -315,6 +319,7 @@ const Game = () => {
           speedDisplay={playerSpeed}
           setShipAngle={setShipAngle}
           setShipThrust={setShipThrust}
+          onShipStop={handleShipStop}
         />
       </div>
       <div
