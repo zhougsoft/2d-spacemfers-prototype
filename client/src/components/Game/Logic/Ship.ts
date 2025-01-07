@@ -9,7 +9,7 @@ const ROTATION_SPEED = 100 // degrees per second
 const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const ROTATION_LERP_FACTOR = 0.1 // how fast the ship changes rotation speed
 
-const APPROACH_MIN_ANGLE = 90 // min angle in degrees from target before starting approach
+const APPROACH_MIN_ANGLE = 30 // min angle in degrees from target before starting approach
 const APPROACH_STOP_DISTANCE = 10 // min distance in meters from target to stop approaching
 
 export class Ship {
