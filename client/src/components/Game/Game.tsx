@@ -145,12 +145,13 @@ const Game = () => {
 
   // Runs once when the scene is created
   const onCreate = useCallback((scene: Phaser.Scene) => {
+    // Instantiate the entity tracking state manager
+    entityManager.current = new EntityManager()
+
     // Create background layers
     if (background.current) {
       background.current.create()
     }
-
-    entityManager.current = new EntityManager()
 
     // Create some test asteroid game objects
     const createAsteroidEntity = (
@@ -171,12 +172,20 @@ const Game = () => {
       return { id, sprite }
     }
 
+    // A batch of close asteroids
     createAsteroidEntity(0, -100, 3, 0.4)
     createAsteroidEntity(-150, -125, 2, 1.5)
     createAsteroidEntity(-100, -100, 1, 1.1)
     createAsteroidEntity(-90, -60, 0.75, 0.8)
     createAsteroidEntity(-75, -25, 1.5, 0.3)
     createAsteroidEntity(-45, -5, 0.5, 1.3)
+
+    // A batch of far asteroids
+    createAsteroidEntity(5000, 2000, 1, 0.7)
+    createAsteroidEntity(5500, 2500, 2.25, 1.2)
+    createAsteroidEntity(6000, 3000, 1.25, 0.4)
+    createAsteroidEntity(6200, 2500, 3, 1.6)
+    createAsteroidEntity(7000, 2750, 1.5, 0.9)
 
     // Create selection box graphics object
     selectionBox.current = scene.add

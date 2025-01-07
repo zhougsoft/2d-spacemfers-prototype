@@ -8,7 +8,7 @@ warping between planets and just flying around and exploring and stuff.
 - [x] add some predefined stuff in the view and check it out at different zoom levels and stuff
 - [x] create "align-to" system
 - [x] create "approach" system
-- [ ] refine approach system
+- [x] refine approach system
 - [ ] add some predefined stuff far AF away, like 10+ AU; make it show in overview nice (in AU units)
 - [ ] tinker with a warp system: for starters, just a debug btn to warp to predefined spots far away
   - align to target
