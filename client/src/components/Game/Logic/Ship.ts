@@ -6,7 +6,7 @@ const MAX_SPEED = 500 // m/s
 const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.001 // how fast the ship slows down
 const ROTATION_SPEED = 100 // degrees per second
-const APPROACH_MIN_ANGLE = 90 // min angle in degrees from target before starting approach
+const APPROACH_MIN_ANGLE = 45 // min angle in degrees from target before starting approach
 const APPROACH_STOP_DISTANCE = 10 // min distance in meters from target to stop approaching
 
 export class Ship {
@@ -144,32 +144,47 @@ export class Ship {
   private updateApproach() {
     if (this.approachTargetX === null || this.approachTargetY === null) return
 
+    // Calculate distance to target from current ship location
     const dx = this.approachTargetX - this.posX_m
     const dy = this.approachTargetY - this.posY_m
     const distanceToTarget = Math.sqrt(dx * dx + dy * dy)
 
+    // Stop the ship if within range of the target
     if (distanceToTarget <= APPROACH_STOP_DISTANCE) {
       this.stop()
       return
     }
 
-    const targetAngle = (Math.atan2(dy, dx) * 180) / Math.PI + 90
-    this.setTargetAngle(targetAngle)
-
+    // Rotate to face target
+    this.alignTo(this.approachTargetX, this.approachTargetY)
     const angleDiff = Math.abs(
-      Phaser.Math.Angle.WrapDegrees(targetAngle - this.getAngle())
+      Phaser.Math.Angle.WrapDegrees(this.targetAngle - this.getAngle())
     )
 
-    // If within approach angle, start throttling thrust
+    // If angle is close enough, apply thrust
     if (angleDiff < APPROACH_MIN_ANGLE) {
-      const thrustFactor =
-        (distanceToTarget * 10) / this.getSpeed() / (angleDiff * 1000)
-      this.setTargetThrust(thrustFactor)
+      const throttleDistance = APPROACH_STOP_DISTANCE * MAX_SPEED * 0.2
+
+      // Set max speed if target exceeds minimum thrust throttling distance
+      if (distanceToTarget > throttleDistance) {
+        this.setTargetThrust(1)
+      } else {
+        // Scale thrust based on how close to the target the ship is
+        const currentSpeed = this.getSpeed()
+        const targetSpeed = Phaser.Math.Clamp(
+          (distanceToTarget / throttleDistance) * MAX_SPEED,
+          0,
+          MAX_SPEED
+        )
+
+        const speedDiff = targetSpeed - currentSpeed
+        const thrustFactor = Phaser.Math.Clamp(speedDiff / MAX_SPEED, 0, 1)
+        this.setTargetThrust(thrustFactor)
+      }
     } else {
+      // Not within minimum angle to target, stop thrusting
       this.setTargetThrust(0)
     }
-
-    this.alignTo(this.approachTargetX, this.approachTargetY)
   }
 
   private updateAngle(deltaSeconds: number) {
@@ -179,9 +194,7 @@ export class Ship {
     )
 
     const maxStep = ROTATION_SPEED * deltaSeconds
-    let rotationStep = angleDiff * deltaSeconds
-    rotationStep = Phaser.Math.Clamp(rotationStep, -maxStep, maxStep)
-
+    const rotationStep = Phaser.Math.Clamp(angleDiff, -maxStep, maxStep)
     this.sprite.angle = currentAngle + rotationStep
   }
 
