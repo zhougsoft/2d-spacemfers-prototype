@@ -3,10 +3,13 @@ import { metersToPixels, pixelsToMeters } from '../../../utils/measurements'
 
 const ACCELERATION_SPEED = 100 // m/s²
 const MAX_SPEED = 500 // m/s
-const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
 const SPEED_DECAY = 0.001 // how fast the ship slows down
 const ROTATION_SPEED = 100 // degrees per second
-const APPROACH_MIN_ANGLE = 45 // min angle in degrees from target before starting approach
+
+const THRUST_LERP_FACTOR = 0.1 // how fast the ship changes thrust level
+const ROTATION_LERP_FACTOR = 0.1 // how fast the ship changes rotation speed
+
+const APPROACH_MIN_ANGLE = 90 // min angle in degrees from target before starting approach
 const APPROACH_STOP_DISTANCE = 10 // min distance in meters from target to stop approaching
 
 export class Ship {
@@ -18,6 +21,7 @@ export class Ship {
   private velY_ms: number = 0 // ship velocity Y in m/s
 
   private currentThrust: number = 0 // current thrust level (0 to 1)
+  private currentRotationSpeed: number = 0 // current rotation speed in degrees/second
   private targetThrust: number = 0 // target thrust level (0 to 1)
   private targetAngle: number = 0 // target angle in degrees (0 to 359, 0 facing up)
 
@@ -144,12 +148,10 @@ export class Ship {
   private updateApproach() {
     if (this.approachTargetX === null || this.approachTargetY === null) return
 
-    // Calculate distance to target from current ship location
     const dx = this.approachTargetX - this.posX_m
     const dy = this.approachTargetY - this.posY_m
     const distanceToTarget = Math.sqrt(dx * dx + dy * dy)
 
-    // Stop the ship if within range of the target
     if (distanceToTarget <= APPROACH_STOP_DISTANCE) {
       this.stop()
       return
@@ -193,9 +195,19 @@ export class Ship {
       this.targetAngle - currentAngle
     )
 
-    const maxStep = ROTATION_SPEED * deltaSeconds
-    const rotationStep = Phaser.Math.Clamp(angleDiff, -maxStep, maxStep)
-    this.sprite.angle = currentAngle + rotationStep
+    const targetRotationSpeed = Phaser.Math.Clamp(
+      angleDiff * 2,
+      -ROTATION_SPEED,
+      ROTATION_SPEED
+    )
+
+    this.currentRotationSpeed = Phaser.Math.Linear(
+      this.currentRotationSpeed,
+      targetRotationSpeed,
+      ROTATION_LERP_FACTOR
+    )
+
+    this.sprite.angle += this.currentRotationSpeed * deltaSeconds
   }
 
   private updateThrust(deltaSeconds: number) {
