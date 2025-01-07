@@ -1,3 +1,11 @@
+export const COLOR = {
+  BLUE: '#5dd3ff',
+  GREEN: '#cafe80',
+  ORANGE: '#ffb470',
+  RED: '#ff7077',
+  YELLOW: '#ffe260',
+}
+
 export const EMOJI = {
   ALIEN: '👽',
   ALIEN_MONSTER: '👾',
@@ -41,12 +49,3 @@ export const EMOJI = {
   WAXING_CRESCENT_MOON: '🌒',
   WAXING_GIBBOUS_MOON: '🌔',
 }
-
-export const CELESTIAL_TYPES: Record<number, { name: string; emoji: string }> =
-  {
-    1: { name: 'star', emoji: EMOJI.STAR },
-    2: { name: 'planet', emoji: EMOJI.RINGED_PLANET },
-    3: { name: 'moon', emoji: EMOJI.CRESCENT_MOON },
-    4: { name: 'belt', emoji: EMOJI.ROCK },
-    5: { name: 'station', emoji: EMOJI.SATELLITE },
-  }

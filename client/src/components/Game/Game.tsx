@@ -26,6 +26,7 @@
 import { useCallback, useRef, useState } from 'react'
 import asteroidImage from '../../assets/asteroid.png'
 import shipImage from '../../assets/shuttle.png'
+import { COLOR } from '../../utils/constants'
 import { metersToPixels } from '../../utils/measurements'
 import { Background } from './Logic/Background'
 import { Camera } from './Logic/Camera'
@@ -39,12 +40,18 @@ import ShipControls from './UI/ShipControls'
 const IS_HUD_ENABLED = true
 const OVERVIEW_UPDATE_INTERVAL = 1000 // every 1 second
 
+const SELECTION_BOX_SIZE = 24 // in screen pixels
+const SELECTION_BOX_LINE_WIDTH = 2 // in screen pixels
+const SELECTION_BOX_COLOR = 0xcafe80
+
 const Game = () => {
   // Game refs
   const background = useRef<Background>()
   const camera = useRef<Camera>()
   const entityManager = useRef<EntityManager>()
   const ship = useRef<Ship>()
+  const selectionBox = useRef<Phaser.GameObjects.Graphics>()
+  const selectedEntityIdRef = useRef<string | null>(null)
 
   // UI state
   const [reloadKey, setReloadKey] = useState(0)
@@ -79,7 +86,33 @@ const Game = () => {
   }, [])
 
   const handleEntitySelection = (id: string | null) => {
+    selectedEntityIdRef.current = id
     setSelectedEntityId(id)
+
+    selectionBox.current?.clear()
+
+    if (id && entityManager.current) {
+      const entity = entityManager.current.getEntities().find(e => e.id === id)
+      if (entity) {
+        selectionBox.current
+          ?.clear()
+          .lineStyle(SELECTION_BOX_LINE_WIDTH, SELECTION_BOX_COLOR, 1)
+          .fillStyle(SELECTION_BOX_COLOR, 0.1)
+          .strokeRect(
+            -SELECTION_BOX_SIZE / 2,
+            -SELECTION_BOX_SIZE / 2,
+            SELECTION_BOX_SIZE,
+            SELECTION_BOX_SIZE
+          )
+          .fillRect(
+            -SELECTION_BOX_SIZE / 2,
+            -SELECTION_BOX_SIZE / 2,
+            SELECTION_BOX_SIZE,
+            SELECTION_BOX_SIZE
+          )
+          .setVisible(true)
+      }
+    }
   }
 
   const handleAlignTo = (id: string) => {
@@ -169,6 +202,9 @@ const Game = () => {
       }
     )
 
+    // Create selection box graphics object
+    selectionBox.current = scene.add.graphics().setVisible(false)
+
     // Add the player ship & follow w/ the camera
     const shipSprite = scene.add.sprite(0, 0, 'ship').setScale(1)
     ship.current = new Ship(shipSprite)
@@ -198,6 +234,24 @@ const Game = () => {
       if (time - lastOverviewUpdate.current >= OVERVIEW_UPDATE_INTERVAL) {
         refreshOverviewItems()
         lastOverviewUpdate.current = time
+      }
+
+      // Update selection box position if there's a selected entity
+      if (
+        selectedEntityIdRef.current &&
+        selectionBox.current &&
+        entityManager.current &&
+        camera.current
+      ) {
+        const entity = entityManager.current
+          .getEntities()
+          .find(e => e.id === selectedEntityIdRef.current)
+        if (entity) {
+          // Position the selection box and counter the camera zoom
+          const zoom = camera.current.getZoom()
+          selectionBox.current.setPosition(entity.sprite.x, entity.sprite.y)
+          selectionBox.current.setScale(1 / zoom + 1) // Inverse zoom to maintain constant screen size
+        }
       }
     },
     []
