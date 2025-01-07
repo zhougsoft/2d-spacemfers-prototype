@@ -67,6 +67,8 @@ const Game = () => {
     camera.current = undefined
     entityManager.current = undefined
     ship.current = undefined
+    selectionBox.current = undefined
+    selectedEntityIdRef.current = null
 
     setPlayerSpeed(0)
     setPlayerLocation({ x: 0, y: 0 })
