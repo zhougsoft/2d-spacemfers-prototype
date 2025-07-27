@@ -1,8 +1,4 @@
-# spacemfers
-
-> mfers, in space
-
-![spacemfers](website/spacemfers.png)
+# 2d spacemfers prototype
 
 ### run locally:
 1. install deps: `npm install`
