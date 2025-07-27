@@ -664,7 +664,7 @@ const main = async () => {
 
   // --- run server -----------------------------------------------------------
   app.listen(PORT, () => {
-    console.log(`\n📡 spacemfers server running on port ${PORT}\n`)
+    console.log(`\n📡 spacemfers prototype server running on port ${PORT}\n`)
   })
 }
 
@@ -675,7 +675,7 @@ main().catch(async error => {
 })
 
 process.on('SIGINT', async () => {
-  console.log('\nshutting down spacemfers server...')
+  console.log('\nshutting down spacemfers prototype server...')
   await client.end()
   process.exit(0)
 })
